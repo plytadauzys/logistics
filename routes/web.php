@@ -43,3 +43,6 @@ Route::post('expeditions/new', [ExpeditionController::class, 'createExpedition']
 Route::post('expeditions/file', [ExpeditionController::class, 'importData']);
 Route::post('expeditions/changeState', [ExpeditionController::class, 'changeState']);
 //-------------------------------------------------------------------
+// Expeditions History ----------------------------------------------
+Route::get('/expeditionHistory', [\App\Http\Controllers\ExpeditionHistoryController::class, 'index']);
+//-------------------------------------------------------------------

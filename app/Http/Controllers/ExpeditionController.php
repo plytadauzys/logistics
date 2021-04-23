@@ -55,6 +55,8 @@ class ExpeditionController extends Controller
     }
     function changeState(request $req) {
         $expedition = Expedition::where('order_no','=',$req->orderNoState)->first();
+        //return $expedition;
+        $test = '';
         if ($expedition->state == 'order') {
             $expedition->from = $req->fromState;
             $expedition->to = $req->toState;
@@ -62,8 +64,46 @@ class ExpeditionController extends Controller
             $expedition->amount = $req->amountState;
             $expedition->profit = $req->profitState;
             $expedition->state = 'contact';
+            $expedition->save();
         }
-        $expedition->save();
+        else if ($expedition->state == 'contact') {
+            $expedition->carrier = $req->carrierState;
+            $expedition->carrier_price = $req->carrierPriceState;
+            $expedition->total_profit = $expedition->profit - $expedition->carrier_price;
+            $expedition->state = 'transport';
+            $expedition->save();
+        }
+        else if ($expedition->state == 'transport') {
+            $expedition->loaded = $req->loadedState;
+            $expedition->state = 'exporting';
+            $expedition->save();
+        }
+        else if ($expedition->state == 'exporting') {
+            $expedition->unloaded = $req->unloadedState;
+            $expedition->state = 'received';
+            $expedition->save();
+        }
+        else if ($expedition->state == 'received') {
+            $expeditionHistory = new ExpeditionHistory();
+            $expeditionHistory->order_no = $expedition->order_no;
+            $expeditionHistory->date = $expedition->date;
+            $expeditionHistory->client = $expedition->client;
+            $expeditionHistory->supplier = $expedition->supplier;
+            $expeditionHistory->from = $expedition->from;
+            $expeditionHistory->to = $expedition->to;
+            $expeditionHistory->cargo = $expedition->cargo;
+            $expeditionHistory->amount = $expedition->amount;
+            $expeditionHistory->profit = $expedition->profit;
+            $expeditionHistory->loaded = $expedition->loaded;
+            $expeditionHistory->unloaded = $expedition->unloaded;
+            $expeditionHistory->carrier = $expedition->carrier;
+            $expeditionHistory->carrier_price = $expedition->carrier_price;
+            $expeditionHistory->total_profit = $expedition->total_profit;
+            $expeditionHistory->closed_date = Carbon::now()->toDateString();
+            if ($expeditionHistory->save()) {
+                $expedition->delete();
+            }
+        }
         return Redirect::back();
     }
     private function read_docx($filename){

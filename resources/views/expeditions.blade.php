@@ -1,10 +1,7 @@
-<head>
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</head>
+@extends('layouts.app')
+@section('content')
+
+<input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
 <table class="table">
     <thead>
     <tr>
@@ -93,7 +90,6 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>Keitimas</p>
                                             <form action="/expeditions/changeState" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
@@ -162,117 +158,479 @@
         @elseif($d->state == 'contact')
             <tr>
                 <td></td>
-                <td>
-                    <div class="card" style="width: 12rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
-                            <p class="card-text">Some</p>
+                    <td>
+                        <div class="card" style="width: 12rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <p class="card-text">Some</p>
 
-                            <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
-                            <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form>
-                                                @csrf
-                                                <div class="form-group">
-                                                    <label for="clientState">Klientas</label>
-                                                    <select class="custom-select" name="clientState" id="clientState" disabled>
-                                                        <option value="{{$d->client}}">{{$d->client}}</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="supplierState">Tiekėjo pavadinimas</label>
-                                                    <select class="custom-select" name="supplierState" id="supplierState" disabled>
-                                                        <option value="{{$d->supplier}}">{{$d->supplier}}</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="fromState">Vieta iš</label>
-                                                    <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                           value="{{$d->from}}" readonly>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="toState">Vieta į</label>
-                                                    <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                           value="{{$d->to}}" readonly>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="cargoState">Krovinys</label>
-                                                    <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
-                                                           value="{{$d->cargo}}" readonly>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="amountState">Kiekis</label>
-                                                    <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
-                                                           value="{{$d->amount}}" readonly>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="profitState">Pelnas</label>
-                                                    <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
-                                                           value="{{$d->profit}}" readonly>
-                                                </div>
-                                            </form>
-                                            <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    @csrf
+                                                    <div class="form-group">
+                                                        <label for="clientState">Klientas</label>
+                                                        <select class="custom-select" name="clientState" id="clientState" disabled>
+                                                            <option value="{{$d->client}}">{{$d->client}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                        <select class="custom-select" name="supplierState" id="supplierState" disabled>
+                                                            <option value="{{$d->supplier}}">{{$d->supplier}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="fromState">Vieta iš</label>
+                                                        <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
+                                                               value="{{$d->from}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="toState">Vieta į</label>
+                                                        <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
+                                                               value="{{$d->to}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="cargoState">Krovinys</label>
+                                                        <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                               value="{{$d->cargo}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="amountState">Kiekis</label>
+                                                        <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                               value="{{$d->amount}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="profitState">Pelnas</label>
+                                                        <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
+                                                               value="{{$d->profit}}" readonly>
+                                                    </div>
+                                                </form>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="modal fade" id="{{'expstate'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expstate'.$d->order_no}}" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Keitimas</p>
-                                            <form action="/expeditions/changeState" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
-                                                <div class="form-group">
-                                                    <label for="carrierState">Vežėjas</label>
-                                                    <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                           required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="carrierPriceState">Vežėjo kaina</label>
-                                                    <input type="text" class="form-control" id="carrierPriceState" name="carrierPriceState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                           required>
-                                                </div>
-                                                <button type="submit" class="btn btn-success">Keisti būseną</button>
-                                            </form>
+                                <div class="modal fade" id="{{'expstate'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expstate'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="/expeditions/changeState" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
+                                                    <div class="form-group">
+                                                        <label for="carrierState">Vežėjas</label>
+                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite krovinio išvykimo vietą"
+                                                               required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierPriceState">Vežėjo kaina</label>
+                                                        <input type="text" class="form-control" id="carrierPriceState" name="carrierPriceState" placeholder="Įveskite krovinio atvykimo vietą"
+                                                               required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
-                    </div>
-                </td>
+                    </td>
                 <td></td><td></td><td></td>
             </tr>
         @elseif($d->state == 'transport')
             <tr>
-                <td></td><td></td> <td>{{$d->order_no}} {{$d->state}}</td> <td></td><td></td>
+                <td></td><td></td>
+                    <td>
+                        <div class="card" style="width: 12rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <p class="card-text">Some</p>
+
+                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    @csrf
+                                                    <a class="btn btn-light" data-toggle="collapse" href="{{'#uzsakymas'.$d->order_no}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                                        Užsakymas
+                                                    </a>
+                                                    <p></p>
+                                                    <div class="collapse" id="{{'uzsakymas'.$d->order_no}}">
+                                                        <div class="card card-body">
+                                                            <div class="form-group">
+                                                                <label for="clientState">Klientas</label>
+                                                                <select class="custom-select" name="clientState" id="clientState" disabled>
+                                                                    <option value="{{$d->client}}">{{$d->client}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                                <select class="custom-select" name="supplierState" id="supplierState" disabled>
+                                                                    <option value="{{$d->supplier}}">{{$d->supplier}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="fromState">Vieta iš</label>
+                                                                <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
+                                                                       value="{{$d->from}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="toState">Vieta į</label>
+                                                                <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
+                                                                       value="{{$d->to}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="cargoState">Krovinys</label>
+                                                                <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                                       value="{{$d->cargo}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="amountState">Kiekis</label>
+                                                                <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                                       value="{{$d->amount}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="profitState">Pelnas</label>
+                                                                <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
+                                                                       value="{{$d->profit}}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierState">Vežėjas</label>
+                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite vežėją"
+                                                               value="{{$d->carrier}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierPriceState">Vežėjo kaina</label>
+                                                        <input type="number" class="form-control" id="carrierPriceState" name="carrierPriceState" placeholder="Įveskite vežėjo kainą"
+                                                               value="{{$d->carrier_price}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="totalPriceState">Visas pelnas</label>
+                                                        <input type="number" class="form-control" id="totalPriceState" name="totalPriceState" placeholder="Įveskite visą pelną"
+                                                               value="{{$d->total_profit}}" readonly>
+                                                    </div>
+                                                </form>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="{{'expstate'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expstate'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="/expeditions/changeState" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
+                                                    <div class="form-group">
+                                                        <label for="loadedState">Pasikrovimo data</label>
+                                                        <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite datą"
+                                                               value="getToday()" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </td>
+                <td></td><td></td>
             </tr>
         @elseif($d->state == 'exporting')
             <tr>
-                <td></td><td></td><td></td> <td>{{$d->order_no}} {{$d->state}}</td> <td></td>
+                <td></td><td></td><td></td>
+                    <td>
+                        <div class="card" style="width: 12rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <p class="card-text">Some</p>
+
+                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form>
+                                                    @csrf
+                                                    <a class="btn btn-light" data-toggle="collapse" href="{{'#uzsakymas'.$d->order_no}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                                        Užsakymas
+                                                    </a>
+                                                    <p></p>
+                                                    <div class="collapse" id="{{'uzsakymas'.$d->order_no}}">
+                                                        <div class="card card-body">
+                                                            <div class="form-group">
+                                                                <label for="clientState">Klientas</label>
+                                                                <select class="custom-select" name="clientState" id="clientState" disabled>
+                                                                    <option value="{{$d->client}}">{{$d->client}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                                <select class="custom-select" name="supplierState" id="supplierState" disabled>
+                                                                    <option value="{{$d->supplier}}">{{$d->supplier}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="fromState">Vieta iš</label>
+                                                                <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
+                                                                       value="{{$d->from}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="toState">Vieta į</label>
+                                                                <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
+                                                                       value="{{$d->to}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="cargoState">Krovinys</label>
+                                                                <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                                       value="{{$d->cargo}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="amountState">Kiekis</label>
+                                                                <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                                       value="{{$d->amount}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="profitState">Pelnas</label>
+                                                                <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
+                                                                       value="{{$d->profit}}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierState">Vežėjas</label>
+                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite vežėją"
+                                                               value="{{$d->carrier}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierPriceState">Vežėjo kaina</label>
+                                                        <input type="number" class="form-control" id="carrierPriceState" name="carrierPriceState" placeholder="Įveskite vežėjo kainą"
+                                                               value="{{$d->carrier_price}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="totalPriceState">Visas pelnas</label>
+                                                        <input type="number" class="form-control" id="totalPriceState" name="totalPriceState" placeholder="Įveskite visą pelną"
+                                                               value="{{$d->total_profit}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="loadedState">Pasikrovimo data</label>
+                                                        <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
+                                                               value="{{$d->loaded}}" readonly>
+                                                    </div>
+                                                </form>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="{{'expstate'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expstate'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="/expeditions/changeState" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
+                                                    <div class="form-group">
+                                                        <label for="unloadedState">Išsikrovimo data</label>
+                                                        <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
+                                                               value="getToday()" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </td>
+                <td></td>
             </tr>
         @elseif($d->state == 'received')
             <tr>
-                <td></td><td></td><td></td><td></td> <td>{{$d->order_no}} {{$d->state}}</td>
+                <td></td><td></td><td></td><td></td>
+                    <td>
+                        <div class="card" style="width: 12rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <p class="card-text">Some</p>
+
+                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="/expeditions/changeState" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
+                                                    <a class="btn btn-light" data-toggle="collapse" href="{{'#uzsakymas'.$d->order_no}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                                        Užsakymas
+                                                    </a>
+                                                    <p></p>
+                                                    <div class="collapse" id="{{'uzsakymas'.$d->order_no}}">
+                                                        <div class="card card-body">
+                                                            <div class="form-group">
+                                                                <label for="clientState">Klientas</label>
+                                                                <select class="custom-select" name="clientState" id="clientState" disabled>
+                                                                    <option value="{{$d->client}}">{{$d->client}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                                <select class="custom-select" name="supplierState" id="supplierState" disabled>
+                                                                    <option value="{{$d->supplier}}">{{$d->supplier}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="fromState">Vieta iš</label>
+                                                                <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
+                                                                       value="{{$d->from}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="toState">Vieta į</label>
+                                                                <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
+                                                                       value="{{$d->to}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="cargoState">Krovinys</label>
+                                                                <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                                       value="{{$d->cargo}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="amountState">Kiekis</label>
+                                                                <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                                       value="{{$d->amount}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="profitState">Pelnas</label>
+                                                                <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
+                                                                       value="{{$d->profit}}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierState">Vežėjas</label>
+                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite vežėją"
+                                                               value="{{$d->carrier}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierPriceState">Vežėjo kaina</label>
+                                                        <input type="number" class="form-control" id="carrierPriceState" name="carrierPriceState" placeholder="Įveskite vežėjo kainą"
+                                                               value="{{$d->carrier_price}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="totalPriceState">Visas pelnas</label>
+                                                        <input type="number" class="form-control" id="totalPriceState" name="totalPriceState" placeholder="Įveskite visą pelną"
+                                                               value="{{$d->total_profit}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="loadedState">Pasikrovimo data</label>
+                                                        <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite "
+                                                               value="{{$d->loaded}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="unloadedState">Išsikrovimo data</label>
+                                                        <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite visą pelną"
+                                                               value="{{$d->unloaded}}" readonly>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Uždaryti ekspediciją</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="{{'expstate'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expstate'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="/expeditions/changeState" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
+                                                    <div class="form-group">
+                                                        <label for="unloadedState">Išsikrovimo data</label>
+                                                        <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
+                                                               value="getToday()" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </td>
             </tr>
         @else
             <tr>
@@ -344,3 +702,38 @@
         </div>
     </div>
 </div>
+    <script>
+        function getToday() {
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = yyyy + '-' + mm + '-' + dd;
+            return today;
+        }
+        function search() {
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("clientTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td") ;
+                for(j=0 ; j<td.length ; j++)
+                {
+                    let tdata = td[j] ;
+                    if (tdata) {
+                        if (tdata.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break ;
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+@endsection

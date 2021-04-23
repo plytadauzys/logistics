@@ -1,10 +1,5 @@
-<head>
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</head>
+@extends('layouts.app')
+@section('content')
 <select class="custom-select" name="formSelector" id="formSelector" oninput="selectForm()">
     <option value="0" selected>Skaičiuoti krovimo metrus (pasirinkti)...</option>
     <option value="1">Suvedant matmenis</option>
@@ -14,12 +9,12 @@
 <form id="pallets" hidden>
     <div>
         <div class="form-group">
-            <label for="length">Ilgis</label>
-            <input type="text" class="form-control" id="length" name="length" placeholder="Įveskite ilgį">
+            <label for="length">Ilgis (m)</label>
+            <input type="text" class="form-control" id="length" name="length" placeholder="Įveskite ilgį" oninput="calcDim()">
         </div>
         <div class="form-group">
-            <label for="width">Plotis</label>
-            <input type="text" class="form-control" id="width" name="width" placeholder="Įveskite plotį">
+            <label for="width">Plotis (m)</label>
+            <input type="text" class="form-control" id="width" name="width" placeholder="Įveskite plotį" oninput="calcDim()">
         </div>
         <div class="form-group">
             <label for="amount">Kiekis</label>
@@ -48,10 +43,6 @@
 </form>
 <p id="answer">ad</p>
 <script>
-    //             Ilgis Plotis Aukštis LDM
-    // Euro         120    80     220   0.4
-    // Finnish      120    100    220   0.5
-    // Industrial   120    120    220   0.6
     function selectForm() {
         var form = document.getElementById('formSelector');
         var pallets = document.getElementById('pallets');
@@ -69,6 +60,10 @@
             dimensions.hidden = false;
         }
     }
+    //             Ilgis Plotis Aukštis LDM
+    // Euro         120    80     220   0.4
+    // Finnish      120    100    220   0.5
+    // Industrial   120    120    220   0.6
     function calcPal() {
         var pallets = document.getElementById('pallet');
         var answer = document.getElementById('answer');
@@ -82,7 +77,22 @@
             answer.innerText = 0.6;
         }
     }
+    //             Ilgis Plotis Aukštis LDM
+    // Euro         120    80     220   0.4
+    // Finnish      120    100    220   0.5
+    // Industrial   120    120    220   0.6
+    // Įprastas vidutinis plotis 2,4m
+    // Krovinio laikiklio (priekabos) ilgis * krovinio laikiklio plotis / 2,4
+    // (e.g. for a Euro pallet: 1.2 m x 0.8 m / 2.4 m = 0.4 ldm)
+    // Ilgis * plotis / 2.4 / stacking factor = loading meter
+    // (e.g., for a Euro pallet: 1.2 m x 0.8 m / 2.4 m / 2 = 0.2 ldm)
+    // Length x width / 2.4 / stacking factor * number of load carriers = loading meter
+    // (e.g. for a Euro pallet: 1.2 m x 0.8 m / 2.4 m / 2 * 16 = 3.2 ldm)
     function calcDim() {
-
+        var length = document.getElementById('length').value;
+        var width = document.getElementById('width').value;
+        var answer = document.getElementById('answer');
+        answer.innerText = length * width / 2.4;
     }
 </script>
+@endsection
