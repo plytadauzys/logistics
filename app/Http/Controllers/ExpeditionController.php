@@ -124,7 +124,7 @@ class ExpeditionController extends Controller
             $content .= zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
 
             zip_entry_close($zip_entry);
-        }// end while
+        }
 
         zip_close($zip);
 

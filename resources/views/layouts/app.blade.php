@@ -15,23 +15,34 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/clients">Klientai</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/suppliers">Tiekėjai</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/expeditions">Ekspedicijos</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/expeditionHistory">Ekspedicijų istorija</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/ldm">Krovimo metrų skaičiuoklė</a>
-            </li>
+            @if(session('user') || session('admin'))
+                <li class="nav-item">
+                    <a class="nav-link" href="/clients">Klientai</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/suppliers">Tiekėjai</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/expeditions">Ekspedicijos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/expeditionHistory">Ekspedicijų istorija</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/ldm">Krovimo metrų skaičiuoklė</a>
+                </li>
+                @if(session('user'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logoutManager">Atsijungti</a>
+                    </li>
+                @elseif(session('admin'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logoutAdmin">Atsijungti</a>
+                    </li>
+                @endif
+            @endif
         </ul>
     </div>
 </nav>

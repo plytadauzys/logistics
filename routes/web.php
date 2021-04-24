@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\ExpeditionController;
 use \App\Http\Controllers\ClientController;
 use \App\Http\Controllers\SupplierController;
+use \App\Http\Controllers\ManagerController;
+use \App\Http\Controllers\AdministratorController;
+use \App\Http\Controllers\ExpeditionHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +20,7 @@ use \App\Http\Controllers\SupplierController;
 */
 // Home -------------------------------------------------------------
 Route::get('/', function () {
-    return view('home');
+    return view('home', ['data' => '']);
 });
 Route::get('w', function () {
     return view('welcome');
@@ -25,6 +28,16 @@ Route::get('w', function () {
 Route::get('ldm', function () {
     return view('ldm');
 });
+//-------------------------------------------------------------------
+// Administrators ---------------------------------------------------
+Route::post('loginAdmin', [AdministratorController::class, 'login']);
+Route::get('logoutAdmin', [AdministratorController::class, 'logout']);
+Route::get('adminHome', [AdministratorController::class, 'index']);
+//-------------------------------------------------------------------
+// Managers----------------------------------------------------------
+Route::post('loginManager', [ManagerController::class, 'login']);
+Route::get('logoutManager', [ManagerController::class, 'logout']);
+Route::get('managerHome', [ManagerController::class, 'index']);
 //-------------------------------------------------------------------
 // Clients ----------------------------------------------------------
 Route::get('clients',[ClientController::class, 'index']);
@@ -44,5 +57,5 @@ Route::post('expeditions/file', [ExpeditionController::class, 'importData']);
 Route::post('expeditions/changeState', [ExpeditionController::class, 'changeState']);
 //-------------------------------------------------------------------
 // Expeditions History ----------------------------------------------
-Route::get('/expeditionHistory', [\App\Http\Controllers\ExpeditionHistoryController::class, 'index']);
+Route::get('/expeditionHistory', [ExpeditionHistoryController::class, 'index']);
 //-------------------------------------------------------------------
