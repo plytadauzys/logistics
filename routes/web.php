@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\ExpeditionController;
 use \App\Http\Controllers\ClientController;
@@ -20,6 +21,10 @@ use \App\Http\Controllers\ExpeditionHistoryController;
 */
 // Home -------------------------------------------------------------
 Route::get('/', function () {
+    if(session()->has('admin'))
+        return Redirect::to('adminHome');
+    else if (session()->has('user'))
+        return Redirect::to('managerHome');
     return view('home', ['data' => '']);
 });
 Route::get('w', function () {

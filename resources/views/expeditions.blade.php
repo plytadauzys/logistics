@@ -658,50 +658,101 @@
             <div class="modal-body">
                 <form action="/expeditions/new" method="POST">
                     @csrf
-                    <div class="form-group">
-                        <label for="clientNew">Klientas</label>
-                        <select class="custom-select" name="clientNew" id="clientNew">
-                            <option selected value="nothing">Pasirinkite klientą</option>
-                            @foreach($clients as $c)
-                                <option value="{{$c->id}}">{{$c->name}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="supplierNew">Tiekėjo pavadinimas</label>
-                        <select class="custom-select" name="supplierNew" id="supplierNew">
-                            <option selected value="nothing">Pasirinkite tiekėją</option>
-                            @foreach($suppliers as $s)
-                                <option value="{{$s->id}}">{{$s->name}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="fromNew">Vieta iš</label>
-                        <input type="text" class="form-control" id="fromNew" name="fromNew" placeholder="Įveskite krovinio išvykimo vietą">
-                    </div>
-                    <div class="form-group">
-                        <label for="toNew">Vieta į</label>
-                        <input type="text" class="form-control" id="toNew" name="toNew" placeholder="Įveskite krovinio atvykimo vietą">
-                    </div>
-                    <div class="form-group">
-                        <label for="cargoNew">Krovinys</label>
-                        <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį">
-                    </div>
-                    <div class="form-group">
-                        <label for="amountNew">Kiekis</label>
-                        <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį">
-                    </div>
-                    <div class="form-group">
-                        <label for="profitNew">Pelnas</label>
-                        <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną">
-                    </div>
+                    @if(session()->has('neworder'))
+                        <div class="form-group">
+                            <label for="clientNew">Klientas</label>
+                            <select class="custom-select" name="clientNew" id="clientNew">
+                                <option selected value="nothing">Pasirinkite klientą</option>
+                                @foreach($clients as $c)
+                                    <option value="{{$c->id}}">{{$c->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplierNew">Tiekėjo pavadinimas</label>
+                            <select class="custom-select" name="supplierNew" id="supplierNew">
+                                <option selected value="nothing">Pasirinkite tiekėją</option>
+                                @foreach($suppliers as $s)
+                                    <option value="{{$s->id}}">{{$s->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fromNew">Vieta iš</label>
+                            <input type="text" class="form-control" id="fromNew" name="fromNew" placeholder="Įveskite krovinio išvykimo vietą"
+                            value="{{session('neworder')[0][2]}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="toNew">Vieta į</label>
+                            <input type="text" class="form-control" id="toNew" name="toNew" placeholder="Įveskite krovinio atvykimo vietą"
+                                   value="{{session('neworder')[0][3]}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="cargoNew">Krovinys</label>
+                            <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį"
+                                   value="{{session('neworder')[0][4]}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="amountNew">Kiekis</label>
+                            <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį"
+                                   value="{{session('neworder')[0][5]}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="profitNew">Pelnas</label>
+                            <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną"
+                                   value="{{(int)session('neworder')[0][6]}}">
+                        </div>
+                    @else
+                        <div class="form-group">
+                            <label for="clientNew">Klientas</label>
+                            <select class="custom-select" name="clientNew" id="clientNew">
+                                <option selected value="nothing">Pasirinkite klientą</option>
+                                @foreach($clients as $c)
+                                    <option value="{{$c->id}}">{{$c->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplierNew">Tiekėjo pavadinimas</label>
+                            <select class="custom-select" name="supplierNew" id="supplierNew">
+                                <option selected value="nothing">Pasirinkite tiekėją</option>
+                                @foreach($suppliers as $s)
+                                    <option value="{{$s->id}}">{{$s->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fromNew">Vieta iš</label>
+                            <input type="text" class="form-control" id="fromNew" name="fromNew" placeholder="Įveskite krovinio išvykimo vietą">
+                        </div>
+                        <div class="form-group">
+                            <label for="toNew">Vieta į</label>
+                            <input type="text" class="form-control" id="toNew" name="toNew" placeholder="Įveskite krovinio atvykimo vietą">
+                        </div>
+                        <div class="form-group">
+                            <label for="cargoNew">Krovinys</label>
+                            <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį">
+                        </div>
+                        <div class="form-group">
+                            <label for="amountNew">Kiekis</label>
+                            <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį">
+                        </div>
+                        <div class="form-group">
+                            <label for="profitNew">Pelnas</label>
+                            <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną">
+                        </div>
+                    @endif
                     <button type="submit" class="btn btn-primary">Pridėti</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<form action="/expeditions/file" method="POST" enctype="multipart/form-data">
+    @csrf
+    <input type="file" id="file" name="file">
+    <input type="submit">
+</form>
     <script>
         function getToday() {
             var today = new Date();

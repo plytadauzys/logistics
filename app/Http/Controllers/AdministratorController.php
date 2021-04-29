@@ -38,4 +38,13 @@ class AdministratorController extends Controller
         }
         return Redirect('/');
     }
+    function editUser(request $req) {
+        $manager = Manager::where('id','=',$req->id)->first();
+        $manager->first_name = $req->firstName;
+        $manager->last_name = $req->lastName;
+        $manager->email = $req->email;
+        $manager->password = $req->password;
+        $manager->save();
+        return Redirect::to('adminHome')->with('message','Duomenys pakeisti sėkmingai.');
+    }
 }

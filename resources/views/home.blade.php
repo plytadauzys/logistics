@@ -1,6 +1,7 @@
 
 @extends('layouts.app')
 @section('content')
+
 @if(session('error'))
     <p>{{session('error')}}</p>
 @endif

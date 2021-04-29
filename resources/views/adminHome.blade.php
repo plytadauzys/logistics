@@ -1,7 +1,9 @@
 @extends('layouts.app')
 @section('content')
 
-    <p>{{$data}}</p>
+    @if(session('message'))
+        <p style="color: #008000">{{session('message')}}</p>
+    @endif
 
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
     <table class="table table-bordered" id="clientTable">
@@ -46,27 +48,27 @@
                                         <div class="form-group">
                                             <label for="id">ID</label>
                                             <input type="text" class="form-control" id="id" name="id" placeholder="Įveskite identifikacinį numerį (ID)"
-                                                   value="{{$m->id}}">
+                                                   value="{{$m->id}}" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="firstName">Vardas</label>
                                             <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Įveskite vartotojo vardą"
-                                                   value="{{$m->first_name}}">
+                                                   value="{{$m->first_name}}" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="lastName">Pavardė</label>
                                             <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Įveskite vartotojo pavardę"
-                                                   value="{{$m->last_name}}">
+                                                   value="{{$m->last_name}}" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="email">El. paštas</label>
                                             <input type="text" class="form-control" id="email" name="email" placeholder="Įveskite vartotojo el. paštą"
-                                                   value="{{$m->phone_no}}">
+                                                   value="{{$m->phone_no}}" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="password">Slaptažodis</label>
                                             <input type="email" class="form-control" id="password" name="password" placeholder="Įveskite vartotojo slaptažodį"
-                                                   value="{{$m->email}}">
+                                                   value="{{$m->email}}" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Redaguoti</button>
                                     </form>

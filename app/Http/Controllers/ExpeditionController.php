@@ -17,6 +17,7 @@ class ExpeditionController extends Controller
 {
     // index, getExpedition, getExpeditions, createExpedition, importData, calculateLDM,
     // changeState, endExpedition
+    // https://gist.github.com/ngugijames/d49fddd73d389d8834c2
     function index() {
         $expeditions = Expedition::all();
         $clients = Client::all();
@@ -46,12 +47,21 @@ class ExpeditionController extends Controller
     function importData(request $req) {
         $file = $req->file('file')->store('docs');
         $dir = storage_path('app');
+        //explode('.',$file)[1]
         $txt = $this->read_docx($dir.'\\'.$file);
         File::delete(storage_path('app/').$file);
+        $supplier = Str::before(Str::after($txt,'Siuntėjo pavadinimas:'),'Pervežimo maršrutas');
+        $client = Str::before(Str::after($txt,'Firmos pavadinimas:'),'Pristatymo');
+        $from = Str::before(Str::after($txt,'Pasikrovimo adresas, data:'),'GAVĖJAS');
+        $to = Str::before(Str::after($txt,'Adresas:'),'Pašto');
         $cargo = Str::before(Str::after($txt,'Krovinio aprašymas:'),'Krovinio svoris, tūris arba konteinerio ');
         $amount = Str::before(Str::after($txt,'konteinerio tipas:'),' (');
         $price = Str::before(Str::after($txt,'Paslaugos kaina:'),' EUR');
-        return $amount;
+        $order = collect([$client, $supplier, $from, $to, $cargo, $amount, $price]);
+        //array($client, $supplier, $from, $to, $cargo, $amount, $price, $order);
+        session()->pull('neworder');
+        session()->push('neworder',$order);
+        return Redirect::back();
     }
     function changeState(request $req) {
         $expedition = Expedition::where('order_no','=',$req->orderNoState)->first();
