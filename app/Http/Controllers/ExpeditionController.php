@@ -29,8 +29,35 @@ class ExpeditionController extends Controller
         $expeditions = Expedition::all();
         $clients = Client::all();
         $suppliers = Supplier::all();
-
-        $expedition = new Expedition();
+        $d = $req->routeNewDate;
+        $a = array();
+        $b = array();
+        if ($req->has('routeDateNew1')) {
+            for ($i = 1; $i < $req->fieldsNewCount + 1; $i++) {
+                if ($d <= $req->input('routeDateNew' . $i))
+                    continue;
+                else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
+            }
+            for ($i = 1; $i < $req->fieldsNewCount + 1; $i++) {
+                for ($j = 1; $j < $req->fieldsNewCount + 1; $j++) {
+                    if ($i === $j)
+                        continue;
+                    else if (!in_array($j, $b)) {
+                        if ($req->input('routeDateNew'.$i) <= $req->input('routeDateNew'.$j))
+                            continue;
+                        else {
+                            //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
+                            return Redirect::back()->with('error', 'Netinkamai suvestos datos: '.$j.' papildomame laukelyje data '.
+                            'turėtų būti mažesnė arba lygi '.($j -1).' papildomo laukelio datai');
+                        }
+                    } else continue;
+                }
+                array_push($b, $i);
+            }
+        }
+        else return 'n3ra';
+        return $b;
+        /*$expedition = new Expedition();
         $expedition->date = Carbon::now()->toDateString();
         $expedition->client = $req->clientNew;
         $expedition->supplier = $req->supplierNew;
@@ -41,7 +68,7 @@ class ExpeditionController extends Controller
         $expedition->profit = $req->profitNew;
         $expedition->state = 'order';
         $expedition->save();
-        return Redirect::back();
+        return Redirect::back();*/
         //return view('expeditions', ['data' => $expeditions, 'clients' => $clients, 'suppliers' => $suppliers]);
     }
     function importData(request $req) {
@@ -50,15 +77,30 @@ class ExpeditionController extends Controller
         //explode('.',$file)[1]
         $txt = $this->read_docx($dir.'\\'.$file);
         File::delete(storage_path('app/').$file);
-        $supplier = Str::before(Str::after($txt,'Siuntėjo pavadinimas:'),'Pervežimo maršrutas');
-        $client = Str::before(Str::after($txt,'Firmos pavadinimas:'),'Pristatymo');
-        $from = Str::before(Str::after($txt,'Pasikrovimo adresas, data:'),'GAVĖJAS');
-        $to = Str::before(Str::after($txt,'Adresas:'),'Pašto');
-        $cargo = Str::before(Str::after($txt,'Krovinio aprašymas:'),'Krovinio svoris, tūris arba konteinerio ');
-        $amount = Str::before(Str::after($txt,'konteinerio tipas:'),' (');
-        $price = Str::before(Str::after($txt,'Paslaugos kaina:'),' EUR');
-        $order = collect([$client, $supplier, $from, $to, $cargo, $amount, $price]);
-        //array($client, $supplier, $from, $to, $cargo, $amount, $price, $order);
+        //$supplier = Str::before(Str::after($txt,'Siuntėjo pavadinimas:'),'Pervežimo maršrutas');
+        $supplier = Str::between($txt,'Siuntėjo pavadinimas:','Pervežimo maršrutas');
+        //$client = Str::before(Str::after($txt,'Firmos pavadinimas:'),'Pristatymo');
+        $client = Str::between($txt, 'Firmos pavadinimas:', 'Pristatymo');
+        //$datesAndAddresses = Str::before(Str::after($txt,'Pasikrovimo adresas, data:'),'GAVĖJAS');
+        $datesAndAddresses = Str::between($txt, 'Pasikrovimo adresas, data:', 'GAVĖJAS');
+
+        ltrim($datesAndAddresses,' ');
+        $datesAndAddresses = explode(PHP_EOL, $datesAndAddresses);
+        $datesAndAddresses[0] = ltrim($datesAndAddresses[0], ' ');
+        $datesAndAddresses = implode('!!',$datesAndAddresses);
+        if(Str::endsWith($datesAndAddresses,'!!'))
+            $datesAndAddresses = rtrim($datesAndAddresses, '!!');
+
+        //$route = Str::before(Str::after($txt,'Pervežimo maršrutas:'),'Pasikrovimo adresas, data:');
+        $route = Str::between($txt, 'Pervežimo maršrutas:', 'Pasikrovimo adresas, data:');
+        //$cargo = Str::before(Str::after($txt,'Krovinio aprašymas:'),'Krovinio svoris, tūris arba konteinerio ');
+        $cargo = Str::between($txt, 'Krovinio aprašymas:', 'Krovinio svoris, tūris arba konteinerio ');
+        //$amount = Str::before(Str::after($txt,'konteinerio tipas:'),' (');
+        $amount = Str::between($txt, 'konteinerio tipas:', ' (');
+        //$price = Str::before(Str::after($txt,'Paslaugos kaina:'),' EUR');
+        $price = Str::between($txt, 'Paslaugos kaina:', ' EUR');
+        $order = collect([$client, $supplier, $datesAndAddresses, $route, $cargo, $amount, $price]);
+
         session()->pull('neworder');
         session()->push('neworder',$order);
         return Redirect::back();

@@ -1,6 +1,11 @@
 @extends('layouts.app')
 @section('content')
-
+@if(session('message'))
+    <p style="color: green">{{session('message')}}</p>
+@endif
+@if(session('error'))
+    <p style="color: red">{{session('error')}}</p>
+@endif
 <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
 <table class="table">
     <thead>
@@ -550,7 +555,7 @@
                                                                        value="{{$d->from}}" readonly>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="toState">Vieta į</label>
+                                                                <label for="toState">Maršrutas</label>
                                                                 <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
                                                                        value="{{$d->to}}" readonly>
                                                             </div>
@@ -678,29 +683,33 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="fromNew">Vieta iš</label>
-                            <input type="text" class="form-control" id="fromNew" name="fromNew" placeholder="Įveskite krovinio išvykimo vietą"
-                            value="{{session('neworder')[0][2]}}">
+                            <label>Data ir pasikrovimo adresas</label>
+                            <input type="text" class="form-control" id="addressesNew" name="addressesNew"
+                                   placeholder="Įveskite krovinio išvykimo vietą" value="{{session('neworder')[0][2]}}" hidden>
+                            @foreach($array = explode('!!',session('neworder')[0][2]) as $a)
+                                <p><strong>{{substr($a, 0, 10)}}</strong> {{substr($a, 11)}}</p>
+                            @endforeach
+                            <p>{{session('neworder')[0][2]}}</p>
                         </div>
                         <div class="form-group">
-                            <label for="toNew">Vieta į</label>
+                            <label for="toNew">Maršrutas</label>
                             <input type="text" class="form-control" id="toNew" name="toNew" placeholder="Įveskite krovinio atvykimo vietą"
-                                   value="{{session('neworder')[0][3]}}">
+                                   value="{{session('neworder')[0][3]}}" required>
                         </div>
                         <div class="form-group">
                             <label for="cargoNew">Krovinys</label>
                             <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį"
-                                   value="{{session('neworder')[0][4]}}">
+                                   value="{{session('neworder')[0][4]}}" required>
                         </div>
                         <div class="form-group">
                             <label for="amountNew">Kiekis</label>
                             <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį"
-                                   value="{{session('neworder')[0][5]}}">
+                                   value="{{session('neworder')[0][5]}}" required>
                         </div>
                         <div class="form-group">
                             <label for="profitNew">Pelnas</label>
                             <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną"
-                                   value="{{(int)session('neworder')[0][6]}}">
+                                   value="{{(int)session('neworder')[0][6]}}" required>
                         </div>
                     @else
                         <div class="form-group">
@@ -722,25 +731,35 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="fromNew">Vieta iš</label>
-                            <input type="text" class="form-control" id="fromNew" name="fromNew" placeholder="Įveskite krovinio išvykimo vietą">
+                            <label for="routeAddressNew">Data ir pasikrovimo adresas</label>
+                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew" required>
+                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
+                                   placeholder="metai.mėn.d adresas" required>
+                            <input type="button" onclick="addField({},null)" value="Pap">
+                            <input type="button" onclick="removeField()" value="Naikinti">
+                            <span id="fooBar">&nbsp;</span>
                         </div>
                         <div class="form-group">
-                            <label for="toNew">Vieta į</label>
-                            <input type="text" class="form-control" id="toNew" name="toNew" placeholder="Įveskite krovinio atvykimo vietą">
+                            <label for="routeNew">Maršrutas</label>
+                            <input type="text" class="form-control" id="routeNew" name="routeNew"
+                                   placeholder="Įveskite krovinio atvykimo vietą" required>
                         </div>
                         <div class="form-group">
                             <label for="cargoNew">Krovinys</label>
-                            <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį">
+                            <input type="text" class="form-control" id="cargoNew" name="cargoNew"
+                                   placeholder="Įveskite krovinį" required>
                         </div>
                         <div class="form-group">
                             <label for="amountNew">Kiekis</label>
-                            <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį">
+                            <input type="text" class="form-control" id="amountNew" name="amountNew"
+                                   placeholder="Įveskite krovinio kiekį" required>
                         </div>
                         <div class="form-group">
                             <label for="profitNew">Pelnas</label>
-                            <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną">
+                            <input type="number" class="form-control" id="profitNew" name="profitNew"
+                                   placeholder="Įveskite pelną" required>
                         </div>
+                        <input id="fieldsNewCount" name="fieldsNewCount" type="number" hidden value="0">
                     @endif
                     <button type="submit" class="btn btn-primary">Pridėti</button>
                 </form>
@@ -785,6 +804,58 @@
                     }
                 }
             }
+        }
+        var fieldCount = 1;
+        var fieldsAddress = [];
+        var fieldsDate = [];
+        var fieldsLine = [];
+        function addField() {
+            //Create an input type dynamically.
+            var input = document.createElement("input");
+
+            //Assign different attributes to the element.
+            input.setAttribute("type", 'text');
+            input.setAttribute("class", 'form-control');
+            input.setAttribute("id", 'routeAddressNew'+fieldCount);
+            input.setAttribute("name", 'routeAddressNew'+fieldCount);
+            input.setAttribute("placeholder", 'metai.mėn.d adresas');
+            input.required = true;
+
+            var date = document.createElement("input");
+
+            date.setAttribute("type", 'date');
+            date.setAttribute("class", 'form-control');
+            date.setAttribute("id", 'routeDateNew'+fieldCount);
+            date.setAttribute("name", 'routeDateNew'+fieldCount);
+            date.required = true;
+
+            var line = document.createElement("hr");
+            line.setAttribute("id",'line'+fieldCount);
+
+            var foo = document.getElementById("fooBar");
+
+            //Append the element in page (in span).
+            foo.appendChild(line);
+            foo.appendChild(date);
+            foo.appendChild(input);
+            fieldsAddress.push('routeAddressNew'+fieldCount);
+            fieldsDate.push('routeDateNew'+fieldCount);
+            fieldsLine.push('line'+fieldCount);
+            fieldCount += 1;
+            document.getElementById('fieldsNewCount').value = fieldCount-1;
+        }
+        function removeField() {
+            var input = document.getElementById(fieldsAddress[fieldsAddress.length-1]);
+            var date = document.getElementById(fieldsDate[fieldsDate.length-1]);
+            var line = document.getElementById(fieldsLine[fieldsLine.length-1]);
+            input.remove();
+            date.remove();
+            line.remove();
+            fieldsAddress.pop();
+            fieldsDate.pop();
+            fieldsLine.pop();
+            fieldCount -= 1;
+            document.getElementById('fieldsNewCount').value = fieldCount-1;
         }
     </script>
 @endsection
