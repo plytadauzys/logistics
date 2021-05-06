@@ -4,6 +4,7 @@
     @if(session('message'))
         <p style="color: #008000">{{session('message')}}</p>
     @endif
+    @if(session()->has('admin'))
 
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
     <table class="table table-bordered" id="clientTable">
@@ -83,6 +84,7 @@
         </tbody>
     </table>
     <p></p>
+    @endif
     <script>
         function search() {
             var input, filter, table, tr, td, i;

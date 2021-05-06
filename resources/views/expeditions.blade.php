@@ -25,7 +25,7 @@
                     <div class="card" style="width: 12rem;">
                         <div class="card-body">
                             <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
                             <p class="card-text">Some</p>
 
                             <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
@@ -54,14 +54,18 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="fromState">Vieta iš</label>
-                                                    <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                           value="{{$d->from}}" readonly>
+                                                    <label for="routeState">Maršrutas</label>
+                                                    <input type="text" class="form-control" id="routeState" name="routeState"
+                                                           value="{{$d->route}}" readonly>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="toState">Vieta į</label>
-                                                    <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                           value="{{$d->to}}" readonly>
+                                                    <label for="routeDateAddressState">Datos ir adresai</label>
+                                                    <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
+                                                           value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
+                                                    @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                        <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
+                                                        value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
+                                                    @endfor
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="cargoState">Krovinys</label>
@@ -124,30 +128,47 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="fromState">Vieta iš</label>
-                                                    <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                    value="{{$d->from}}" required>
+                                                    <label for="routeState">Maršrutas</label>
+                                                    <input type="text" class="form-control" id="routeState" name="routeState"
+                                                           value="{{$d->route}}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="toState">Vieta į</label>
-                                                    <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                    value="{{$d->to}}" required>
+                                                    <label>Data ir pasikrovimo adresas</label>
+                                                    <input type="date" class="form-control" id="routeDateState" name="routeDateState"
+                                                           placeholder="Pasirinkite datą" value="{{explode('!!',$d->dates)[0]}}" required>
+                                                    <input type="text" class="form-control" id="routeAddressState" name="routeAddressState"
+                                                           placeholder="Įveskite adresą" value="{{explode('!!',$d->addresses)[0]}}" required>
+                                                    <input type="button" onclick="addField({},null)" value="Pap">
+                                                    <input type="button" onclick="removeField()" value="Naikinti">
+                                                    <hr>
+
+                                                    <span id="fooBar">&nbsp;
+                                                        @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                            <input type="date" class="form-control" id="{{'routeDateState'.$i}}" name="{{'routeDateState'.$i}}"
+                                                                   placeholder="Pasirinkite datą" value="{{explode('!!',$d->dates)[$i]}}" required>
+                                                            <input type="text" class="form-control" id="{{'routeAddressState'.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                   placeholder="Įveskite adresą" value="{{explode('!!',$d->addresses)[$i]}}" required>
+                                                            <hr>
+                                                        @endfor
+                                                    </span>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="cargoState">Krovinys</label>
                                                     <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
-                                                    value="{{$d->cargo}}" required>
+                                                           value="{{$d->cargo}}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="amountState">Kiekis</label>
                                                     <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
-                                                    value="{{$d->amount}}" required>
+                                                           value="{{$d->amount}}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="profitState">Pelnas</label>
                                                     <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
-                                                    value="{{$d->profit}}" required>
+                                                           value="{{$d->profit}}">
                                                 </div>
+                                                <input id="fieldsNewCountState" name="fieldsNewCountState" type="number" hidden
+                                                       value="{{count(explode('!!', $d->dates))-1}}">
                                                 <button type="submit" class="btn btn-success">Keisti būseną</button>
                                             </form>
                                         </div>
@@ -167,7 +188,7 @@
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
                                 <p class="card-text">Some</p>
 
                                 <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
@@ -196,14 +217,18 @@
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="fromState">Vieta iš</label>
-                                                        <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                               value="{{$d->from}}" readonly>
+                                                        <label for="routeState">Maršrutas</label>
+                                                        <input type="text" class="form-control" id="routeState" name="routeState"
+                                                               value="{{$d->route}}" readonly>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="toState">Vieta į</label>
-                                                        <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                               value="{{$d->to}}" readonly>
+                                                        <label for="routeDateAddressState">Datos ir adresai</label>
+                                                        <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
+                                                               value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
+                                                        @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                            <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
+                                                                   value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
+                                                        @endfor
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="cargoState">Krovinys</label>
@@ -242,12 +267,12 @@
                                                     <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
                                                     <div class="form-group">
                                                         <label for="carrierState">Vežėjas</label>
-                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite krovinio išvykimo vietą"
+                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite vežėją"
                                                                required>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="carrierPriceState">Vežėjo kaina</label>
-                                                        <input type="text" class="form-control" id="carrierPriceState" name="carrierPriceState" placeholder="Įveskite krovinio atvykimo vietą"
+                                                        <input type="text" class="form-control" id="carrierPriceState" name="carrierPriceState" placeholder="Įveskite vežėjo kainą"
                                                                required>
                                                     </div>
                                                     <button type="submit" class="btn btn-success">Keisti būseną</button>
@@ -269,7 +294,7 @@
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
                                 <p class="card-text">Some</p>
 
                                 <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
@@ -304,14 +329,18 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="fromState">Vieta iš</label>
-                                                                <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                                       value="{{$d->from}}" readonly>
+                                                                <label for="routeDateAddressState">Datos ir adresai</label>
+                                                                <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
+                                                                       value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
+                                                                @for($i = 1; $i <= count(explode('!!',$d->dates))-1; $i++)
+                                                                    <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
+                                                                           value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
+                                                                @endfor
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="toState">Vieta į</label>
-                                                                <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                                       value="{{$d->to}}" readonly>
+                                                                <label for="routeState">Maršrutas</label>
+                                                                <input type="text" class="form-control" id="routeState" name="routeState"
+                                                                       value="{{$d->route}}" readonly>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="cargoState">Krovinys</label>
@@ -366,6 +395,11 @@
                                                     @csrf
                                                     <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
                                                     <div class="form-group">
+                                                        <label for="routeDateAddressState">Planuotas pasikrovimas</label>
+                                                        <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
+                                                               value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
+                                                    </div>
+                                                    <div class="form-group">
                                                         <label for="loadedState">Pasikrovimo data</label>
                                                         <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite datą"
                                                                value="getToday()" required>
@@ -389,7 +423,7 @@
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
                                 <p class="card-text">Some</p>
 
                                 <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
@@ -424,14 +458,18 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="fromState">Vieta iš</label>
-                                                                <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                                       value="{{$d->from}}" readonly>
+                                                                <label for="routeDateAddressState">Datos ir adresai</label>
+                                                                <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
+                                                                       value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
+                                                                @for($i = 1; $i <= count(explode('!!',$d->dates))-1; $i++)
+                                                                    <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
+                                                                           value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
+                                                                @endfor
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="toState">Vieta į</label>
-                                                                <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                                       value="{{$d->to}}" readonly>
+                                                                <label for="routeState">Maršrutas</label>
+                                                                <input type="text" class="form-control" id="routeState" name="routeState"
+                                                                       value="{{$d->route}}" readonly>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="cargoState">Krovinys</label>
@@ -470,6 +508,16 @@
                                                         <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
                                                                value="{{$d->loaded}}" readonly>
                                                     </div>
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-info" role="progressbar" style="{{'width: '.($d->progress/count(explode('!!',$d->dates))*100).'%'}}" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    @for($i = 0; $i <= count(explode('!!',$d->dates))-1; $i++)
+                                                        @if($i <= $d->progress - 1)
+                                                            <p style="color: green">{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i].' = pasikrauta'}}</p>
+                                                        @else
+                                                            <p>{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i].' = vyksta'}}</p>
+                                                        @endif
+                                                    @endfor
                                                 </form>
                                                 <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
                                             </div>
@@ -491,11 +539,33 @@
                                                     @csrf
                                                     <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
                                                     <div class="form-group">
-                                                        <label for="unloadedState">Išsikrovimo data</label>
-                                                        <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
-                                                               value="getToday()" required>
+                                                        <input type="date" class="form-control" value="{{explode('!!', $d->dates)[$d->progress]}}" readonly hidden>
                                                     </div>
-                                                    <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    @if($d->progress != count(explode('!!', $d->dates)) - 1)
+                                                        <div class="form-group">
+                                                            <label for="loadedState">Planuojama pasikrovimo data</label>
+                                                            <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
+                                                                   value="{{explode('!!', $d->dates)[$d->progress]}}" readonly>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="unloadedState">Pasikrovimo data</label>
+                                                            <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
+                                                                   value="getToday()" required>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    @else
+                                                        <div class="form-group">
+                                                            <label for="loadedState">Planuojama pristatymo data</label>
+                                                            <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
+                                                                   value="{{explode('!!', $d->dates)[$d->progress]}}" readonly>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="unloadedState">Pristatymo data</label>
+                                                            <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
+                                                                   value="getToday()" required>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    @endif
                                                 </form>
                                             </div>
                                         </div>
@@ -514,7 +584,7 @@
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{$d->from}} -> {{$d->to}}</h6>
+                                <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
                                 <p class="card-text">Some</p>
 
                                 <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
@@ -550,14 +620,18 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="fromState">Vieta iš</label>
-                                                                <input type="text" class="form-control" id="fromState" name="fromState" placeholder="Įveskite krovinio išvykimo vietą"
-                                                                       value="{{$d->from}}" readonly>
+                                                                <label for="routeDateAddressState">Datos ir adresai</label>
+                                                                <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
+                                                                       value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
+                                                                @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                                    <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
+                                                                           value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
+                                                                @endfor
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="toState">Maršrutas</label>
-                                                                <input type="text" class="form-control" id="toState" name="toState" placeholder="Įveskite krovinio atvykimo vietą"
-                                                                       value="{{$d->to}}" readonly>
+                                                                <label for="routeState">Maršrutas</label>
+                                                                <input type="text" class="form-control" id="routeState" name="routeState"
+                                                                       value="{{$d->route}}" readonly>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="cargoState">Krovinys</label>
@@ -683,34 +757,47 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Data ir pasikrovimo adresas</label>
-                            <input type="text" class="form-control" id="addressesNew" name="addressesNew"
-                                   placeholder="Įveskite krovinio išvykimo vietą" value="{{session('neworder')[0][2]}}" hidden>
-                            @foreach($array = explode('!!',session('neworder')[0][2]) as $a)
-                                <p><strong>{{substr($a, 0, 10)}}</strong> {{substr($a, 11)}}</p>
-                            @endforeach
-                            <p>{{session('neworder')[0][2]}}</p>
+                            <label for="routeNew">Maršrutas</label>
+                            <input type="text" class="form-control" id="routeNew" name="routeNew" placeholder="Įveskite krovinio atvykimo vietą"
+                                   value="{{session('neworder')[0][2]}}" required>
                         </div>
                         <div class="form-group">
-                            <label for="toNew">Maršrutas</label>
-                            <input type="text" class="form-control" id="toNew" name="toNew" placeholder="Įveskite krovinio atvykimo vietą"
-                                   value="{{session('neworder')[0][3]}}" required>
+                            <label>Data ir pasikrovimo adresas</label>
+                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
+                                   placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[0]}}" required>
+                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
+                                   placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[0]}}" required>
+                            <input type="button" onclick="addField({},null)" value="Pap">
+                            <input type="button" onclick="removeField()" value="Naikinti">
+                            <hr>
+
+                            <span id="fooBar">&nbsp;
+                                @for($i = 1; $i < count(explode('!!',session('neworder')[0][3])); $i++)
+                                    <input type="date" class="form-control" id="{{'routeDateNew'.$i}}" name="{{'routeDateNew'.$i}}"
+                                           placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[$i]}}" required>
+                                    <input type="text" class="form-control" id="{{'routeAddressNew'.$i}}" name="{{'routeAddressNew'.$i}}"
+                                           placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[$i]}}" required>
+                                    <hr>
+                                @endfor
+                            </span>
                         </div>
                         <div class="form-group">
                             <label for="cargoNew">Krovinys</label>
                             <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį"
-                                   value="{{session('neworder')[0][4]}}" required>
+                                   value="{{session('neworder')[0][5]}}" required>
                         </div>
                         <div class="form-group">
                             <label for="amountNew">Kiekis</label>
                             <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį"
-                                   value="{{session('neworder')[0][5]}}" required>
+                                   value="{{session('neworder')[0][6]}}" required>
                         </div>
                         <div class="form-group">
                             <label for="profitNew">Pelnas</label>
                             <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną"
-                                   value="{{(int)session('neworder')[0][6]}}" required>
+                                   value="{{(int)session('neworder')[0][7]}}" required>
                         </div>
+                        <input id="fieldsNewCount" name="fieldsNewCount" type="number" hidden value="{{count(explode('!!', session('neworder')[0][3]))-1}}">
+                        @php(session()->pull('neworder'))
                     @else
                         <div class="form-group">
                             <label for="clientNew">Klientas</label>
@@ -731,18 +818,19 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label for="routeNew">Maršrutas</label>
+                            <input type="text" class="form-control" id="routeNew" name="routeNew"
+                                   placeholder="Įveskite maršrutą" required>
+                        </div>
+                        <div class="form-group">
                             <label for="routeAddressNew">Data ir pasikrovimo adresas</label>
-                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew" required>
+                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
+                                   placeholder="Pasirinkite datą" required>
                             <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
-                                   placeholder="metai.mėn.d adresas" required>
+                                   placeholder="Įveskitę adresą" required>
                             <input type="button" onclick="addField({},null)" value="Pap">
                             <input type="button" onclick="removeField()" value="Naikinti">
                             <span id="fooBar">&nbsp;</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="routeNew">Maršrutas</label>
-                            <input type="text" class="form-control" id="routeNew" name="routeNew"
-                                   placeholder="Įveskite krovinio atvykimo vietą" required>
                         </div>
                         <div class="form-group">
                             <label for="cargoNew">Krovinys</label>
@@ -770,7 +858,7 @@
 <form action="/expeditions/file" method="POST" enctype="multipart/form-data">
     @csrf
     <input type="file" id="file" name="file">
-    <input type="submit">
+    <button type="submit" class="btn btn-outline-info">Importuoti duomenis</button>
 </form>
     <script>
         function getToday() {
@@ -844,6 +932,14 @@
             fieldCount += 1;
             document.getElementById('fieldsNewCount').value = fieldCount-1;
         }
+        function addFieldsAfterImport() {
+            fieldsAddress.push('routeAddressNew'+fieldCount);
+            fieldsDate.push('routeDateNew'+fieldCount);
+            fieldsLine.push('line'+fieldCount);
+            fieldCount += 1;
+            document.getElementById('fieldsNewCount').value = fieldCount-1;
+        }
+
         function removeField() {
             var input = document.getElementById(fieldsAddress[fieldsAddress.length-1]);
             var date = document.getElementById(fieldsDate[fieldsDate.length-1]);
@@ -856,6 +952,20 @@
             fieldsLine.pop();
             fieldCount -= 1;
             document.getElementById('fieldsNewCount').value = fieldCount-1;
+        }
+        /*var num = count(explode('!!',session('neworder')[0][3]));
+        for(var i = count(explode('!!',session('neworder')[0][3]))-1; i > 0; i--) {
+            if (document.getElementById('routeDateNew'+i)) {
+                fieldsAddress.push('routeAddressNew'+fieldCount);
+                fieldsDate.push('routeDateNew'+fieldCount);
+                fieldsLine.push('line'+fieldCount);
+                fieldCount += 1;
+                document.getElementById('fieldsNewCount').value = fieldCount-1;
+                console.log(i);
+            } else break;
+        }*/
+        function progressBar() {
+
         }
     </script>
 @endsection

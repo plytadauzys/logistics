@@ -96,60 +96,122 @@
         </div>
     </div>
 
-    @foreach($data as $d)
-        <p>{{ $d }}</p>
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#{{$d->id}}">
-            Redaguoti
-        </button>
+    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
+    <table class="table table-bordered" id="clientTable">
+        <thead class="thead-dark">
+        <tr>
+            <th>Pavadinimas</th>
+            <th>Adresas</th>
+            <th>Pašto kodas</th>
+            <th>Telefono nr.</th>
+            <th>El. paštas</th>
+            <th>Veiksmas</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($data as $d)
+            <tr>
+                <th scope="row">{{$d->name}}</th>
+                <td>{{$d->address}}</td>
+                <td>{{$d->postal_code}}</td>
+                <td>{{$d->phone_no}}</td>
+                <td>{{$d->email}}</td>
+                <td>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#{{$d->id}}">
+                        Redaguoti
+                    </button>
 
-        <!-- Modal -->
-        <div class="modal fade" id="{{$d->id}}" tabindex="-1" role="dialog" aria-labelledby="{{$d->id}}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Redaguoti Tiekėją</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="{{$d->id}}" tabindex="-1" role="dialog" aria-labelledby="{{$d->id}}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Redaguoti Tiekėją</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="/suppliers/edit" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{$d->id}}">
+                                        <div class="form-group">
+                                            <label for="name">Tiekėjo pavadinimas</label>
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Įveskite kliento pavadinimą"
+                                                   value="{{$d->name}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address">Tiekėjo adresas</label>
+                                            <input type="text" class="form-control" id="address" name="address" placeholder="Įveskite kliento adresą"
+                                                   value="{{$d->address}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="postal_code">Tiekėjo pašto kodas</label>
+                                            <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="Įveskite kliento pašto kodą"
+                                                   value="{{$d->postal_code}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="phone_no">Tiekėjo telefono numeris</label>
+                                            <input type="text" class="form-control" id="phone_no" name="phone_no" placeholder="Įveskite kliento telefono numerį"
+                                                   value="{{$d->phone_no}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Tiekėjo el. paštas</label>
+                                            <input type="email" class="form-control" id="email" name="email" placeholder="Įveskite kliento el. paštą"
+                                                   value="{{$d->email}}">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Redaguoti</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <form action="/suppliers/edit" method="POST">
-                            @csrf
-                            <input type="hidden" name="id" value="{{$d->id}}">
-                            <div class="form-group">
-                                <label for="name">Tiekėjo pavadinimas</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Įveskite kliento pavadinimą"
-                                       value="{{$d->name}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="address">Tiekėjo adresas</label>
-                                <input type="text" class="form-control" id="address" name="address" placeholder="Įveskite kliento adresą"
-                                       value="{{$d->address}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="postal_code">Tiekėjo pašto kodas</label>
-                                <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="Įveskite kliento pašto kodą"
-                                       value="{{$d->postal_code}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="phone_no">Tiekėjo telefono numeris</label>
-                                <input type="text" class="form-control" id="phone_no" name="phone_no" placeholder="Įveskite kliento telefono numerį"
-                                       value="{{$d->phone_no}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Tiekėjo el. paštas</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Įveskite kliento el. paštą"
-                                       value="{{$d->email}}">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Redaguoti</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button type="button" class="btn btn-outline-danger">Šalinti</button>
+                <button type="button" class="btn btn-outline-danger">Šalinti</button>
+                </td>
+            </tr>
     @endforeach
-
+        </tbody>
+    </table>
 @endif
+<script>
+    function search() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("clientTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td") ;
+            for(j=0 ; j<td.length ; j++)
+            {
+                let tdata = td[j] ;
+                if (tdata) {
+                    if (tdata.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break ;
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    }
+    //function sort() {
+    const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+            v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+    // do the work...
+    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+        const table = th.closest('table');
+        Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+            .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+            .forEach(tr => table.appendChild(tr) );
+    })));
+    //}
+</script>
 @endsection

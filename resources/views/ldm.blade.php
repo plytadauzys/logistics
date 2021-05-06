@@ -17,11 +17,11 @@
             <input type="text" class="form-control" id="width" name="width" placeholder="Įveskite plotį" oninput="calcDim()">
         </div>
         <div class="form-group">
-            <label for="amount">Kiekis</label>
-            <input type="number" class="form-control" id="amount" name="amount" placeholder="Įveskite kiekį">
+            <label for="amountD">Kiekis</label>
+            <input type="number" class="form-control" id="amountD" name="amountD" placeholder="Įveskite kiekį" oninput="calcDim()">
         </div>
     </div>
-    <button type="button" class="btn btn-success" onclick="calcDim()">Skaičiuoti</button>
+    <button type="button" class="btn btn-success" onclick="calcDim()" hidden>Skaičiuoti</button>
 </form>
 <form id="dimensions" hidden>
     <div>
@@ -29,19 +29,19 @@
             <label for="pallet">Paletės tipas</label>
             <select class="custom-select" name="pallet" id="pallet">
                 <option value="0">Pasirinkite paletę</option>
-                <option value="1">Euro (EPAL)</option>
-                <option value="2">Finnish (FIN)</option>
-                <option value="3">Industrial (IND)</option>
+                <option value="1">Euro (EPAL)       (1 EPAL = 0.4)</option>
+                <option value="2">Finnish (FIN)     (1 FIN = 0.5)</option>
+                <option value="3">Industrial (IND)  (1 IND = 0.6)</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="amount">Kiekis</label>
-            <input type="number" class="form-control" id="amount" name="amount" placeholder="Įveskite kiekį">
+            <label for="amountP">Kiekis</label>
+            <input type="number" class="form-control" id="amountP" name="amountP" placeholder="Įveskite kiekį" oninput="calcPal()">
         </div>
     </div>
-    <button type="button" class="btn btn-success" onclick="calcPal()">Skaičiuoti</button>
+    <button type="button" class="btn btn-success" onclick="calcPal()" hidden>Skaičiuoti</button>
 </form>
-<p id="answer">ad</p>
+<p id="answer"></p>
 <script>
     function selectForm() {
         var form = document.getElementById('formSelector');
@@ -67,14 +67,15 @@
     function calcPal() {
         var pallets = document.getElementById('pallet');
         var answer = document.getElementById('answer');
+        var amount = document.getElementById('amountP').value;
         if(pallets.value == 1) {
-            answer.innerText = 0.4;
+            answer.innerText = (0.4 * amount)+' krovimo metrai';
         }
         else if(pallets.value == 2) {
-            answer.innerText = 0.5;
+            answer.innerText = (0.5 * amount) + ' krovimo metrai';
         }
         else if(pallets.value == 3) {
-            answer.innerText = 0.6;
+            answer.innerText = (0.6 * amount) + ' krovimo metrai';
         }
     }
     //             Ilgis Plotis Aukštis LDM
@@ -92,7 +93,8 @@
         var length = document.getElementById('length').value;
         var width = document.getElementById('width').value;
         var answer = document.getElementById('answer');
-        answer.innerText = length * width / 2.4;
+        var amount = document.getElementById('amountD').value;
+        answer.innerText = (length * width / 2.4 * amount) + ' krovimo metrų';
     }
 </script>
 @endsection
