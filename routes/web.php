@@ -38,6 +38,9 @@ Route::get('ldm', function () {
 Route::post('loginAdmin', [AdministratorController::class, 'login']);
 Route::get('logoutAdmin', [AdministratorController::class, 'logout']);
 Route::get('adminHome', [AdministratorController::class, 'index']);
+Route::post('adminHome/new', [AdministratorController::class, 'createUser']);
+Route::post('admin/edit', [AdministratorController::class, 'editUser']);
+Route::get('admin/remove/{id}', [AdministratorController::class, 'removeUser']);
 //-------------------------------------------------------------------
 // Managers----------------------------------------------------------
 Route::post('loginManager', [ManagerController::class, 'login']);
@@ -49,11 +52,13 @@ Route::get('clients',[ClientController::class, 'index']);
 Route::post('clients/new',[ClientController::class, 'createClient']);
 Route::post('clients/edit', [ClientController::class, 'editClient']);
 Route::get('searchForClient/{string}', [ClientController::class, 'searchForClient']);
+Route::get('clients/remove/{id}', [ClientController::class, 'removeClient']);
 //-------------------------------------------------------------------
 // Suppliers --------------------------------------------------------
 Route::get('suppliers', [SupplierController::class, 'index']);
 Route::post('suppliers/new', [SupplierController::class, 'createSupplier']);
 Route::post('suppliers/edit', [SupplierController::class, 'editSupplier']);
+Route::get('suppliers/remove/{id}', [SupplierController::class, 'removeSupplier']);
 //-------------------------------------------------------------------
 // Expeditions ------------------------------------------------------
 Route::get('/expeditions',[ExpeditionController::class, 'index']);

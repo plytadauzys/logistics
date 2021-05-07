@@ -9,4 +9,8 @@ class Supplier extends Model
 {
     protected $table = 'suppliers';
     public $timestamps = false;
+
+    function ekspedicija() {
+        return $this->hasMany('App\Models\Expedition','supplier');
+    }
 }

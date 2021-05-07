@@ -134,9 +134,27 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'name' => [
+            'unique' => 'Toks pavadinimas jau egzistuoja',
         ],
+        'address' => [
+            'unique' => 'Toks adresas jau egzistuoja'
+        ],
+        'postal_code' => [
+            'unique' => 'Toks pašto kodas jau egzistuoja'
+        ],
+        'phone_no' => [
+            'unique' => 'Toks telefono numeris jau egzistuoja'
+        ],
+        'email' => [
+            'unique' => 'Toks el. paštas jau egzistuoja'
+        ],
+        'id' => [
+            'unique' => 'Toks vartotojo ID jau egzistuoja'
+        ],
+        'password' => [
+            'min' => 'Slaptažodis turi būti sudarytas iš 8 ar daugiau simbolių'
+        ]
     ],
 
     /*

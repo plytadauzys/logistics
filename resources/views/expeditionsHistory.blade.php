@@ -29,7 +29,7 @@
                     <td>{{$d->supplier}}</td>
                     <td>{{$d->route}}</td>
                     <td>{{implode(', ', explode('!!',$d->dates))}}</td>
-                    <td>{{implode(', ', explode('!!', $d->datos))}}</td>
+                    <td>{{implode(', ', explode('!!', $d->addresses))}}</td>
                     <td>{{$d->cargo}}</td>
                     <td>{{$d->amount}}</td>
                     <td>{{$d->profit}}</td>

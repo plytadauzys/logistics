@@ -3,6 +3,18 @@
 @if(session('message'))
     <p style="color: #008000">{{session('message')}}</p>
 @endif
+@if(session('error'))
+    <p style="color: red">{{session('error')}}</p>
+@endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li style="color:red">{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 @if($data->count() == 0)
     <p style="color: red">Nėra jokių klientų</p>
     <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
@@ -105,6 +117,7 @@
                 <th>Telefono nr.</th>
                 <th>El. paštas</th>
                 <th>Veiksmas</th>
+                <th>Vykstančios ekspedicijos</th>
             </tr>
         </thead>
         <tbody>
@@ -166,8 +179,38 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline-danger">Šalinti</button>
+                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="{{'#confirm'.$d->id}}">Šalinti</button>
+                    <!-- ŠALINTI Modal -->
+                    <div class="modal fade" id="{{'confirm'.$d->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti {{$d->name}}?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                    <a href="{{'clients/remove/'.$d->id}}"><button type="button" class="btn btn-danger" value="{{$d->id}}">Taip</button></a>
+                                    <button type="button" class="btn btn-success" data-dismiss="modal">Ne</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
+                @if($d->ekspedicija->count() > 0)
+                <td>
+                    @foreach($d->ekspedicija as $de)
+                        @if($loop->last)
+                            Eksp. {{$de->order_no}}
+                        @else
+                            Eksp. {{$de->order_no}},
+                        @endif
+                    @endforeach
+                </td>
+                @else
+                <td>Nėra</td>
+                @endif
             </tr>
         @endforeach
         </tbody>

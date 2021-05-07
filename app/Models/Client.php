@@ -9,4 +9,8 @@ class Client extends Model
 {
     protected $table = 'clients';
     public $timestamps = false;
+
+    function ekspedicija() {
+        return $this->hasMany('App\Models\Expedition','client');
+    }
 }

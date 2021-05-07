@@ -44,13 +44,13 @@
                                                 <div class="form-group">
                                                     <label for="clientState">Klientas</label>
                                                     <select class="custom-select" name="clientState" id="clientState" disabled>
-                                                        <option value="{{$d->client}}">{{$d->client}}</option>
+                                                        <option value="{{$d->client}}">{{$d->klientas->name}}</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="supplierState">Tiekėjo pavadinimas</label>
                                                     <select class="custom-select" name="supplierState" id="supplierState" disabled>
-                                                        <option value="{{$d->supplier}}">{{$d->supplier}}</option>
+                                                        <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">

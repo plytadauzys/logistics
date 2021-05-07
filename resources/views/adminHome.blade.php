@@ -4,7 +4,63 @@
     @if(session('message'))
         <p style="color: #008000">{{session('message')}}</p>
     @endif
+    @if(session('error'))
+        <p style="color: red">{{session('error')}}</p>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li style="color:red">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     @if(session()->has('admin'))
+
+        <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
+            Naujas
+        </button>
+
+        <!-- NAUJAS Modal -->
+        <div class="modal fade" id="naujas" tabindex="-1" role="dialog" aria-labelledby="naujas" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Pridėti naują klientą</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/adminHome/new" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="id">Vartotojo ID</label>
+                                <input type="number" class="form-control" id="id" name="id" placeholder="Įveskite vartotojo ID">
+                            </div>
+                            <div class="form-group">
+                                <label for="first_name">Vartotojo vardas</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Įveskite vartotojo vardą">
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Vartotojo pavardė</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Įveskite vartotojo pavardę">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Vartotojo el. paštas</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Įveskite vartotojo el. paštą">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">vartotojo slaptažodis</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Įveskite vartotojo slaptažodį">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Pridėti</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
     <table class="table table-bordered" id="clientTable">
@@ -21,7 +77,7 @@
         <tbody>
         @foreach($managers as $m)
             <tr>
-                <th scope="row">{{$m->id}}</th>
+                <th>{{$m->id}}</th>
                 <td>{{$m->first_name}}</td>
                 <td>{{$m->last_name}}</td>
                 <td>{{$m->email}}</td>
@@ -45,11 +101,11 @@
                                 <div class="modal-body">
                                     <form action="/admin/edit" method="POST">
                                         @csrf
-                                        <input type="hidden" name="id" value="{{$m->id}}">
+                                        <input type="hidden" name="idH" value="{{$m->id}}">
                                         <div class="form-group">
                                             <label for="id">ID</label>
-                                            <input type="text" class="form-control" id="id" name="id" placeholder="Įveskite identifikacinį numerį (ID)"
-                                                   value="{{$m->id}}" required>
+                                            <input type="number" class="form-control" id="id" name="id" placeholder="Įveskite identifikacinį numerį (ID)"
+                                                   value="{{$m->id}}">
                                         </div>
                                         <div class="form-group">
                                             <label for="firstName">Vardas</label>
@@ -63,13 +119,13 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="email">El. paštas</label>
-                                            <input type="text" class="form-control" id="email" name="email" placeholder="Įveskite vartotojo el. paštą"
-                                                   value="{{$m->phone_no}}" required>
+                                            <input type="email" class="form-control" id="email" name="email" placeholder="Įveskite vartotojo el. paštą"
+                                                   value="{{$m->email}}" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="password">Slaptažodis</label>
-                                            <input type="email" class="form-control" id="password" name="password" placeholder="Įveskite vartotojo slaptažodį"
-                                                   value="{{$m->email}}" required>
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="Įveskite vartotojo slaptažodį"
+                                                   value="{{$m->password}}" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Redaguoti</button>
                                     </form>
@@ -77,7 +133,23 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline-danger">Šalinti</button>
+                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="{{'#confirm'.$m->id}}">Šalinti</button>
+                    <div class="modal fade" id="{{'confirm'.$m->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti {{$m->first_name}} {{$m->last_name}}?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                    <a href="{{'admin/remove/'.$m->id}}"><button type="button" class="btn btn-danger" value="{{$m->id}}">Taip</button></a>
+                                    <button type="button" class="btn btn-success" data-dismiss="modal">Ne</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
         @endforeach
