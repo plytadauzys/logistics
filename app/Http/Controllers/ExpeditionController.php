@@ -81,8 +81,31 @@ class ExpeditionController extends Controller
         $dir = storage_path('app');
         $txt = $this->read_docx($dir.'\\'.$file);
         File::delete(storage_path('app/').$file);
-        $supplier = Str::between($txt,'Siuntėjo pavadinimas: ','Pervežimo maršrutas');
-        $client = Str::between($txt, 'Firmos pavadinimas: ', 'Pristatymo');
+        $client = Str::between($txt, 'Firmos pavadinimas: ', PHP_EOL.'Pristatymo');
+        $clientObject = Client::where('name','=',$client)->first();
+        if(strlen($client) > 30)
+            return Redirect::back()->with('error','Gavėjo pavadinimas nerastas arba per ilgas');
+        if($clientObject == null) {
+            $newClient = new Client();
+            if(Str::between($txt, 'Adresas: ', 'Pašto kodas:') != null) {
+                $newClient->address = Str::between($txt, 'Adresas: ', 'Pašto kodas:');
+            } else $newClient->address = $client.' (įveskite tikrą adresą)';
+            $newClient->name = $client;
+            $newClient->postal_code = 00000;
+            $newClient->phone_no = '+123456789';
+            $newClient->email = $client.' (įveskitę tikrą el. paštą)';
+            $newClient->save();
+        }
+        $supplier = Str::between($txt,'Siuntėjo pavadinimas: ',PHP_EOL.'Pervežimo maršrutas');
+        $supplierObject = Supplier::where('name','=',$supplier)->first();
+        if($supplierObject == null) {
+            $newSupplier = new Supplier();
+            $newSupplier->name = $supplier;
+            $newSupplier->address = $supplier.' (įveskite tikrą adresą)';
+            $newSupplier->postal_code = 00000;
+            $newSupplier->phone_no = '+123456789';
+            $newSupplier->email = $supplier.' (įveskite tikrą el. paštą)';
+        }
         // Dates and addresses -------------------------------------------------------------------
         $datesAndAddresses = Str::between($txt, 'Pasikrovimo adresas, data: ', 'GAVĖJAS');
         $destinationDate = Str::between($txt, 'Pristatymo data: ', 'Adresas:');
@@ -107,14 +130,15 @@ class ExpeditionController extends Controller
         $addresses = implode('!!', $addresses);
         // -------------------------------------------------------------------------------------
 
-        $route = Str::between($txt, 'Pervežimo maršrutas: ', 'Pasikrovimo adresas, data:');
-        $cargo = Str::between($txt, 'Krovinio aprašymas: ', 'Krovinio svoris, tūris arba konteinerio ');
+        $route = Str::between($txt, 'Pervežimo maršrutas: ', PHP_EOL.'Pasikrovimo adresas, data:');
+        $cargo = Str::between($txt, 'Krovinio aprašymas: ', PHP_EOL.'Krovinio svoris, tūris arba konteinerio ');
         $amount = Str::between($txt, 'konteinerio tipas: ', 'Vilkiko');
         $price = Str::between($txt, 'Paslaugos kaina: ', ' EUR');
         $order = collect([$client, $supplier, $route, $dates, $addresses, $cargo, $amount, $price]);
         session()->pull('neworder');
         session()->push('neworder',$order);
         return Redirect::back();
+        //return $order;
     }
     function changeState(request $req) {
         $expedition = Expedition::where('order_no','=',$req->orderNoState)->first();

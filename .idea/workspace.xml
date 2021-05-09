@@ -19,22 +19,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d9b19c56-7aca-4806-8974-84e54bbca145" name="Default Changelist" comment="Implemented: route dates and addresses updated, ldm updated, supplier and expedition history updated">
-      <change afterPath="$PROJECT_DIR$/resources/lang/lt/validation.php" afterDir="false" />
+    <list default="true" id="d9b19c56-7aca-4806-8974-84e54bbca145" name="Default Changelist" comment="Implemented: updates users, clients and suppliers tables, implemented remove functionality, implemented validation functionality">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AdministratorController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AdministratorController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ClientController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ClientController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/SupplierController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/SupplierController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/Client.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Client.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/Expedition.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Expedition.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/Supplier.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Supplier.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/lang/en/validation.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/validation.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/adminHome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/adminHome.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/clients.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/clients.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/expeditions.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/expeditions.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/expeditionsHistory.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/expeditionsHistory.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/suppliers.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/suppliers.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,7 +200,8 @@
       <workItem from="1619868286293" duration="18882000" />
       <workItem from="1620295229733" duration="26509000" />
       <workItem from="1620366443032" duration="1828000" />
-      <workItem from="1620378120818" duration="17206000" />
+      <workItem from="1620378120818" duration="17317000" />
+      <workItem from="1620557708903" duration="11307000" />
     </task>
     <task id="LOCAL−00001" summary="Implemented: expedition state changing, expedition transfering to expedition history, ldm calculator">
       <created>1619193771631</created>
@@ -243,7 +233,13 @@
       <option name="presentableId" value="LOCAL−00005" />
       <updated>1620325706167</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL−00006" summary="Implemented: updates users, clients and suppliers tables, implemented remove functionality, implemented validation functionality">
+      <created>1620402163415</created>
+      <option name="number" value="LOCAL−00006" />
+      <option name="presentableId" value="LOCAL−00006" />
+      <updated>1620402163415</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -267,25 +263,26 @@
     <MESSAGE value="Implemented: data import to new expedition form" />
     <MESSAGE value="Implemented: route dates and addresses" />
     <MESSAGE value="Implemented: route dates and addresses updated, ldm updated, supplier and expedition history updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented: route dates and addresses updated, ldm updated, supplier and expedition history updated" />
+    <MESSAGE value="Implemented: updates users, clients and suppliers tables, implemented remove functionality, implemented validation functionality" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented: updates users, clients and suppliers tables, implemented remove functionality, implemented validation functionality" />
   </component>
   <component name="WindowStateProjectService">
     <state x="534" y="214" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1619271135734">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="534" y="214" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.824@0.0.1536.824" timestamp="1619271135734" />
-    <state x="499" y="167" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1620386921254">
+    <state x="499" y="167" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1620568539852">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="499" y="167" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.0.1536.824@0.0.1536.824" timestamp="1620386921254" />
+    <state x="499" y="167" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.0.1536.824@0.0.1536.824" timestamp="1620568539852" />
     <state x="604" y="336" key="NewPhpFileDialog" timestamp="1620381992862">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="604" y="336" key="NewPhpFileDialog/0.0.1536.824@0.0.1536.824" timestamp="1620381992862" />
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1620325708411">
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1620402166745">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1620325708411" />
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1620402166745" />
     <state x="586" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1619193639741">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

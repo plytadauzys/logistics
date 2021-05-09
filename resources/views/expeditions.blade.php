@@ -6,7 +6,162 @@
 @if(session('error'))
     <p style="color: red">{{session('error')}}</p>
 @endif
-<input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
+
+<!-- Modal NAUJAS -->
+<div class="modal fade" id="naujas" tabindex="-1" role="dialog" aria-labelledby="naujas" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Pradėti naują ekspediciją</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/expeditions/new" method="POST">
+                    @csrf
+                    @if(session()->has('neworder'))
+                        <div class="form-group">
+                            <label for="clientNew">Klientas</label>
+                            <select class="custom-select" name="clientNew" id="clientNew">
+                                <option selected value="nothing">Pasirinkite klientą</option>
+                                @foreach($clients as $c)
+                                    @if($c->name == session('neworder')[0][0])
+                                        <option value="{{$c->id}}" selected>{{$c->name}}</option>
+                                    @else
+                                        <option value="{{$c->id}}">{{$c->name}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplierNew">Tiekėjo pavadinimas</label>
+                            <select class="custom-select" name="supplierNew" id="supplierNew">
+                                <option selected value="nothing">Pasirinkite tiekėją</option>
+                                @foreach($suppliers as $s)
+                                    <option value="{{$s->id}}">{{$s->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="routeNew">Maršrutas</label>
+                            <input type="text" class="form-control" id="routeNew" name="routeNew" placeholder="Įveskite krovinio atvykimo vietą"
+                                   value="{{session('neworder')[0][2]}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Data ir pasikrovimo adresas</label>
+                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
+                                   placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[0]}}" required>
+                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
+                                   placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[0]}}" required>
+                            <input type="button" onclick="addField({},null)" value="Pap">
+                            <input type="button" onclick="removeField()" value="Naikinti">
+                            <hr>
+
+                            <span id="fooBar">&nbsp;
+                                @for($i = 1; $i < count(explode('!!',session('neworder')[0][3])); $i++)
+                                    <input type="date" class="form-control" id="{{'routeDateNew'.$i}}" name="{{'routeDateNew'.$i}}"
+                                           placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[$i]}}" required>
+                                    <input type="text" class="form-control" id="{{'routeAddressNew'.$i}}" name="{{'routeAddressNew'.$i}}"
+                                           placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[$i]}}" required>
+                                    <hr>
+                                @endfor
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cargoNew">Krovinys</label>
+                            <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį"
+                                   value="{{session('neworder')[0][5]}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amountNew">Kiekis</label>
+                            <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį"
+                                   value="{{session('neworder')[0][6]}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profitNew">Pelnas</label>
+                            <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną"
+                                   value="{{(int)session('neworder')[0][7]}}" required>
+                        </div>
+                        <input id="fieldsNewCount" name="fieldsNewCount" type="number" hidden value="{{count(explode('!!', session('neworder')[0][3]))-1}}">
+                        <!--php(session()->pull('neworder'))-->
+                    @else
+                        <div class="form-group">
+                            <label for="clientNew">Klientas</label>
+                            <select class="custom-select" name="clientNew" id="clientNew">
+                                <option selected value="nothing">Pasirinkite klientą</option>
+                                @foreach($clients as $c)
+                                    <option value="{{$c->id}}">{{$c->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplierNew">Tiekėjo pavadinimas</label>
+                            <select class="custom-select" name="supplierNew" id="supplierNew">
+                                <option selected value="nothing">Pasirinkite tiekėją</option>
+                                @foreach($suppliers as $s)
+                                    <option value="{{$s->id}}">{{$s->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="routeNew">Maršrutas</label>
+                            <input type="text" class="form-control" id="routeNew" name="routeNew"
+                                   placeholder="Įveskite maršrutą" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="routeAddressNew">Data ir pasikrovimo adresas</label>
+                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
+                                   placeholder="Pasirinkite datą" required>
+                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
+                                   placeholder="Įveskitę adresą" required>
+                            <input type="button" onclick="addField({},null)" value="Pap">
+                            <input type="button" onclick="removeField()" value="Naikinti">
+                            <span id="fooBar">&nbsp;</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cargoNew">Krovinys</label>
+                            <input type="text" class="form-control" id="cargoNew" name="cargoNew"
+                                   placeholder="Įveskite krovinį" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amountNew">Kiekis</label>
+                            <input type="text" class="form-control" id="amountNew" name="amountNew"
+                                   placeholder="Įveskite krovinio kiekį" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profitNew">Pelnas</label>
+                            <input type="number" class="form-control" id="profitNew" name="profitNew"
+                                   placeholder="Įveskite pelną" required>
+                        </div>
+                        <input id="fieldsNewCount" name="fieldsNewCount" type="number" hidden value="0">
+                    @endif
+                    <button type="submit" class="btn btn-primary">Pridėti</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<form action="/expeditions/file" method="POST" enctype="multipart/form-data">
+    @csrf
+    <div class="row g-3">
+        <div class="col-md-2">
+            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
+                Naujas
+            </button>
+        </div>
+        <div class="custom-file col-md-4">
+            <input class="custom-file-input" type="file" id="file" name="file" lang="en">
+            <label class="custom-file-label" for="file">Pasirinkite failą</label>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-info">Importuoti duomenis</button>
+        </div>
+    </div>
+</form>
+<div class="row col-md-6">
+    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
+</div>
 <table class="table">
     <thead>
     <tr>
@@ -720,146 +875,7 @@
     </tbody>
 </table>
 
-<button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
-    Naujas
-</button>
 
-<!-- Modal -->
-<div class="modal fade" id="naujas" tabindex="-1" role="dialog" aria-labelledby="naujas" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Pradėti naują ekspediciją</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="/expeditions/new" method="POST">
-                    @csrf
-                    @if(session()->has('neworder'))
-                        <div class="form-group">
-                            <label for="clientNew">Klientas</label>
-                            <select class="custom-select" name="clientNew" id="clientNew">
-                                <option selected value="nothing">Pasirinkite klientą</option>
-                                @foreach($clients as $c)
-                                    <option value="{{$c->id}}">{{$c->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierNew">Tiekėjo pavadinimas</label>
-                            <select class="custom-select" name="supplierNew" id="supplierNew">
-                                <option selected value="nothing">Pasirinkite tiekėją</option>
-                                @foreach($suppliers as $s)
-                                    <option value="{{$s->id}}">{{$s->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="routeNew">Maršrutas</label>
-                            <input type="text" class="form-control" id="routeNew" name="routeNew" placeholder="Įveskite krovinio atvykimo vietą"
-                                   value="{{session('neworder')[0][2]}}" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Data ir pasikrovimo adresas</label>
-                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
-                                   placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[0]}}" required>
-                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
-                                   placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[0]}}" required>
-                            <input type="button" onclick="addField({},null)" value="Pap">
-                            <input type="button" onclick="removeField()" value="Naikinti">
-                            <hr>
-
-                            <span id="fooBar">&nbsp;
-                                @for($i = 1; $i < count(explode('!!',session('neworder')[0][3])); $i++)
-                                    <input type="date" class="form-control" id="{{'routeDateNew'.$i}}" name="{{'routeDateNew'.$i}}"
-                                           placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[$i]}}" required>
-                                    <input type="text" class="form-control" id="{{'routeAddressNew'.$i}}" name="{{'routeAddressNew'.$i}}"
-                                           placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[$i]}}" required>
-                                    <hr>
-                                @endfor
-                            </span>
-                        </div>
-                        <div class="form-group">
-                            <label for="cargoNew">Krovinys</label>
-                            <input type="text" class="form-control" id="cargoNew" name="cargoNew" placeholder="Įveskite krovinį"
-                                   value="{{session('neworder')[0][5]}}" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="amountNew">Kiekis</label>
-                            <input type="text" class="form-control" id="amountNew" name="amountNew" placeholder="Įveskite krovinio kiekį"
-                                   value="{{session('neworder')[0][6]}}" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="profitNew">Pelnas</label>
-                            <input type="number" class="form-control" id="profitNew" name="profitNew" placeholder="Įveskite pelną"
-                                   value="{{(int)session('neworder')[0][7]}}" required>
-                        </div>
-                        <input id="fieldsNewCount" name="fieldsNewCount" type="number" hidden value="{{count(explode('!!', session('neworder')[0][3]))-1}}">
-                        @php(session()->pull('neworder'))
-                    @else
-                        <div class="form-group">
-                            <label for="clientNew">Klientas</label>
-                            <select class="custom-select" name="clientNew" id="clientNew">
-                                <option selected value="nothing">Pasirinkite klientą</option>
-                                @foreach($clients as $c)
-                                    <option value="{{$c->id}}">{{$c->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="supplierNew">Tiekėjo pavadinimas</label>
-                            <select class="custom-select" name="supplierNew" id="supplierNew">
-                                <option selected value="nothing">Pasirinkite tiekėją</option>
-                                @foreach($suppliers as $s)
-                                    <option value="{{$s->id}}">{{$s->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="routeNew">Maršrutas</label>
-                            <input type="text" class="form-control" id="routeNew" name="routeNew"
-                                   placeholder="Įveskite maršrutą" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="routeAddressNew">Data ir pasikrovimo adresas</label>
-                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
-                                   placeholder="Pasirinkite datą" required>
-                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
-                                   placeholder="Įveskitę adresą" required>
-                            <input type="button" onclick="addField({},null)" value="Pap">
-                            <input type="button" onclick="removeField()" value="Naikinti">
-                            <span id="fooBar">&nbsp;</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="cargoNew">Krovinys</label>
-                            <input type="text" class="form-control" id="cargoNew" name="cargoNew"
-                                   placeholder="Įveskite krovinį" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="amountNew">Kiekis</label>
-                            <input type="text" class="form-control" id="amountNew" name="amountNew"
-                                   placeholder="Įveskite krovinio kiekį" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="profitNew">Pelnas</label>
-                            <input type="number" class="form-control" id="profitNew" name="profitNew"
-                                   placeholder="Įveskite pelną" required>
-                        </div>
-                        <input id="fieldsNewCount" name="fieldsNewCount" type="number" hidden value="0">
-                    @endif
-                    <button type="submit" class="btn btn-primary">Pridėti</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<form action="/expeditions/file" method="POST" enctype="multipart/form-data">
-    @csrf
-    <input type="file" id="file" name="file">
-    <button type="submit" class="btn btn-outline-info">Importuoti duomenis</button>
-</form>
     <script>
         function getToday() {
             var today = new Date();
@@ -893,10 +909,21 @@
                 }
             }
         }
-        var fieldCount = 1;
+
         var fieldsAddress = [];
         var fieldsDate = [];
         var fieldsLine = [];
+        @if(session()->has('neworder'))
+            $('#naujas').modal();
+            var fieldCount = {{ count(explode('!!',session('neworder')[0][3])) + 1 }};
+            for(var i = 1; i < {{count(explode('!!',session('neworder')[0][3]))}}; i++) {
+                if (document.getElementById('routeDateNew'+i))
+                    addFieldsAfterImport(i);
+            }
+            @php(session()->pull('neworder'))
+        @else
+            var fieldCount = 1;
+        @endif
         function addField() {
             //Create an input type dynamically.
             var input = document.createElement("input");
@@ -932,12 +959,11 @@
             fieldCount += 1;
             document.getElementById('fieldsNewCount').value = fieldCount-1;
         }
-        function addFieldsAfterImport() {
-            fieldsAddress.push('routeAddressNew'+fieldCount);
-            fieldsDate.push('routeDateNew'+fieldCount);
-            fieldsLine.push('line'+fieldCount);
-            fieldCount += 1;
-            document.getElementById('fieldsNewCount').value = fieldCount-1;
+        function addFieldsAfterImport(index) {
+            fieldsAddress.push('routeAddressNew'+i);
+            fieldsDate.push('routeDateNew'+i);
+            fieldsLine.push('line'+i);
+            document.getElementById('fieldsNewCount').value = i-1;
         }
 
         function removeField() {
