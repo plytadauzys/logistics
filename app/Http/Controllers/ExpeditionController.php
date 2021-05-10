@@ -82,29 +82,38 @@ class ExpeditionController extends Controller
         $txt = $this->read_docx($dir.'\\'.$file);
         File::delete(storage_path('app/').$file);
         $client = Str::between($txt, 'Firmos pavadinimas: ', PHP_EOL.'Pristatymo');
-        $clientObject = Client::where('name','=',$client)->first();
         if(strlen($client) > 30)
             return Redirect::back()->with('error','Gavėjo pavadinimas nerastas arba per ilgas');
+        $clientObject = Client::where('name','=',$client)->first();
         if($clientObject == null) {
             $newClient = new Client();
-            if(Str::between($txt, 'Adresas: ', 'Pašto kodas:') != null) {
-                $newClient->address = Str::between($txt, 'Adresas: ', 'Pašto kodas:');
-            } else $newClient->address = $client.' (įveskite tikrą adresą)';
             $newClient->name = $client;
-            $newClient->postal_code = 00000;
-            $newClient->phone_no = '+123456789';
-            $newClient->email = $client.' (įveskitę tikrą el. paštą)';
+            if(Str::between($txt, 'Adresas: ', 'Pašto kodas:') != null) {
+                $newClient->address = Str::between($txt, 'Adresas: ', PHP_EOL.'Pašto kodas:');
+            } else $newClient->address = $client;
+            if(Str::between($txt, 'Pašto kodas:', 'Telefonas') != null) {
+                $newClient->postal_code = Str::between($txt, 'Pašto kodas: ', PHP_EOL.'Telefonas');
+            } else $newClient->postal_code = 0;
+            if(Str::between($txt, 'Telefonas:', 'El. paštas:') != null) {
+                $newClient->phone_no = Str::between($txt, 'Telefonas: ', PHP_EOL.'El. paštas:');
+            } else $newClient->phone_no = '+123456789';
+            if(Str::between($txt, 'El. paštas:', 'KROVINIO APRAŠYMAS') != null) {
+                $newClient->email = Str::between($txt, 'El. paštas: ', PHP_EOL.'KROVINIO APRAŠYMAS');
+            } else $newClient->email = $client;;
             $newClient->save();
         }
         $supplier = Str::between($txt,'Siuntėjo pavadinimas: ',PHP_EOL.'Pervežimo maršrutas');
+        if(strlen($supplier) > 30)
+            return Redirect::back()->with('error','Tiekėjo pavadinimas nerastas arba per ilgas');
         $supplierObject = Supplier::where('name','=',$supplier)->first();
         if($supplierObject == null) {
             $newSupplier = new Supplier();
             $newSupplier->name = $supplier;
-            $newSupplier->address = $supplier.' (įveskite tikrą adresą)';
+            $newSupplier->address = $supplier;
             $newSupplier->postal_code = 00000;
             $newSupplier->phone_no = '+123456789';
-            $newSupplier->email = $supplier.' (įveskite tikrą el. paštą)';
+            $newSupplier->email = $supplier;
+            $newSupplier->save();
         }
         // Dates and addresses -------------------------------------------------------------------
         $datesAndAddresses = Str::between($txt, 'Pasikrovimo adresas, data: ', 'GAVĖJAS');
@@ -139,6 +148,12 @@ class ExpeditionController extends Controller
         session()->push('neworder',$order);
         return Redirect::back();
         //return $order;
+    }
+    function edit(request $req) {
+        $exp = Expedition::where('order_no',$req->id)->first();
+        if($exp->state == 'order' || $exp->state == 'contact')
+            $this->editOrder($req);
+        return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
     }
     function changeState(request $req) {
         $expedition = Expedition::where('order_no','=',$req->orderNoState)->first();
@@ -240,7 +255,7 @@ class ExpeditionController extends Controller
                 $expedition->delete();
             }
         }
-        return Redirect::back();
+        return Redirect::back()->with('message','Ekspedicijos būsena sėkmingai pakeista.');
     }
     private function read_docx($filename){
 
@@ -269,5 +284,46 @@ class ExpeditionController extends Controller
         $striped_content = strip_tags($content);
 
         return $striped_content;
+    }
+    function editOrder($req) {
+        $expedition = Expedition::where('order_no',$req->id)->first();
+        $expedition->route = $req->routeState;
+        $datess = array();
+        array_push($datess, $req->routeDateState);
+        $addresses = array();
+        array_push($addresses, $req->routeAddressState);
+        $b = array();
+        if ($req->has('routeDateState1')) {
+            for ($i = 1; $i < $req->fieldsStateCount + 1; $i++) {
+                if ($datess[0] <= $req->input('routeDateState'.$i))
+                    continue;
+                else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
+            }
+            for ($i = 1; $i < $req->fieldsStateCount + 1; $i++) {
+                for ($j = 1; $j < $req->fieldsStateCount + 1; $j++) {
+                    if ($i === $j)
+                        continue;
+                    else if (!in_array($j, $b)) {
+                        if ($req->input('routeDateState'.$i) <= $req->input('routeDateState'.$j))
+                            continue;
+                        else {
+                            //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
+                            return Redirect::back()->with('error', 'Netinkamai suvestos datos: '.$j.' papildomame laukelyje data '.
+                                'turėtų būti mažesnė arba lygi '.($j -1).' papildomo laukelio datai');
+                        }
+                    } else continue;
+                }
+                array_push($b, $i);
+                array_push($datess, $req->input('routeDateState'.$i));
+                array_push($addresses, $req->input('routeAddressState'.$i));
+            }
+        }
+        $expedition->dates = implode('!!', $datess);
+        $expedition->addresses = implode('!!', $addresses);
+        $expedition->route = $req->routeState;
+        $expedition->cargo = $req->cargoState;
+        $expedition->amount = $req->amountState;
+        $expedition->profit = $req->profitState;
+        $expedition->save();
     }
 }

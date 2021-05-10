@@ -39,7 +39,11 @@
                             <select class="custom-select" name="supplierNew" id="supplierNew">
                                 <option selected value="nothing">Pasirinkite tiekėją</option>
                                 @foreach($suppliers as $s)
-                                    <option value="{{$s->id}}">{{$s->name}}</option>
+                                    @if($s->name == session('neworder')[0][1])
+                                        <option value="{{$s->id}}" selected>{{$s->name}}</option>
+                                    @else
+                                        <option value="{{$s->id}}">{{$s->name}}</option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -54,8 +58,8 @@
                                    placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[0]}}" required>
                             <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
                                    placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[0]}}" required>
-                            <input type="button" onclick="addField({},null)" value="Pap">
-                            <input type="button" onclick="removeField()" value="Naikinti">
+                            <input type="button" onclick="addField(0)" value="Pap">
+                            <input type="button" onclick="removeField(0)" value="Naikinti">
                             <hr>
 
                             <span id="fooBar">&nbsp;
@@ -64,7 +68,7 @@
                                            placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[$i]}}" required>
                                     <input type="text" class="form-control" id="{{'routeAddressNew'.$i}}" name="{{'routeAddressNew'.$i}}"
                                            placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[$i]}}" required>
-                                    <hr>
+                                    <hr id="{{'line'.$i}}">
                                 @endfor
                             </span>
                         </div>
@@ -115,8 +119,8 @@
                                    placeholder="Pasirinkite datą" required>
                             <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
                                    placeholder="Įveskitę adresą" required>
-                            <input type="button" onclick="addField({},null)" value="Pap">
-                            <input type="button" onclick="removeField()" value="Naikinti">
+                            <input type="button" onclick="addField(0)" value="Pap">
+                            <input type="button" onclick="removeField(0)" value="Naikinti">
                             <span id="fooBar">&nbsp;</span>
                         </div>
                         <div class="form-group">
@@ -159,6 +163,7 @@
         </div>
     </div>
 </form>
+@if(count($data) != 0)
 <div class="row col-md-6">
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
 </div>
@@ -181,9 +186,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
-                            <p class="card-text">Some</p>
 
-                            <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                            <button class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</button>
                             <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
@@ -239,6 +243,78 @@
                                                 </div>
                                             </form>
                                             <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                            <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}">Redaguoti</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="{{'expedit'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expedit'.$d->order_no}}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="expeditions/edit" method="POST">
+                                                @csrf
+                                                <input type="text" name="id" value="{{$d->order_no}}" hidden>
+                                                <div class="form-group">
+                                                    <label for="clientState">Klientas</label>
+                                                    <select class="custom-select" name="clientState" id="clientState">
+                                                        <option value="{{$d->client}}">{{$d->klientas->name}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                    <select class="custom-select" name="supplierState" id="supplierState">
+                                                        <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="routeState">Maršrutas</label>
+                                                    <input type="text" class="form-control" id="routeState" name="routeState"
+                                                           value="{{$d->route}}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="routeDateState">Datos ir adresai</label>
+                                                    <input type="date" class="form-control" id="routeDateState" name="routeDateState"
+                                                           value="{{explode('!!',$d->dates)[0]}}" required>
+                                                    <input type="text" class="form-control" id="routeAddressState" name="routeAddressState"
+                                                           value="{{explode('!!',$d->addresses)[0]}}" required>
+                                                    <hr>
+                                                    @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                        <input type="date" class="form-control" id="{{'routeDateState'.$i}}" name="{{'routeDateState'.$i}}"
+                                                               value="{{explode('!!',$d->dates)[$i]}}" required>
+                                                        <input type="text" class="form-control" id="{{'routeAddressState'.$i}}" name="{{'routeAddressState'.$i}}"
+                                                               value="{{explode('!!',$d->addresses)[$i]}}" required>
+                                                        <hr>
+                                                    @endfor
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="cargoState">Krovinys</label>
+                                                    <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                           value="{{$d->cargo}}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="amountState">Kiekis</label>
+                                                    <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                           value="{{$d->amount}}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="profitState">Pelnas</label>
+                                                    <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
+                                                           value="{{$d->profit}}" required>
+                                                </div>
+
+                                                <input id="fieldsStateCount" name="fieldsStateCount" type="number" hidden value="{{count(explode('!!',$d->dates))-1}}">
+                                                <button type="submit" class="btn btn-success">Redaguoti</button>
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -325,6 +401,7 @@
                                                 <input id="fieldsNewCountState" name="fieldsNewCountState" type="number" hidden
                                                        value="{{count(explode('!!', $d->dates))-1}}">
                                                 <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                             </form>
                                         </div>
                                     </div>
@@ -344,9 +421,8 @@
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
-                                <p class="card-text">Some</p>
 
-                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</button>
                                 <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
@@ -380,10 +456,11 @@
                                                         <label for="routeDateAddressState">Datos ir adresai</label>
                                                         <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
                                                                value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
-                                                        @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
-                                                            <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
-                                                                   value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
-                                                        @endfor
+                                                        <hr>
+                                                            @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                                <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
+                                                                       value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
+                                                            @endfor
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="cargoState">Krovinys</label>
@@ -402,6 +479,84 @@
                                                     </div>
                                                 </form>
                                                 <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                                <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
+                                                        onclick="initAdditionalFields({{$d->order_no}},{{count(explode('!!',$d->dates))}})">Redaguoti</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="{{'expedit'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expedit'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="expeditions/edit" method="POST">
+                                                    @csrf
+                                                    <input type="text" name="id" value="{{$d->order_no}}" hidden>
+                                                    <div class="form-group">
+                                                        <label for="clientState">Klientas</label>
+                                                        <select class="custom-select" name="clientState" id="clientState">
+                                                            <option value="{{$d->client}}">{{$d->klientas->name}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                        <select class="custom-select" name="supplierState" id="supplierState">
+                                                            <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="routeState">Maršrutas</label>
+                                                        <input type="text" class="form-control" id="routeState" name="routeState"
+                                                               value="{{$d->route}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="routeDateState">Datos ir adresai</label>
+                                                        <input type="date" class="form-control" id="routeDateState" name="routeDateState"
+                                                               value="{{explode('!!',$d->dates)[0]}}" required>
+                                                        <input type="text" class="form-control" id="routeAddressState" name="routeAddressState"
+                                                               value="{{explode('!!',$d->addresses)[0]}}" required>
+                                                        <hr>
+                                                        <span id="{{'foobar'.$d->order_no}}">
+                                                            @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                                <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                       value="{{explode('!!',$d->dates)[$i]}}" required>
+                                                                <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                       value="{{explode('!!',$d->addresses)[$i]}}" required>
+                                                                <button type="button" id="{{'delEdit'.$d->order_no.$i}}"
+                                                                        onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}})">Trinti</button>
+                                                                <hr id="{{'line'.$d->order_no.$i}}">
+                                                            @endfor
+                                                        </span>
+                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})">Naujas laukelis</button>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="cargoState">Krovinys</label>
+                                                        <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                               value="{{$d->cargo}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="amountState">Kiekis</label>
+                                                        <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                               value="{{$d->amount}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="profitState">Pelnas</label>
+                                                        <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
+                                                               value="{{$d->profit}}" required>
+                                                    </div>
+
+                                                    <input id="fieldsStateCount" name="fieldsStateCount" type="number" hidden value="{{count(explode('!!',$d->dates))-1}}">
+                                                    <button type="submit" class="btn btn-success">Redaguoti</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -431,6 +586,7 @@
                                                                required>
                                                     </div>
                                                     <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -450,9 +606,8 @@
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
-                                <p class="card-text">Some</p>
 
-                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</button>
                                 <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
@@ -531,6 +686,7 @@
                                                     </div>
                                                 </form>
                                                 <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
                                             </div>
                                         </div>
                                     </div>
@@ -560,6 +716,7 @@
                                                                value="getToday()" required>
                                                     </div>
                                                     <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -579,9 +736,8 @@
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
-                                <p class="card-text">Some</p>
 
-                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</button>
                                 <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
@@ -675,6 +831,7 @@
                                                     @endfor
                                                 </form>
                                                 <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
                                             </div>
                                         </div>
                                     </div>
@@ -720,6 +877,7 @@
                                                                    value="getToday()" required>
                                                         </div>
                                                         <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                                     @endif
                                                 </form>
                                             </div>
@@ -740,9 +898,8 @@
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
-                                <p class="card-text">Some</p>
 
-                                <a class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</a>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="{{'#exp'.$d->order_no}}">Peržiūrėti</button>
                                 <div class="modal fade" id="{{'exp'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'exp'.$d->order_no}}" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
@@ -831,6 +988,7 @@
                                                                value="{{$d->unloaded}}" readonly>
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Uždaryti ekspediciją</button>
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -856,6 +1014,7 @@
                                                                value="getToday()" required>
                                                     </div>
                                                     <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -874,6 +1033,11 @@
     @endforeach
     </tbody>
 </table>
+@else
+    <div class="alert alert-info" role="alert">
+        Nėra vykstančių ekspedicijų.
+    </div>
+@endif
 
 
     <script>
@@ -909,89 +1073,66 @@
                 }
             }
         }
-
-        var fieldsAddress = [];
-        var fieldsDate = [];
-        var fieldsLine = [];
-        @if(session()->has('neworder'))
-            $('#naujas').modal();
-            var fieldCount = {{ count(explode('!!',session('neworder')[0][3])) + 1 }};
-            for(var i = 1; i < {{count(explode('!!',session('neworder')[0][3]))}}; i++) {
-                if (document.getElementById('routeDateNew'+i))
-                    addFieldsAfterImport(i);
+        function initAdditionalFields(id, count) {
+            fieldCount = count+1;
+            for(let i =1; i < fieldCount; i++) {
+                fieldsAddress[id][i-1] = 'routeAddressNew'+i;
+                fieldsDate[id][i-1] = 'routeDateNew'+i;
+                fieldsLine[id][i-1] = 'line'+i;
             }
-            @php(session()->pull('neworder'))
-        @else
-            var fieldCount = 1;
-        @endif
-        function addField() {
-            //Create an input type dynamically.
-            var input = document.createElement("input");
+            console.log(fieldsAddress,fieldsDate,fieldsLine);
+        }
+        var fieldNo = {{count(explode('!!',$d->dates))}};
+        function createFields(fooID,dateString,addressString,fieldCount, orderNo) {
+            document.getElementById('delEdit'+orderNo.toString()+(fieldNo-1)).hidden = false;
+            var address = document.createElement("input");
 
             //Assign different attributes to the element.
-            input.setAttribute("type", 'text');
-            input.setAttribute("class", 'form-control');
-            input.setAttribute("id", 'routeAddressNew'+fieldCount);
-            input.setAttribute("name", 'routeAddressNew'+fieldCount);
-            input.setAttribute("placeholder", 'metai.mėn.d adresas');
-            input.required = true;
+            address.setAttribute("type", 'text');
+            address.setAttribute("class", 'form-control');
+            address.setAttribute("id", addressString + orderNo.toString() + fieldNo);
+            address.setAttribute("name", addressString + fieldNo);
+            address.setAttribute("placeholder", 'metai.mėn.d adresas');
+            address.required = true;
 
             var date = document.createElement("input");
 
             date.setAttribute("type", 'date');
             date.setAttribute("class", 'form-control');
-            date.setAttribute("id", 'routeDateNew'+fieldCount);
-            date.setAttribute("name", 'routeDateNew'+fieldCount);
+            date.setAttribute("id", dateString + orderNo.toString()+ fieldNo);
+            date.setAttribute("name", dateString + fieldNo);
             date.required = true;
 
             var line = document.createElement("hr");
-            line.setAttribute("id",'line'+fieldCount);
+            line.setAttribute("id", 'lineEdit' + fieldNo);
 
-            var foo = document.getElementById("fooBar");
+            var delButton = document.createElement('button');
+            delButton.setAttribute('type','button');
+            delButton.setAttribute('id','delEdit'+orderNo.toString()+fieldNo);
+            delButton.setAttribute('onclick', 'deleteField('+date.id+','+address.id+','+delButton.id+','+line.id+');');
+            delButton.innerText = 'Trinti';
+            delButton.hidden = true;
+
+            var foo = document.getElementById(fooID.id);
 
             //Append the element in page (in span).
-            foo.appendChild(line);
             foo.appendChild(date);
-            foo.appendChild(input);
-            fieldsAddress.push('routeAddressNew'+fieldCount);
-            fieldsDate.push('routeDateNew'+fieldCount);
-            fieldsLine.push('line'+fieldCount);
+            foo.appendChild(address);
+            foo.appendChild(delButton);
+            foo.appendChild(line);
+            fieldNo++;
+            /*fieldsAddress[id].push('routeAddressNew' + fieldCount);
+            fieldsDate[id].push('routeDateNew' + fieldCount);
+            fieldsLine[id].push('line' + fieldCount);
             fieldCount += 1;
-            document.getElementById('fieldsNewCount').value = fieldCount-1;
+            document.getElementById('fieldsNewCount').value = fieldCount - 1;*/
         }
-        function addFieldsAfterImport(index) {
-            fieldsAddress.push('routeAddressNew'+i);
-            fieldsDate.push('routeDateNew'+i);
-            fieldsLine.push('line'+i);
-            document.getElementById('fieldsNewCount').value = i-1;
-        }
-
-        function removeField() {
-            var input = document.getElementById(fieldsAddress[fieldsAddress.length-1]);
-            var date = document.getElementById(fieldsDate[fieldsDate.length-1]);
-            var line = document.getElementById(fieldsLine[fieldsLine.length-1]);
-            input.remove();
-            date.remove();
-            line.remove();
-            fieldsAddress.pop();
-            fieldsDate.pop();
-            fieldsLine.pop();
-            fieldCount -= 1;
-            document.getElementById('fieldsNewCount').value = fieldCount-1;
-        }
-        /*var num = count(explode('!!',session('neworder')[0][3]));
-        for(var i = count(explode('!!',session('neworder')[0][3]))-1; i > 0; i--) {
-            if (document.getElementById('routeDateNew'+i)) {
-                fieldsAddress.push('routeAddressNew'+fieldCount);
-                fieldsDate.push('routeDateNew'+fieldCount);
-                fieldsLine.push('line'+fieldCount);
-                fieldCount += 1;
-                document.getElementById('fieldsNewCount').value = fieldCount-1;
-                console.log(i);
-            } else break;
-        }*/
-        function progressBar() {
-
+        function deleteField(dateID, addressID, delID, lineID) {
+            document.getElementById(dateID.id).remove();
+            document.getElementById(addressID.id).remove();
+            document.getElementById(delID.id).remove();
+            document.getElementById(lineID.id).remove();
+            fieldNo--;
         }
     </script>
 @endsection

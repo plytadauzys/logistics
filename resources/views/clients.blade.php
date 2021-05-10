@@ -15,8 +15,10 @@
         </ul>
     </div>
 @endif
-@if($data->count() == 0)
-    <p style="color: red">Nėra jokių klientų</p>
+@if(count($data) == 0)
+    <div class="alert alert-info" role="alert">
+        Nėra jokių klientų.
+    </div>
     <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
         Naujas
     </button>
