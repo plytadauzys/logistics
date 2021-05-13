@@ -19,12 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d9b19c56-7aca-4806-8974-84e54bbca145" name="Default Changelist" comment="Implemented: new clients and suppliers from file">
+    <list default="true" id="d9b19c56-7aca-4806-8974-84e54bbca145" name="Default Changelist" comment="Implemented: new field and remove field upgrade">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/clients.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/clients.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/expeditions.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/expeditions.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -203,7 +201,8 @@
       <workItem from="1620366443032" duration="1828000" />
       <workItem from="1620378120818" duration="17317000" />
       <workItem from="1620557708903" duration="11358000" />
-      <workItem from="1620643201127" duration="13694000" />
+      <workItem from="1620643201127" duration="13865000" />
+      <workItem from="1620910596405" duration="21136000" />
     </task>
     <task id="LOCAL−00001" summary="Implemented: expedition state changing, expedition transfering to expedition history, ldm calculator">
       <created>1619193771631</created>
@@ -247,7 +246,13 @@
       <option name="presentableId" value="LOCAL−00007" />
       <updated>1620570441447</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL−00008" summary="Implemented: new field and remove field upgrade">
+      <created>1620658598333</created>
+      <option name="number" value="LOCAL−00008" />
+      <option name="presentableId" value="LOCAL−00008" />
+      <updated>1620658598333</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,7 +278,8 @@
     <MESSAGE value="Implemented: route dates and addresses updated, ldm updated, supplier and expedition history updated" />
     <MESSAGE value="Implemented: updates users, clients and suppliers tables, implemented remove functionality, implemented validation functionality" />
     <MESSAGE value="Implemented: new clients and suppliers from file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented: new clients and suppliers from file" />
+    <MESSAGE value="Implemented: new field and remove field upgrade" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented: new field and remove field upgrade" />
   </component>
   <component name="WindowStateProjectService">
     <state x="534" y="214" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1619271135734">
@@ -288,13 +294,17 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="604" y="336" key="NewPhpFileDialog/0.0.1536.824@0.0.1536.824" timestamp="1620381992862" />
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1620570443161">
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1620658600324">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1620570443161" />
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1620658600324" />
     <state x="586" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1619193639741">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="586" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1619193639741" />
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1620915910518">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1620915910518" />
   </component>
 </project>

@@ -35,13 +35,13 @@ class ExpeditionController extends Controller
         array_push($addresses, $req->routeAddressNew);
         $b = array();
         if ($req->has('routeDateNew1')) {
-            for ($i = 1; $i < $req->fieldsNewCount + 1; $i++) {
+            for ($i = 1; $i < $req->fieldsNewCount; $i++) {
                 if ($datess[0] <= $req->input('routeDateNew'.$i))
                     continue;
                 else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
             }
-            for ($i = 1; $i < $req->fieldsNewCount + 1; $i++) {
-                for ($j = 1; $j < $req->fieldsNewCount + 1; $j++) {
+            for ($i = 1; $i < $req->fieldsNewCount; $i++) {
+                for ($j = 1; $j < $req->fieldsNewCount; $j++) {
                     if ($i === $j)
                         continue;
                     else if (!in_array($j, $b)) {
@@ -153,6 +153,10 @@ class ExpeditionController extends Controller
         $exp = Expedition::where('order_no',$req->id)->first();
         if($exp->state == 'order' || $exp->state == 'contact')
             $this->editOrder($req);
+        else if($exp->state == 'transport')
+            $this->editTransport($req);
+        else if($exp->state == 'exporting')
+            $this->editExporting($req);
         return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
     }
     function changeState(request $req) {
@@ -196,6 +200,7 @@ class ExpeditionController extends Controller
             $expedition->amount = $req->amountState;
             $expedition->profit = $req->profitState;
             $expedition->state = 'contact';
+            $expedition->date = Carbon::now()->toDateString();
             $expedition->save();
         }
         else if ($expedition->state == 'contact') {
@@ -203,6 +208,7 @@ class ExpeditionController extends Controller
             $expedition->carrier_price = $req->carrierPriceState;
             $expedition->total_profit = $expedition->profit - $expedition->carrier_price;
             $expedition->state = 'transport';
+            $expedition->date = Carbon::now()->toDateString();
             $expedition->save();
         }
         else if ($expedition->state == 'transport') {
@@ -213,6 +219,7 @@ class ExpeditionController extends Controller
             $expedition->dates = $datesArray;
             $expedition->progress += 1;
             $expedition->state = 'exporting';
+            $expedition->date = Carbon::now()->toDateString();
             $expedition->save();
         }
         else if ($expedition->state == 'exporting') {
@@ -223,6 +230,7 @@ class ExpeditionController extends Controller
                 $datesArray = implode('!!', $datesArray);
                 $expedition->dates = $datesArray;
                 $expedition->state = 'received';
+                $expedition->date = Carbon::now()->toDateString();
                 $expedition->save();
             } else {
                 $datesArray = explode('!!', $expedition->dates);
@@ -230,6 +238,7 @@ class ExpeditionController extends Controller
                 $datesArray = implode('!!', $datesArray);
                 $expedition->dates = $datesArray;
                 $expedition->progress += 1;
+                $expedition->date = Carbon::now()->toDateString();
                 $expedition->save();
             }
         }
@@ -294,13 +303,13 @@ class ExpeditionController extends Controller
         array_push($addresses, $req->routeAddressState);
         $b = array();
         if ($req->has('routeDateState1')) {
-            for ($i = 1; $i < $req->fieldsStateCount + 1; $i++) {
+            for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
                 if ($datess[0] <= $req->input('routeDateState'.$i))
                     continue;
                 else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
             }
-            for ($i = 1; $i < $req->fieldsStateCount + 1; $i++) {
-                for ($j = 1; $j < $req->fieldsStateCount + 1; $j++) {
+            for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
+                for ($j = 1; $j < $req->input('fieldsEditCount'.$req->id); $j++) {
                     if ($i === $j)
                         continue;
                     else if (!in_array($j, $b)) {
@@ -324,6 +333,95 @@ class ExpeditionController extends Controller
         $expedition->cargo = $req->cargoState;
         $expedition->amount = $req->amountState;
         $expedition->profit = $req->profitState;
+        $expedition->save();
+    }
+    function editTransport($req) {
+        $expedition = Expedition::where('order_no',$req->id)->first();
+        $expedition->route = $req->routeState;
+        $datess = array();
+        array_push($datess, $req->routeDateState);
+        $addresses = array();
+        array_push($addresses, $req->routeAddressState);
+        $b = array();
+        if ($req->has('routeDateState1')) {
+            for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
+                if ($datess[0] <= $req->input('routeDateState'.$i))
+                    continue;
+                else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
+            }
+            for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
+                for ($j = 1; $j < $req->input('fieldsEditCount'.$req->id); $j++) {
+                    if ($i === $j)
+                        continue;
+                    else if (!in_array($j, $b)) {
+                        if ($req->input('routeDateState'.$i) <= $req->input('routeDateState'.$j))
+                            continue;
+                        else {
+                            //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
+                            return Redirect::back()->with('error', 'Netinkamai suvestos datos: '.$j.' papildomame laukelyje data '.
+                                'turėtų būti mažesnė arba lygi '.($j -1).' papildomo laukelio datai');
+                        }
+                    } else continue;
+                }
+                array_push($b, $i);
+                array_push($datess, $req->input('routeDateState'.$i));
+                array_push($addresses, $req->input('routeAddressState'.$i));
+            }
+        }
+        $expedition->dates = implode('!!', $datess);
+        $expedition->addresses = implode('!!', $addresses);
+        $expedition->route = $req->routeState;
+        $expedition->cargo = $req->cargoState;
+        $expedition->amount = $req->amountState;
+        $expedition->profit = $req->profitState;
+        $expedition->carrier = $req->carrierState;
+        $expedition->carrier_price = $req->carrierPriceState;
+        $expedition->total_profit = $req->totalPriceState;
+        $expedition->save();
+    }
+    function editExporting($req) {
+        $expedition = Expedition::where('order_no',$req->id)->first();
+        $expedition->route = $req->routeState;
+        $datess = array();
+        array_push($datess, $req->routeDateState);
+        $addresses = array();
+        array_push($addresses, $req->routeAddressState);
+        $b = array();
+        if ($req->has('routeDateState1')) {
+            for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
+                if ($datess[0] <= $req->input('routeDateState'.$i))
+                    continue;
+                else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
+            }
+            for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
+                for ($j = 1; $j < $req->input('fieldsEditCount'.$req->id); $j++) {
+                    if ($i === $j)
+                        continue;
+                    else if (!in_array($j, $b)) {
+                        if ($req->input('routeDateState'.$i) <= $req->input('routeDateState'.$j))
+                            continue;
+                        else {
+                            //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
+                            return Redirect::back()->with('error', 'Netinkamai suvestos datos: '.$j.' papildomame laukelyje data '.
+                                'turėtų būti mažesnė arba lygi '.($j -1).' papildomo laukelio datai');
+                        }
+                    } else continue;
+                }
+                array_push($b, $i);
+                array_push($datess, $req->input('routeDateState'.$i));
+                array_push($addresses, $req->input('routeAddressState'.$i));
+            }
+        }
+        $expedition->dates = implode('!!', $datess);
+        $expedition->addresses = implode('!!', $addresses);
+        $expedition->route = $req->routeState;
+        $expedition->cargo = $req->cargoState;
+        $expedition->amount = $req->amountState;
+        $expedition->profit = $req->profitState;
+        $expedition->carrier = $req->carrierState;
+        $expedition->carrier_price = $req->carrierPriceState;
+        $expedition->total_profit = $req->totalPriceState;
+        $expedition->progress = $req->progressCount;
         $expedition->save();
     }
 }

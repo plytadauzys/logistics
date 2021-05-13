@@ -58,8 +58,7 @@
                                    placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[0]}}" required>
                             <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
                                    placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[0]}}" required>
-                            <input type="button" onclick="addField(0)" value="Pap">
-                            <input type="button" onclick="removeField(0)" value="Naikinti">
+                            <input type="button" onclick="createFieldsNew()" value="Pap">
                             <hr>
 
                             <span id="fooBar">&nbsp;
@@ -68,7 +67,9 @@
                                            placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[$i]}}" required>
                                     <input type="text" class="form-control" id="{{'routeAddressNew'.$i}}" name="{{'routeAddressNew'.$i}}"
                                            placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[$i]}}" required>
-                                    <hr id="{{'line'.$i}}">
+                                    <button type="button" id="{{'delNew'.$i}}" onclick="deleteFieldNew({{'routeDateNew'.$i}},{{'routeAddressNew'.$i}},
+                                            {{'delNew'.$i}},{{'lineNew'.$i}})">Trinti</button>
+                                    <hr id="{{'lineNew'.$i}}">
                                 @endfor
                             </span>
                         </div>
@@ -119,9 +120,8 @@
                                    placeholder="Pasirinkite datą" required>
                             <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
                                    placeholder="Įveskitę adresą" required>
-                            <input type="button" onclick="addField(0)" value="Pap">
-                            <input type="button" onclick="removeField(0)" value="Naikinti">
-                            <span id="fooBar">&nbsp;</span>
+                            <input type="button" onclick="createFieldsNew()" value="Naujas laukelis">
+                            <span id="fooBarNew">&nbsp;</span>
                         </div>
                         <div class="form-group">
                             <label for="cargoNew">Krovinys</label>
@@ -243,7 +243,7 @@
                                                 </div>
                                             </form>
                                             <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
-                                            <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}">Redaguoti</button>
+                                            <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}" onclick="changeFieldNo({{count(explode('!!',$d->dates))}})">Redaguoti</button>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
                                         </div>
                                     </div>
@@ -287,13 +287,19 @@
                                                     <input type="text" class="form-control" id="routeAddressState" name="routeAddressState"
                                                            value="{{explode('!!',$d->addresses)[0]}}" required>
                                                     <hr>
-                                                    @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
-                                                        <input type="date" class="form-control" id="{{'routeDateState'.$i}}" name="{{'routeDateState'.$i}}"
-                                                               value="{{explode('!!',$d->dates)[$i]}}" required>
-                                                        <input type="text" class="form-control" id="{{'routeAddressState'.$i}}" name="{{'routeAddressState'.$i}}"
-                                                               value="{{explode('!!',$d->addresses)[$i]}}" required>
-                                                        <hr>
-                                                    @endfor
+                                                    <span id="{{'foobar'.$d->order_no}}">
+                                                            @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                            <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                   value="{{explode('!!',$d->dates)[$i]}}" required>
+                                                            <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                   value="{{explode('!!',$d->addresses)[$i]}}" required>
+                                                            <button type="button" id="{{'delEdit'.$d->order_no.$i}}"
+                                                                    onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
+                                                                    {{$d->order_no}})">Trinti</button>
+                                                            <hr id="{{'line'.$d->order_no.$i}}">
+                                                        @endfor
+                                                        </span>
+                                                    <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})">Naujas laukelis</button>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="cargoState">Krovinys</label>
@@ -311,7 +317,7 @@
                                                            value="{{$d->profit}}" required>
                                                 </div>
 
-                                                <input id="fieldsStateCount" name="fieldsStateCount" type="number" hidden value="{{count(explode('!!',$d->dates))-1}}">
+                                                <input id="{{'fieldsEditCount'.$d->order_no}}" name="{{'fieldsEditCount'.$d->order_no}}" type="number" hidden value="{{count(explode('!!',$d->dates))}}">
                                                 <button type="submit" class="btn btn-success">Redaguoti</button>
                                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                             </form>
@@ -480,7 +486,7 @@
                                                 </form>
                                                 <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
                                                 <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
-                                                        onclick="initAdditionalFields({{$d->order_no}},{{count(explode('!!',$d->dates))}})">Redaguoti</button>
+                                                        onclick="changeFieldNo({{count(explode('!!',$d->dates))}})">Redaguoti</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
                                             </div>
                                         </div>
@@ -531,7 +537,8 @@
                                                                 <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
                                                                        value="{{explode('!!',$d->addresses)[$i]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}"
-                                                                        onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}})">Trinti</button>
+                                                                        onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
+                                                                            {{$d->order_no}})">Trinti</button>
                                                                 <hr id="{{'line'.$d->order_no.$i}}">
                                                             @endfor
                                                         </span>
@@ -553,7 +560,7 @@
                                                                value="{{$d->profit}}" required>
                                                     </div>
 
-                                                    <input id="fieldsStateCount" name="fieldsStateCount" type="number" hidden value="{{count(explode('!!',$d->dates))-1}}">
+                                                    <input id="{{'fieldsEditCount'.$d->order_no}}" name="{{'fieldsEditCount'.$d->order_no}}" type="number" hidden value="{{count(explode('!!',$d->dates))}}">
                                                     <button type="submit" class="btn btn-success">Redaguoti</button>
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                                 </form>
@@ -629,13 +636,13 @@
                                                             <div class="form-group">
                                                                 <label for="clientState">Klientas</label>
                                                                 <select class="custom-select" name="clientState" id="clientState" disabled>
-                                                                    <option value="{{$d->client}}">{{$d->client}}</option>
+                                                                    <option value="{{$d->client}}">{{$d->klientas->name}}</option>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="supplierState">Tiekėjo pavadinimas</label>
                                                                 <select class="custom-select" name="supplierState" id="supplierState" disabled>
-                                                                    <option value="{{$d->supplier}}">{{$d->supplier}}</option>
+                                                                    <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
@@ -686,7 +693,99 @@
                                                     </div>
                                                 </form>
                                                 <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                                <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}" onclick="changeFieldNo({{count(explode('!!',$d->dates))}})">Redaguoti</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="{{'expedit'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expedit'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="expeditions/edit" method="POST">
+                                                    @csrf
+                                                    <input type="text" name="id" value="{{$d->order_no}}" hidden>
+                                                    <div class="form-group">
+                                                        <label for="clientState">Klientas</label>
+                                                        <select class="custom-select" name="clientState" id="clientState">
+                                                            <option value="{{$d->client}}">{{$d->klientas->name}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                        <select class="custom-select" name="supplierState" id="supplierState">
+                                                            <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="routeState">Maršrutas</label>
+                                                        <input type="text" class="form-control" id="routeState" name="routeState"
+                                                               value="{{$d->route}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="routeDateState">Datos ir adresai</label>
+                                                        <input type="date" class="form-control" id="routeDateState" name="routeDateState"
+                                                               value="{{explode('!!',$d->dates)[0]}}" required>
+                                                        <input type="text" class="form-control" id="routeAddressState" name="routeAddressState"
+                                                               value="{{explode('!!',$d->addresses)[0]}}" required>
+                                                        <hr>
+                                                        <span id="{{'foobar'.$d->order_no}}">
+                                                            @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                                <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                       value="{{explode('!!',$d->dates)[$i]}}" required>
+                                                                <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                       value="{{explode('!!',$d->addresses)[$i]}}" required>
+                                                                <button type="button" id="{{'delEdit'.$d->order_no.$i}}"
+                                                                        onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
+                                                                        {{$d->order_no}})">Trinti</button>
+                                                                <hr id="{{'line'.$d->order_no.$i}}">
+                                                            @endfor
+                                                        </span>
+                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})">Naujas laukelis</button>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="cargoState">Krovinys</label>
+                                                        <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                               value="{{$d->cargo}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="amountState">Kiekis</label>
+                                                        <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                               value="{{$d->amount}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="profitState">Pelnas</label>
+                                                        <input type="number" class="form-control" id="{{'profitState'.$d->order_no}}" name="profitState" placeholder="Įveskite pelną"
+                                                               value="{{$d->profit}}" required oninput="calcTotalProfit({{$d->order_no}})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierState">Vežėjas</label>
+                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite vežėją"
+                                                               value="{{$d->carrier}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierPriceState">Vežėjo kaina</label>
+                                                        <input type="number" class="form-control" id="{{'carrierPriceState'.$d->order_no}}" name="carrierPriceState" placeholder="Įveskite vežėjo kainą"
+                                                               value="{{$d->carrier_price}}" oninput="calcTotalProfit({{$d->order_no}})" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="totalPriceState">Visas pelnas</label>
+                                                        <input type="number" class="form-control" id="{{'totalPriceState'.$d->order_no}}" name="totalPriceState" placeholder="Įveskite visą pelną"
+                                                               value="{{$d->total_profit}}" readonly>
+                                                    </div>
+
+                                                    <input id="{{'fieldsEditCount'.$d->order_no}}" name="{{'fieldsEditCount'.$d->order_no}}" type="number" hidden value="{{count(explode('!!',$d->dates))}}">
+                                                    <button type="submit" class="btn btn-success">Redaguoti</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -713,7 +812,7 @@
                                                     <div class="form-group">
                                                         <label for="loadedState">Pasikrovimo data</label>
                                                         <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite datą"
-                                                               value="getToday()" required>
+                                                               value="{{\Carbon\Carbon::now()->toDateString()}}" required>
                                                     </div>
                                                     <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
@@ -831,7 +930,125 @@
                                                     @endfor
                                                 </form>
                                                 <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                                <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
+                                                        onclick="changeFieldNo({{count(explode('!!',$d->dates))}})">Redaguoti</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="{{'expedit'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="{{'expedit'.$d->order_no}}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="expeditions/edit" method="POST">
+                                                    @csrf
+                                                    <input type="text" name="id" value="{{$d->order_no}}" hidden>
+                                                    <div class="form-group">
+                                                        <label for="clientState">Klientas</label>
+                                                        <select class="custom-select" name="clientState" id="clientState">
+                                                            <option value="{{$d->client}}">{{$d->klientas->name}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                        <select class="custom-select" name="supplierState" id="supplierState">
+                                                            <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="routeState">Maršrutas</label>
+                                                        <input type="text" class="form-control" id="routeState" name="routeState"
+                                                               value="{{$d->route}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="routeDateState">Datos ir adresai</label>
+                                                        <input type="date" class="form-control" id="routeDateState" name="routeDateState"
+                                                               value="{{explode('!!',$d->dates)[0]}}" required>
+                                                        <input type="text" class="form-control" id="routeAddressState" name="routeAddressState"
+                                                               value="{{explode('!!',$d->addresses)[0]}}" required>
+                                                        <input id="{{'lastIndex'.$d->order_no}}" value="{{count(explode('!!',$d->dates))}}" hidden>
+                                                        @if($d->progress > 2)
+                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked disabled oninput="changeProgress({{$d->order_no}},0,document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                        @elseif($d->progress == 1)
+                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked oninput="changeProgress({{$d->order_no}},0,document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                        @else
+                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" oninput="changeProgress({{$d->order_no}},0,document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                        @endif
+                                                        <label class="form-check-label" for="{{'progressState'.$d->order_no}}">Pasikrauta</label>
+                                                        <hr>
+                                                        <span id="{{'foobar'.$d->order_no}}">
+                                                            @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
+                                                                <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                       value="{{explode('!!',$d->dates)[$i]}}" required>
+                                                                <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                       value="{{explode('!!',$d->addresses)[$i]}}" required>
+                                                                <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
+                                                                        onclick="deleteFieldsExporting({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},
+                                                                        {{'line'.$d->order_no.$i}},{{$d->order_no}},{{'progressState'.$d->order_no.$i}},
+                                                                        {{'progressLabel'.$i}})">Trinti</button>
+                                                                @if($i + 1 < $d->progress)
+                                                                    <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" checked disabled
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                @elseif($i + 1 == $d->progress)
+                                                                    <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" checked
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                @elseif($i + 1 > $d->progress + 1)
+                                                                    <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" disabled
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                @else
+                                                                    <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}"
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                @endif
+                                                                <label class="form-check-label" id="{{'progressLabel'.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pasikrauta</label>
+                                                                <hr id="{{'line'.$d->order_no.$i}}">
+                                                            @endfor
+                                                        </span>
+                                                        <button type="button" class="btn btn-success" onclick="createFieldsExporting({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})">Naujas laukelis</button>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="cargoState">Krovinys</label>
+                                                        <input type="text" class="form-control" id="cargoState" name="cargoState" placeholder="Įveskite krovinį"
+                                                               value="{{$d->cargo}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="amountState">Kiekis</label>
+                                                        <input type="text" class="form-control" id="amountState" name="amountState" placeholder="Įveskite krovinio kiekį"
+                                                               value="{{$d->amount}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="profitState">Pelnas</label>
+                                                        <input type="number" class="form-control" id="{{'profitState'.$d->order_no}}" name="profitState" placeholder="Įveskite pelną"
+                                                               value="{{$d->profit}}" required oninput="calcTotalProfit({{$d->order_no}})">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierState">Vežėjas</label>
+                                                        <input type="text" class="form-control" id="carrierState" name="carrierState" placeholder="Įveskite vežėją"
+                                                               value="{{$d->carrier}}" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="carrierPriceState">Vežėjo kaina</label>
+                                                        <input type="number" class="form-control" id="{{'carrierPriceState'.$d->order_no}}" name="carrierPriceState" placeholder="Įveskite vežėjo kainą"
+                                                               value="{{$d->carrier_price}}" oninput="calcTotalProfit({{$d->order_no}})" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="totalPriceState">Visas pelnas</label>
+                                                        <input type="number" class="form-control" id="{{'totalPriceState'.$d->order_no}}" name="totalPriceState" placeholder="Įveskite visą pelną"
+                                                               value="{{$d->total_profit}}" readonly>
+                                                    </div>
+
+                                                    <input id="{{'fieldsEditCount'.$d->order_no}}" name="{{'fieldsEditCount'.$d->order_no}}" type="number" hidden value="{{count(explode('!!',$d->dates))}}">
+                                                    <input id="progressCount" name="progressCount" value="{{$d->progress}}" hidden>
+                                                    <button type="submit" class="btn btn-success">Redaguoti</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -850,14 +1067,14 @@
                                                 <form action="/expeditions/changeState" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="orderNoState" value="{{$d->order_no}}">
-                                                    <div class="form-group">
-                                                        <input type="date" class="form-control" value="{{explode('!!', $d->dates)[$d->progress]}}" readonly hidden>
-                                                    </div>
+                                                    <!-- <div class="form-group">
+                                                        <input type="date" class="form-control" value="{//explode('!!', $d->dates)[$d->progress]}" readonly hidden>
+                                                    </div> -->
                                                     @if($d->progress != count(explode('!!', $d->dates)) - 1)
                                                         <div class="form-group">
                                                             <label for="loadedState">Planuojama pasikrovimo data</label>
                                                             <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
-                                                                   value="{{explode('!!', $d->dates)[$d->progress]}}" readonly>
+                                                                   value="{{explode('!!', $d->dates)[$d->progress-1]}}" readonly>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="unloadedState">Pasikrovimo data</label>
@@ -1087,7 +1304,6 @@
             document.getElementById('delEdit'+orderNo.toString()+(fieldNo-1)).hidden = false;
             var address = document.createElement("input");
 
-            //Assign different attributes to the element.
             address.setAttribute("type", 'text');
             address.setAttribute("class", 'form-control');
             address.setAttribute("id", addressString + orderNo.toString() + fieldNo);
@@ -1108,31 +1324,246 @@
 
             var delButton = document.createElement('button');
             delButton.setAttribute('type','button');
+            delButton.setAttribute('class','btn btn-danger');
             delButton.setAttribute('id','delEdit'+orderNo.toString()+fieldNo);
             delButton.setAttribute('onclick', 'deleteField('+date.id+','+address.id+','+delButton.id+','+line.id+');');
             delButton.innerText = 'Trinti';
-            delButton.hidden = true;
 
             var foo = document.getElementById(fooID.id);
+
+            foo.appendChild(date);
+            foo.appendChild(address);
+            foo.appendChild(delButton);
+            foo.appendChild(line);
+            fieldNo++;
+            document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
+        }
+        @if(session()->has('neworder'))
+            var fieldNoNew = {{count(explode('!!',session('neworder')[0][3]))}} + 1;
+        @else
+            var fieldNoNew = 1;
+        @endif
+        function createFieldsNew() {
+            var address = document.createElement("input");
+
+            //Assign different attributes to the element.
+            address.setAttribute("type", 'text');
+            address.setAttribute("class", 'form-control');
+            address.setAttribute("id", 'routeAddressNew' + fieldNoNew);
+            address.setAttribute("name", 'routeAddressNew' + fieldNoNew);
+            address.setAttribute("placeholder", 'metai.mėn.d adresas');
+            address.required = true;
+
+            var date = document.createElement("input");
+
+            date.setAttribute("type", 'date');
+            date.setAttribute("class", 'form-control');
+            date.setAttribute("id", 'routeDateNew' + fieldNoNew);
+            date.setAttribute("name", 'routeDateNew' + fieldNoNew);
+            date.required = true;
+
+            var line = document.createElement("hr");
+            line.setAttribute("id", 'lineNew' + fieldNoNew);
+
+            var delButton = document.createElement('button');
+            delButton.setAttribute('type','button');
+            delButton.setAttribute('id','delNew'+fieldNoNew);
+            delButton.setAttribute('onclick', 'deleteFieldNew('+'routeDateNew' + fieldNoNew+','+'routeAddressNew' + fieldNoNew+','+
+                'delNew'+fieldNoNew+','+'lineNew' + fieldNoNew+');');
+            delButton.innerText = 'Trinti';
+
+            var foo = document.getElementById('fooBarNew');
 
             //Append the element in page (in span).
             foo.appendChild(date);
             foo.appendChild(address);
             foo.appendChild(delButton);
             foo.appendChild(line);
-            fieldNo++;
+            fieldNoNew++;
             /*fieldsAddress[id].push('routeAddressNew' + fieldCount);
             fieldsDate[id].push('routeDateNew' + fieldCount);
             fieldsLine[id].push('line' + fieldCount);
-            fieldCount += 1;
-            document.getElementById('fieldsNewCount').value = fieldCount - 1;*/
+            fieldCount += 1;*/
+            document.getElementById('fieldsNewCount').value = fieldNoNew - 1;
         }
-        function deleteField(dateID, addressID, delID, lineID) {
+        function deleteField(dateID, addressID, delID, lineID, orderNo) {
             document.getElementById(dateID.id).remove();
             document.getElementById(addressID.id).remove();
             document.getElementById(delID.id).remove();
             document.getElementById(lineID.id).remove();
             fieldNo--;
+            document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
+        }
+        function deleteFieldNew(dateID, addressID, delID, lineID) {
+            document.getElementById(dateID.id).remove();
+            document.getElementById(addressID.id).remove();
+            document.getElementById(delID.id).remove();
+            document.getElementById(lineID.id).remove();
+            fieldNoNew--;
+        }
+        function calcTotalProfit(orderNo) {
+            var profit = document.getElementById('profitState'+orderNo);
+            var carrierPrice = document.getElementById('carrierPriceState'+orderNo);
+            var totalProfit = document.getElementById('totalPriceState'+orderNo);
+            totalProfit.value = profit.value - carrierPrice.value;
+        }
+        function changeFieldNo(count) {
+            fieldNo = count;
+        }
+        function createFieldsExporting(fooID,dateString,addressString,fieldCount, orderNo) {
+
+            document.getElementById('delEdit'+orderNo.toString()+(fieldNo-1)).hidden = false;
+            var address = document.createElement("input");
+
+            address.setAttribute("type", 'text');
+            address.setAttribute("class", 'form-control');
+            address.setAttribute("id", addressString + orderNo.toString() + fieldNo);
+            address.setAttribute("name", addressString + fieldNo);
+            address.setAttribute("placeholder", 'metai.mėn.d adresas');
+            address.required = true;
+
+            var date = document.createElement("input");
+
+            date.setAttribute("type", 'date');
+            date.setAttribute("class", 'form-control');
+            date.setAttribute("id", dateString + orderNo.toString()+ fieldNo);
+            date.setAttribute("name", dateString + fieldNo);
+            date.required = true;
+
+            var line = document.createElement("hr");
+            line.setAttribute("id", 'lineEdit' + fieldNo);
+
+            var lastIndex = document.getElementById('lastIndex'+orderNo);
+
+            if(document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).checked === false &&
+                document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).disabled === false) {
+                var checkBox = document.createElement('input');
+                checkBox.setAttribute('type','checkbox');
+                checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                checkBox.setAttribute('name','progressState'+fieldNo);
+                checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+','+(parseInt(lastIndex.value)+1)+')');
+                checkBox.disabled = true;
+            }
+            else if(document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).checked === false) {
+                var checkBox = document.createElement('input');
+                checkBox.setAttribute('type','checkbox');
+                checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                checkBox.setAttribute('name','progressState'+fieldNo);
+                checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+','+(parseInt(lastIndex.value)+1)+')');
+                checkBox.disabled = true;
+            } else {
+                var checkBox = document.createElement('input');
+                checkBox.setAttribute('type','checkbox');
+                checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                checkBox.setAttribute('name','progressState'+fieldNo);
+                checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+','+(parseInt(lastIndex.value)+1)+')');
+            }
+
+            var label = document.createElement('label');
+            label.setAttribute('class','form-check-label');
+            label.setAttribute('for','progressState'+orderNo.toString()+fieldNo);
+            label.setAttribute('id','progressLabel'+fieldNo);
+            label.innerText = 'Pasikrauta';
+
+            var delButton = document.createElement('button');
+            delButton.setAttribute('type','button');
+            delButton.setAttribute('class','btn btn-danger');
+            delButton.setAttribute('id','delEdit'+orderNo.toString()+fieldNo);
+            delButton.setAttribute('onclick', 'deleteFieldsExporting('+date.id+','+address.id+','+delButton.id+','+line.id+
+                ','+ orderNo + ',' + checkBox.id+','+label.id+');');
+            delButton.innerText = 'Trinti';
+
+            var foo = document.getElementById(fooID.id);
+
+            foo.appendChild(date);
+            foo.appendChild(address);
+            foo.appendChild(delButton);
+            foo.appendChild(delButton);
+            foo.appendChild(checkBox);
+            foo.appendChild(label);
+            foo.appendChild(line);
+            fieldNo++;
+            updateLastIndex(orderNo);
+            document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
+            lastIndex.value = fieldNo;
+        }
+        function updateLastIndex(orderNo) {
+            for(let i = 0; i < fieldNo; i++) {
+                if(i === 0) {
+                    document.getElementById('progressState'+orderNo.toString()).setAttribute('oninput',
+                        'changeProgress('+orderNo+','+i+','+fieldNo+')');
+                } else {
+                    document.getElementById('progressState'+orderNo.toString()+i).setAttribute('oninput',
+                        'changeProgress('+orderNo+','+i+','+fieldNo+')');
+                }
+            }
+        }
+        function deleteFieldsExporting(dateID, addressID, delID, lineID, orderNo,checkID,labelID) {
+            document.getElementById(dateID.id).remove();
+            document.getElementById(addressID.id).remove();
+            document.getElementById(delID.id).remove();
+            console.log(checkID.id);
+            var index = checkID.id.replace(/[^\d.]/g, '').replace(orderNo,'');
+            if(document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled === false &&
+                document.getElementById('progressState'+orderNo.toString()+(index-1)).checked === false)
+                document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled = true;
+            else if(document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled)
+                document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled = false;
+            document.getElementById(checkID.id).remove();
+            document.getElementById(labelID.id).remove();
+            document.getElementById(lineID.id).remove();
+            fieldNo--;
+            document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
+            updateLastIndex(orderNo);
+        }
+        function changeProgress(orderNo, index, lastIndex) {
+            lastIndex -= 1;
+            var progressValue = parseInt(document.getElementById('progressCount').value);
+            if(index === 0)
+                var progress = document.getElementById('progressState'+orderNo.toString());
+            else
+                var progress = document.getElementById('progressState'+orderNo.toString()+index.toString());
+            if(index === 0) {
+                if(progress.checked === true) {
+                    document.getElementById('progressState'+orderNo.toString()+(index+1).toString()).disabled = false;
+                    document.getElementById('progressCount').value = progressValue + 1;
+                }
+                else {
+                    document.getElementById('progressState'+orderNo.toString()+(index+1).toString()).disabled = true;
+                    document.getElementById('progressCount').value = progressValue - 1;
+                }
+            }
+            else if(index === lastIndex) {
+                if(progress.checked === true) {
+                    document.getElementById('progressState'+orderNo.toString()+(index-1).toString()).disabled = true;
+                    document.getElementById('progressCount').value = progressValue + 1;
+                }
+                else {
+                    document.getElementById('progressState'+orderNo.toString()+(index-1).toString()).disabled = false;
+                    document.getElementById('progressCount').value = progressValue - 1;
+                }
+            } else {
+                if(progress.checked === true) {
+                    if(index - 1 === 0) {
+                        document.getElementById('progressState' + orderNo.toString()).disabled = true;
+                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = false;
+                    } else {
+                        document.getElementById('progressState' + orderNo.toString() + (index - 1).toString()).disabled = true;
+                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = false;
+                    }
+                    document.getElementById('progressCount').value = progressValue + 1;
+                }
+                else {
+                    if(index - 1 === 0) {
+                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = true;
+                        document.getElementById('progressState' + orderNo.toString()).disabled = false;
+                    } else {
+                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = true;
+                        document.getElementById('progressState' + orderNo.toString() + (index - 1).toString()).disabled = false;
+                    }
+                    document.getElementById('progressCount').value = progressValue - 1;
+                }
+            }
         }
     </script>
 @endsection
