@@ -7,7 +7,6 @@
     <meta charset="utf-8">
 </head>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Navbar</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -15,31 +14,32 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/"><button id="homeBtn" class="btn btn-outline-success me-2" type="button">Home</button></a>
             </li>
             @if(session('user') || session('admin'))
                 <li class="nav-item">
-                    <a class="nav-link" href="/clients">Klientai</a>
+                    <a class="nav-link" href="/clients"><button id="clientBtn" class="btn btn-outline-success me-2" type="button">Klientai</button></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/suppliers">Tiekėjai</a>
+                    <a class="nav-link" href="/suppliers"><button id="supplierBtn" class="btn btn-outline-success me-2" type="button">Tiekėjai</button></a>
+                    <!--<a class="nav-link" href="/suppliers">Tiekėjai</a>-->
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/expeditions">Ekspedicijos</a>
+                    <a class="nav-link" href="/expeditions"><button id="expBtn" class="btn btn-outline-success me-2" type="button">Ekspedicijos</button></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/expeditionHistory">Ekspedicijų istorija</a>
+                    <a class="nav-link" href="/expeditionHistory"><button id="expHistBtn" class="btn btn-outline-success me-2" type="button">Ekspedicijų istorija</button></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/ldm">Krovimo metrų skaičiuoklė</a>
+                    <a class="nav-link" href="/ldm"><button id="ldmBtn" class="btn btn-outline-success me-2" type="button">Krovimo metrų skaičiuoklė</button></a>
                 </li>
                 @if(session('user'))
                     <li class="nav-item">
-                        <a class="nav-link" href="/logoutManager">Atsijungti</a>
+                        <a class="nav-link" href="/logoutManager"><button id="logoutBtn" class="btn btn-outline-success me-2" type="button">Atsijungti</button></a>
                     </li>
                 @elseif(session('admin'))
                     <li class="nav-item">
-                        <a class="nav-link" href="/logoutAdmin">Atsijungti</a>
+                        <a class="nav-link" href="/logoutAdmin"><button id="loginBtn" class="btn btn-outline-success me-2" type="button">Atsijungti</button></a>
                     </li>
                 @endif
             @endif

@@ -44,6 +44,8 @@
         </table>
     @endif
     <script>
+        document.getElementById('expHistBtn').classList.remove('btn-outline-success');
+        document.getElementById('expHistBtn').classList.add('btn-success');
         function search() {
             var input, filter, table, tr, td, i;
             input = document.getElementById("search");

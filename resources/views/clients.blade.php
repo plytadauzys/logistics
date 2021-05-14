@@ -220,6 +220,8 @@
 @endif
 <p></p>
 <script>
+    document.getElementById('clientBtn').classList.remove('btn-outline-success');
+    document.getElementById('clientBtn').classList.add('btn-success');
     function search() {
         var input, filter, table, tr, td, i;
         input = document.getElementById("search");

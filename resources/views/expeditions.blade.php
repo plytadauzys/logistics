@@ -921,7 +921,7 @@
                                                     <div class="progress">
                                                         <div class="progress-bar bg-info" role="progressbar" style="{{'width: '.($d->progress/count(explode('!!',$d->dates))*100).'%'}}" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                                                     </div>
-                                                    @for($i = 0; $i <= count(explode('!!',$d->dates))-1; $i++)
+                                                    @for($i = 0; $i < count(explode('!!',$d->dates))-1; $i++)
                                                         @if($i <= $d->progress - 1)
                                                             <p style="color: green">{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i].' = pasikrauta'}}</p>
                                                         @else
@@ -976,11 +976,11 @@
                                                                value="{{explode('!!',$d->addresses)[0]}}" required>
                                                         <input id="{{'lastIndex'.$d->order_no}}" value="{{count(explode('!!',$d->dates))}}" hidden>
                                                         @if($d->progress > 2)
-                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked disabled oninput="changeProgress({{$d->order_no}},0,document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked disabled oninput="changeProgress({{$d->order_no}},0,'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                         @elseif($d->progress == 1)
-                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked oninput="changeProgress({{$d->order_no}},0,document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked oninput="changeProgress({{$d->order_no}},0,'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                         @else
-                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" oninput="changeProgress({{$d->order_no}},0,document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                            <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" oninput="changeProgress({{$d->order_no}},0,'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                         @endif
                                                         <label class="form-check-label" for="{{'progressState'.$d->order_no}}">Pasikrauta</label>
                                                         <hr>
@@ -989,23 +989,23 @@
                                                                 <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
                                                                        value="{{explode('!!',$d->dates)[$i]}}" required>
                                                                 <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
-                                                                       value="{{explode('!!',$d->addresses)[$i]}}" required>
+                                                                       value="{{explode('!!',$d->addresses)[$i-1]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
                                                                         onclick="deleteFieldsExporting({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},
                                                                         {{'line'.$d->order_no.$i}},{{$d->order_no}},{{'progressState'.$d->order_no.$i}},
                                                                         {{'progressLabel'.$i}})">Trinti</button>
                                                                 @if($i + 1 < $d->progress)
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" checked disabled
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                                 @elseif($i + 1 == $d->progress)
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" checked
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                                 @elseif($i + 1 > $d->progress + 1)
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" disabled
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                                 @else
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}"
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},document.getElementById({{'lastIndex'.$d->order_no}}).value)">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                                 @endif
                                                                 <label class="form-check-label" id="{{'progressLabel'.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pasikrauta</label>
                                                                 <hr id="{{'line'.$d->order_no.$i}}">
@@ -1258,6 +1258,12 @@
 
 
     <script>
+        document.getElementById('expBtn').classList.remove('btn-outline-success');
+        document.getElementById('expBtn').classList.add('btn-success');
+        @if(session()->has('exp'))
+            $('#exp'+{{session()->get('exp')[0]}}).modal('show');
+            @php(session()->pull('exp'))
+        @endif
         function getToday() {
             var today = new Date();
             var dd = String(today.getDate()).padStart(2, '0');
@@ -1340,6 +1346,8 @@
         }
         @if(session()->has('neworder'))
             var fieldNoNew = {{count(explode('!!',session('neworder')[0][3]))}} + 1;
+            $('#naujas').modal('show');
+            @php(session()->pull('neworder'))
         @else
             var fieldNoNew = 1;
         @endif

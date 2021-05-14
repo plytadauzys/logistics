@@ -59,6 +59,10 @@ Route::get('suppliers', [SupplierController::class, 'index']);
 Route::post('suppliers/new', [SupplierController::class, 'createSupplier']);
 Route::post('suppliers/edit', [SupplierController::class, 'editSupplier']);
 Route::get('suppliers/remove/{id}', [SupplierController::class, 'removeSupplier']);
+Route::get('suppliers/{id}', function ($id) {
+    session()->push('supplier', $id);
+    return \redirect()->action([SupplierController::class, 'index']);
+});
 //-------------------------------------------------------------------
 // Expeditions ------------------------------------------------------
 Route::get('/expeditions',[ExpeditionController::class, 'index']);
@@ -66,6 +70,10 @@ Route::post('expeditions/new', [ExpeditionController::class, 'createExpedition']
 Route::post('expeditions/file', [ExpeditionController::class, 'importData']);
 Route::post('expeditions/changeState', [ExpeditionController::class, 'changeState']);
 Route::post('expeditions/edit', [ExpeditionController::class, 'edit']);
+Route::get('expeditions/{id}', function ($id) {
+    session()->push('exp', $id);
+    return \redirect()->action([ExpeditionController::class, 'index']);
+});
 //-------------------------------------------------------------------
 // Expeditions History ----------------------------------------------
 Route::get('/expeditionHistory', [ExpeditionHistoryController::class, 'index']);

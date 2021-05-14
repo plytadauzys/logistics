@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
+    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti tiekėjų" title="Įveskite norimą tekstą">
     <table class="table table-bordered" id="clientTable">
         <thead class="thead-dark">
         <tr>
@@ -219,6 +219,12 @@
     </table>
 @endif
 <script>
+    document.getElementById('supplierBtn').classList.remove('btn-outline-success');
+    document.getElementById('supplierBtn').classList.add('btn-success');
+    @if(session()->has('supplier'))
+        $('#'+{{session()->get('supplier')[0]}}).modal('show');
+        @php(session()->pull('supplier'))
+    @endif
     function search() {
         var input, filter, table, tr, td, i;
         input = document.getElementById("search");

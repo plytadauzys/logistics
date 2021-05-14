@@ -391,7 +391,7 @@ class ExpeditionController extends Controller
             for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
                 if ($datess[0] <= $req->input('routeDateState'.$i))
                     continue;
-                else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
+                //else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
             }
             for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
                 for ($j = 1; $j < $req->input('fieldsEditCount'.$req->id); $j++) {
@@ -404,6 +404,7 @@ class ExpeditionController extends Controller
                             //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
                             return Redirect::back()->with('error', 'Netinkamai suvestos datos: '.$j.' papildomame laukelyje data '.
                                 'turėtų būti mažesnė arba lygi '.($j -1).' papildomo laukelio datai');
+                            continue;
                         }
                     } else continue;
                 }
