@@ -149,15 +149,33 @@ class ExpeditionController extends Controller
         return Redirect::back();
         //return $order;
     }
-    function edit(request $req) {
-        $exp = Expedition::where('order_no',$req->id)->first();
-        if($exp->state == 'order' || $exp->state == 'contact')
-            $this->editOrder($req);
-        else if($exp->state == 'transport')
-            $this->editTransport($req);
-        else if($exp->state == 'exporting')
-            $this->editExporting($req);
-        return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
+    private function read_docx($filename){
+
+        $striped_content = '';
+        $content = '';
+
+        $zip = zip_open($filename);
+
+        if (!$zip || is_numeric($zip)) return false;
+
+        while ($zip_entry = zip_read($zip)) {
+
+            if (zip_entry_open($zip, $zip_entry) == FALSE) continue;
+
+            if (zip_entry_name($zip_entry) != "word/document.xml") continue;
+
+            $content .= zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+
+            zip_entry_close($zip_entry);
+        }
+
+        zip_close($zip);
+
+        $content = str_replace('</w:r></w:p></w:tc><w:tc>', " ", $content);
+        $content = str_replace('</w:r></w:p>', "\r\n", $content);
+        $striped_content = strip_tags($content);
+
+        return $striped_content;
     }
     function changeState(request $req) {
         $expedition = Expedition::where('order_no','=',$req->orderNoState)->first();
@@ -266,33 +284,15 @@ class ExpeditionController extends Controller
         }
         return Redirect::back()->with('message','Ekspedicijos būsena sėkmingai pakeista.');
     }
-    private function read_docx($filename){
-
-        $striped_content = '';
-        $content = '';
-
-        $zip = zip_open($filename);
-
-        if (!$zip || is_numeric($zip)) return false;
-
-        while ($zip_entry = zip_read($zip)) {
-
-            if (zip_entry_open($zip, $zip_entry) == FALSE) continue;
-
-            if (zip_entry_name($zip_entry) != "word/document.xml") continue;
-
-            $content .= zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
-
-            zip_entry_close($zip_entry);
-        }
-
-        zip_close($zip);
-
-        $content = str_replace('</w:r></w:p></w:tc><w:tc>', " ", $content);
-        $content = str_replace('</w:r></w:p>', "\r\n", $content);
-        $striped_content = strip_tags($content);
-
-        return $striped_content;
+    function edit(request $req) {
+        $exp = Expedition::where('order_no',$req->id)->first();
+        if($exp->state == 'order' || $exp->state == 'contact')
+            $this->editOrder($req);
+        else if($exp->state == 'transport')
+            $this->editTransport($req);
+        else if($exp->state == 'exporting')
+            $this->editExporting($req);
+        return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
     }
     function editOrder($req) {
         $expedition = Expedition::where('order_no',$req->id)->first();
@@ -424,5 +424,8 @@ class ExpeditionController extends Controller
         $expedition->total_profit = $req->totalPriceState;
         $expedition->progress = $req->progressCount;
         $expedition->save();
+    }
+    function editReceived($req) {
+
     }
 }

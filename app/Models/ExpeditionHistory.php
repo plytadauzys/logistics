@@ -10,4 +10,11 @@ class ExpeditionHistory extends Model
     protected $table = 'expeditionhistory';
     protected $primaryKey = 'order_no';
     public $timestamps = false;
+
+    public function clients() {
+
+    }
+    public function suppliers() {
+
+    }
 }

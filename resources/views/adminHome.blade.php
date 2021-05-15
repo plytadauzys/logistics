@@ -62,7 +62,7 @@
             </div>
         </div>
 
-    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
+    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti vartotojų" title="Įveskite norimą tekstą">
     <table class="table table-bordered" id="clientTable">
         <thead class="thead-dark">
         <tr>
@@ -72,9 +72,88 @@
             <th scope="col">El. paštas</th>
             <th scope="col">Slaptažodis</th>
             <th scope="col">Veiksmas</th>
+            <th scope="col">Rolė</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody>@foreach($data as $a)
+            <tr>
+                <th>{{$a->id}}</th>
+                <td>{{$a->first_name}}</td>
+                <td>{{$a->last_name}}</td>
+                <td>{{$a->email}}</td>
+                <td>{{$a->password}}</td>
+                <td>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#a{{$a->id}}">
+                        Redaguoti
+                    </button>
+
+                    <!-- REDAGUOTI Modal -->
+                    <div class="modal fade" id="a{{$a->id}}" tabindex="-1" role="dialog" aria-labelledby="a{{$a->id}}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Redaguoti klientą</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="/admin/edit" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="idH" value="{{$a->id}}">
+                                        <div class="form-group">
+                                            <label for="id">ID</label>
+                                            <input type="number" class="form-control" id="id" name="id" placeholder="Įveskite identifikacinį numerį (ID)"
+                                                   value="{{$a->id}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="firstName">Vardas</label>
+                                            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Įveskite vartotojo vardą"
+                                                   value="{{$a->first_name}}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lastName">Pavardė</label>
+                                            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Įveskite vartotojo pavardę"
+                                                   value="{{$a->last_name}}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">El. paštas</label>
+                                            <input type="email" class="form-control" id="email" name="email" placeholder="Įveskite vartotojo el. paštą"
+                                                   value="{{$a->email}}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password">Slaptažodis</label>
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="Įveskite vartotojo slaptažodį"
+                                                   value="{{$a->password}}" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Redaguoti</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="{{'#confirma'.$a->id}}">Šalinti</button>
+                    <div class="modal fade" id="{{'confirma'.$a->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti {{$a->first_name}} {{$a->last_name}}?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                    <a href="{{'admin/removeAdmin/'.$a->id}}"><button type="button" class="btn btn-danger" value="{{$a->id}}">Taip</button></a>
+                                    <button type="button" class="btn btn-success" data-dismiss="modal">Ne</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>Administratorius</td>
+            </tr>
+        @endforeach
         @foreach($managers as $m)
             <tr>
                 <th>{{$m->id}}</th>
@@ -151,6 +230,7 @@
                         </div>
                     </div>
                 </td>
+                <td>Vadybininkas</td>
             </tr>
         @endforeach
         </tbody>

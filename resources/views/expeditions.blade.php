@@ -167,7 +167,7 @@
 <div class="row col-md-6">
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
 </div>
-<table class="table">
+<table class="table sortable">
     <thead>
     <tr>
         <th scope="col">Gautas užsakymas (order)</th>
@@ -181,7 +181,7 @@
     @foreach($data as $d)
         @if($d->state == 'order')
             <tr>
-                <td>
+                <td> <p hidden>5</p>
                     <div class="card" style="width: 12rem;">
                         <div class="card-body">
                             <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -417,12 +417,12 @@
                         </div>
                     </div>
                 </td>
-                <td></td><td></td><td></td><td></td>
+                <td><p hidden>2</p></td><td><p hidden>2</p></td><td><p hidden>2</p></td><td><p hidden>2</p></td>
             </tr>
         @elseif($d->state == 'contact')
             <tr>
-                <td></td>
-                    <td>
+                <td><p hidden>2</p></td>
+                    <td><p style="display: none">1</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -603,12 +603,12 @@
                             </div>
                         </div>
                     </td>
-                <td></td><td></td><td></td>
+                <td><p hidden>3</p></td><td><p hidden>3</p></td><p hidden>3</p><td><p hidden>3</p></td>
             </tr>
         @elseif($d->state == 'transport')
             <tr>
-                <td></td><td></td>
-                    <td>
+                <td><p hidden>3</p></td><td><p hidden>3</p></td>
+                    <td><p hidden>1</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -825,12 +825,12 @@
                             </div>
                         </div>
                     </td>
-                <td></td><td></td>
+                <td><p hidden>3</p></td><td><p hidden>3</p></td>
             </tr>
         @elseif($d->state == 'exporting')
             <tr>
-                <td></td><td></td><td></td>
-                    <td>
+                <td><p hidden>4</p></td><td><p hidden>4</p></td><td><p hidden>4</p></td>
+                    <td><p hidden>1</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -1079,7 +1079,7 @@
                                                         <div class="form-group">
                                                             <label for="unloadedState">Pasikrovimo data</label>
                                                             <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
-                                                                   value="getToday()" required>
+                                                                   value="{{\Carbon\Carbon::now()->toDateString()}}" required>
                                                         </div>
                                                         <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                     @else
@@ -1091,7 +1091,7 @@
                                                         <div class="form-group">
                                                             <label for="unloadedState">Pristatymo data</label>
                                                             <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
-                                                                   value="getToday()" required>
+                                                                   value="{{\Carbon\Carbon::now()->toDateString()}}" required>
                                                         </div>
                                                         <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
@@ -1105,12 +1105,12 @@
                             </div>
                         </div>
                     </td>
-                <td></td>
+                <td><p hidden>4</p></td>
             </tr>
         @elseif($d->state == 'received')
             <tr>
-                <td></td><td></td><td></td><td></td>
-                    <td>
+                <td><p hidden>5</p></td><td><p hidden>5</p></td><td><p hidden>5</p></td><td><p hidden>5</p></td>
+                    <td><p hidden>1</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -1228,7 +1228,7 @@
                                                     <div class="form-group">
                                                         <label for="unloadedState">Išsikrovimo data</label>
                                                         <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
-                                                               value="getToday()" required>
+                                                               value="{{\Carbon\Carbon::now()->toDateString()}}" required>
                                                     </div>
                                                     <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
@@ -1264,15 +1264,6 @@
             $('#exp'+{{session()->get('exp')[0]}}).modal('show');
             @php(session()->pull('exp'))
         @endif
-        function getToday() {
-            var today = new Date();
-            var dd = String(today.getDate()).padStart(2, '0');
-            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-            var yyyy = today.getFullYear();
-
-            today = yyyy + '-' + mm + '-' + dd;
-            return today;
-        }
         function search() {
             var input, filter, table, tr, td, i;
             input = document.getElementById("search");
@@ -1295,15 +1286,6 @@
                     }
                 }
             }
-        }
-        function initAdditionalFields(id, count) {
-            fieldCount = count+1;
-            for(let i =1; i < fieldCount; i++) {
-                fieldsAddress[id][i-1] = 'routeAddressNew'+i;
-                fieldsDate[id][i-1] = 'routeDateNew'+i;
-                fieldsLine[id][i-1] = 'line'+i;
-            }
-            console.log(fieldsAddress,fieldsDate,fieldsLine);
         }
         var fieldNo = {{count(explode('!!',$d->dates))}};
         function createFields(fooID,dateString,addressString,fieldCount, orderNo) {

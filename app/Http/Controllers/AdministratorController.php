@@ -14,7 +14,7 @@ class AdministratorController extends Controller
     // login, logout, getUser, getUsers, createUser, editUser, removeUser,
     // searchForUser, filterUsers
     function index() {
-        $admin = Administrator::where('email','=',session('admin'))->first();
+        $admin = Administrator::all();
         $managers = Manager::all();
         return view('adminHome',['data' => $admin, 'managers' => $managers]);
     }
@@ -108,5 +108,13 @@ class AdministratorController extends Controller
             return Redirect::back()->with('message','Vartotojas sėkmingai ištrintas.');
         }
         return Redirect::back()->with('error','Vartotojas neištrintas');
+    }
+    function removeAdmin($id) {
+        $admin = Administrator::where('id','=',$id)->first();
+        if($admin != null && count(Administrator::all()) > 1) {
+            $admin->delete();
+            return Redirect::back()->with('message','Vartotojas sėkmingai pašalintas');
+        }
+        return Redirect::back()->with('error','Vartotojas neištrintas: negali trinti administratoriaus, kai yra mažiau nei 2 administratoriai.');
     }
 }
