@@ -54,6 +54,10 @@ else {*/
     Route::post('clients/edit', [ClientController::class, 'editClient']);
     Route::get('searchForClient/{string}', [ClientController::class, 'searchForClient']);
     Route::get('clients/remove/{id}', [ClientController::class, 'removeClient']);
+    Route::get('clients/{id}', function ($id) {
+        session()->push('client', $id);
+        return \redirect()->action([ClientController::class, 'index']);
+    });
     //-------------------------------------------------------------------
     // Suppliers --------------------------------------------------------
     Route::get('suppliers', [SupplierController::class, 'index']);

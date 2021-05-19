@@ -53,11 +53,15 @@
                 @endif
             @endforeach
             @foreach($client as $c)
-
+                @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id + 1).'. Reikia keisti' ||
+                $c->name == $c->email)
+                    <p>Pakeiskite kliento "{{$c->name}}" duomenis tikrais.  <a href="clients/{{$c->id}}"><button type="button" class="btn btn-outline-danger">Pildyti</button></a></p>
+                @endif
             @endforeach
             @foreach($supplier as $s)
-                @if($s->name == $s->address)
-                    <p>Užpildykite tiekėjo "{{$s->name}}" duomenis.  <a href="suppliers/{{$s->id}}"><button type="button" class="btn btn-outline-danger">Pildyti</button></a></p>
+                @if($s->name == $s->address || $s->postal_code == '0' || $s->phone_no == ($s->id + 1).'. Reikia keisti' ||
+                $s->names == $s->email)
+                    <p>Pakeiskite tiekėjo "{{$s->name}}" duomenis tikrais.  <a href="suppliers/{{$s->id}}"><button type="button" class="btn btn-outline-danger">Pildyti</button></a></p>
                 @endif
             @endforeach
         </div>
@@ -168,6 +172,18 @@
         @if(\Carbon\Carbon::now()->diffInDays($d->date) > 0 && \Carbon\Carbon::now()->diffInDays($d->date) < 4)
             document.getElementById('warning').hidden = false;
         @elseif(\Carbon\Carbon::now()->diffInDays($d->date) > 3)
+            document.getElementById('danger').hidden = false;
+        @endif
+    @endforeach
+    @foreach($client as $c)
+        @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id + 1).'. Reikia keisti' ||
+        $c->name == $c->email)
+            document.getElementById('danger').hidden = false;
+        @endif
+    @endforeach
+    @foreach($supplier as $s)
+        @if($s->name == $s->address || $s->postal_code == '0' || $s->phone_no == ($s->id + 1).'. Reikia keisti' ||
+        $s->names == $s->email)
             document.getElementById('danger').hidden = false;
         @endif
     @endforeach

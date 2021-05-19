@@ -71,38 +71,42 @@ class ExpeditionController extends Controller
         $expedition->profit = $req->profitNew;
         $expedition->progress = 0;
         $expedition->state = 'order';
-        //return $expedition;
         $expedition->save();
         return Redirect::back()->with('message', 'Ekspedicija sėkmingai sukurta.');
-        //return view('expeditions', ['data' => $expeditions, 'clients' => $clients, 'suppliers' => $suppliers]);
     }
     function importData(request $req) {
         $file = $req->file('file')->store('docs');
         $dir = storage_path('app');
         $txt = $this->read_docx($dir.'\\'.$file);
         File::delete(storage_path('app/').$file);
-        $client = Str::between($txt, 'Firmos pavadinimas: ', PHP_EOL.'Pristatymo');
-        if(strlen($client) > 30)
+        $client = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Firmos pavadinimas: ', 'Pristatymo')));
+        if(strlen($client) > 30 || $client == null)
             return Redirect::back()->with('error','Gavėjo pavadinimas nerastas arba per ilgas');
         $clientObject = Client::where('name','=',$client)->first();
         if($clientObject == null) {
             $newClient = new Client();
             $newClient->name = $client;
-            if(Str::between($txt, 'Adresas: ', 'Pašto kodas:') != null) {
-                $newClient->address = Str::between($txt, 'Adresas: ', PHP_EOL.'Pašto kodas:');
-            } else $newClient->address = $client;
-            if(Str::between($txt, 'Pašto kodas:', 'Telefonas') != null) {
-                $newClient->postal_code = Str::between($txt, 'Pašto kodas: ', PHP_EOL.'Telefonas');
-            } else $newClient->postal_code = 0;
-            if(Str::between($txt, 'Telefonas:', 'El. paštas:') != null) {
-                $newClient->phone_no = Str::between($txt, 'Telefonas: ', PHP_EOL.'El. paštas:');
-            } else $newClient->phone_no = '+123456789';
-            if(Str::between($txt, 'El. paštas:', 'KROVINIO APRAŠYMAS') != null) {
-                $newClient->email = Str::between($txt, 'El. paštas: ', PHP_EOL.'KROVINIO APRAŠYMAS');
-            } else $newClient->email = $client;;
+
+            $adresas = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Adresas: ', 'Pašto kodas:')));
+            if(empty($adresas)) $newClient->address = $client;
+            else $newClient->address = $adresas;
+
+            $postal_code = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Pašto kodas:', 'Telefonas')));
+            if(empty($postal_code)) $newClient->postal_code = 0;
+            else $newClient->postal_code = $postal_code;
+
+            $phone_no = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Telefonas:', 'El. paštas:')));
+            if(empty($phone_no) && !empty(Client::all())) $newClient->phone_no = (Client::orderBy('id','desc')->first()->id + 1).'. Reikia keisti';
+            else if(empty(Client::all())) $newClient = '1. Reikia keisti';
+            else $newClient->phone_no = $phone_no;
+
+            $email = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'El. paštas:', 'KROVINIO APRAŠYMAS')));
+            if(empty($email)) $newClient->email = $client;
+            else $newClient->email = $email;;
+
             $newClient->save();
         }
-        $supplier = Str::between($txt,'Siuntėjo pavadinimas: ',PHP_EOL.'Pervežimo maršrutas');
+        $supplier = trim(preg_replace('/\s\s+/', ' ', Str::between($txt,'Siuntėjo pavadinimas: ',PHP_EOL.'Pervežimo maršrutas')));
         if(strlen($supplier) > 30)
             return Redirect::back()->with('error','Tiekėjo pavadinimas nerastas arba per ilgas');
         $supplierObject = Supplier::where('name','=',$supplier)->first();
@@ -110,8 +114,9 @@ class ExpeditionController extends Controller
             $newSupplier = new Supplier();
             $newSupplier->name = $supplier;
             $newSupplier->address = $supplier;
-            $newSupplier->postal_code = 00000;
-            $newSupplier->phone_no = '+123456789';
+            $newSupplier->postal_code = 0;
+            if(empty(Supplier::all()) || Supplier::all() == null) $newSupplier->phone_no = '1. Reikia keisti';
+            else $newSupplier->phone_no = (Supplier::orderBy('id','desc')->first()->id + 1).'. Reikia keisti';
             $newSupplier->email = $supplier;
             $newSupplier->save();
         }
@@ -139,15 +144,14 @@ class ExpeditionController extends Controller
         $addresses = implode('!!', $addresses);
         // -------------------------------------------------------------------------------------
 
-        $route = Str::between($txt, 'Pervežimo maršrutas: ', PHP_EOL.'Pasikrovimo adresas, data:');
-        $cargo = Str::between($txt, 'Krovinio aprašymas: ', PHP_EOL.'Krovinio svoris, tūris arba konteinerio ');
-        $amount = Str::between($txt, 'konteinerio tipas: ', 'Vilkiko');
-        $price = Str::between($txt, 'Paslaugos kaina: ', ' EUR');
+        $route = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Pervežimo maršrutas: ', PHP_EOL.'Pasikrovimo adresas, data:')));
+        $cargo = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Krovinio aprašymas: ', PHP_EOL.'Krovinio svoris, tūris arba konteinerio ')));
+        $amount = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'konteinerio tipas: ', 'Vilkiko')));
+        $price = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Paslaugos kaina: ', ' EUR')));
         $order = collect([$client, $supplier, $route, $dates, $addresses, $cargo, $amount, $price]);
         session()->pull('neworder');
         session()->push('neworder',$order);
         return Redirect::back();
-        //return $order;
     }
     private function read_docx($filename){
 
@@ -179,8 +183,6 @@ class ExpeditionController extends Controller
     }
     function changeState(request $req) {
         $expedition = Expedition::where('order_no','=',$req->orderNoState)->first();
-        //return $expedition;
-        $test = '';
         if ($expedition->state == 'order') {
             $datess = array();
             array_push($datess, $req->routeDateState);
@@ -241,10 +243,10 @@ class ExpeditionController extends Controller
             $expedition->save();
         }
         else if ($expedition->state == 'exporting') {
-            if($expedition->progress == count(explode('!!', $expedition->dates)) - 1) {
+            if($expedition->progress == count(explode('!!', $expedition->dates))) {
                 $expedition->unloaded = $req->unloadedState;
                 $datesArray = explode('!!', $expedition->dates);
-                $datesArray[$expedition->progress] = $req->unloadedState;
+                $datesArray[$expedition->progress-1] = $req->unloadedState;
                 $datesArray = implode('!!', $datesArray);
                 $expedition->dates = $datesArray;
                 $expedition->state = 'received';
@@ -252,7 +254,7 @@ class ExpeditionController extends Controller
                 $expedition->save();
             } else {
                 $datesArray = explode('!!', $expedition->dates);
-                $datesArray[$expedition->progress] = $req->unloadedState;
+                $datesArray[$expedition->progress-1] = $req->unloadedState;
                 $datesArray = implode('!!', $datesArray);
                 $expedition->dates = $datesArray;
                 $expedition->progress += 1;
@@ -264,8 +266,8 @@ class ExpeditionController extends Controller
             $expeditionHistory = new ExpeditionHistory();
             $expeditionHistory->order_no = $expedition->order_no;
             $expeditionHistory->date = $expedition->date;
-            $expeditionHistory->client = $expedition->client;
-            $expeditionHistory->supplier = $expedition->supplier;
+            $expeditionHistory->client = $expedition->klientas->name;
+            $expeditionHistory->supplier = $expedition->tiekejas->name;
             $expeditionHistory->route = $expedition->route;
             $expeditionHistory->dates = $expedition->dates;
             $expeditionHistory->addresses = $expedition->addresses;
@@ -288,7 +290,7 @@ class ExpeditionController extends Controller
         $exp = Expedition::where('order_no',$req->id)->first();
         if($exp->state == 'order' || $exp->state == 'contact')
             $this->editOrder($req);
-        else if($exp->state == 'transport')
+        else if($exp->state == 'transport' || $exp->state == 'received')
             $this->editTransport($req);
         else if($exp->state == 'exporting')
             $this->editExporting($req);
@@ -422,7 +424,7 @@ class ExpeditionController extends Controller
         $expedition->carrier = $req->carrierState;
         $expedition->carrier_price = $req->carrierPriceState;
         $expedition->total_profit = $req->totalPriceState;
-        $expedition->progress = $req->progressCount;
+        $expedition->progress = $req->progressCount + 1;
         $expedition->save();
     }
     function editReceived($req) {

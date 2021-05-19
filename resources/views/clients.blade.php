@@ -222,6 +222,10 @@
 <script>
     document.getElementById('clientBtn').classList.remove('btn-outline-success');
     document.getElementById('clientBtn').classList.add('btn-success');
+    @if(session()->has('client'))
+    $('#'+{{session()->get('client')[0]}}).modal('show');
+    @php(session()->pull('client'))
+    @endif
     function search() {
         var input, filter, table, tr, td, i;
         input = document.getElementById("search");

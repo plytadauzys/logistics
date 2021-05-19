@@ -14,10 +14,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="/"><button id="homeBtn" class="btn btn-outline-success me-2" type="button">Home</button></a>
-            </li>
+            <p></p>
+            <br>
+            <p></p>
             @if(session('user') || session('admin'))
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><button id="homeBtn" class="btn btn-outline-success me-2" type="button">Namai</button></a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/clients"><button id="clientBtn" class="btn btn-outline-success me-2" type="button">Klientai</button></a>
                 </li>

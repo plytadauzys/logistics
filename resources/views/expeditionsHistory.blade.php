@@ -1,7 +1,9 @@
 @extends('layouts.app')
 @section('content')
     @if($data->count() == 0)
-        <p>nėra įvykusių ekspedicijų</p>
+        <div class="alert alert-info" role="alert">
+            Nėra įvykusių ekspedicijų.
+        </div>
     @else
         <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
         <table class="table table-bordered sortable" id="clientTable">

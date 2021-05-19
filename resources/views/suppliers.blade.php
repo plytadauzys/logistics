@@ -16,7 +16,9 @@
     </div>
 @endif
 @if($data->count() == 0)
-    <p style="color: red">Nėra jokių klientų</p>
+    <div class="alert alert-info" role="alert">
+        Nėra jokių tiekėjų.
+    </div>
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
         Naujas

@@ -11,10 +11,10 @@ class ExpeditionHistory extends Model
     protected $primaryKey = 'order_no';
     public $timestamps = false;
 
-    public function clients() {
-
+    function clients() {
+        return $this->belongsTo('App\Models\Client', 'client');
     }
-    public function suppliers() {
-
+    function suppliers() {
+        return $this->belongsTo('App\Models\Supplier', 'supplier');
     }
 }
