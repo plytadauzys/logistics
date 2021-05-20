@@ -3,7 +3,9 @@
 @section('content')
 
 @if(session('error'))
-    <p>{{session('error')}}</p>
+    <div class="alert alert-danger">
+        <p>{{session('error')}}</p>
+    </div>
 @endif
 <div class="container" id="myGroup">
         <div class="row justify-content-center">

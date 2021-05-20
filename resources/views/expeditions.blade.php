@@ -58,20 +58,20 @@
                                    placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[0]}}" required>
                             <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
                                    placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[0]}}" required>
-                            <input type="button" onclick="createFieldsNew()" value="Pap">
                             <hr>
 
-                            <span id="fooBar">&nbsp;
+                            <span id="fooBarNew">&nbsp;
                                 @for($i = 1; $i < count(explode('!!',session('neworder')[0][3])); $i++)
                                     <input type="date" class="form-control" id="{{'routeDateNew'.$i}}" name="{{'routeDateNew'.$i}}"
                                            placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[$i]}}" required>
                                     <input type="text" class="form-control" id="{{'routeAddressNew'.$i}}" name="{{'routeAddressNew'.$i}}"
                                            placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[$i]}}" required>
                                     <button type="button" id="{{'delNew'.$i}}" onclick="deleteFieldNew({{'routeDateNew'.$i}},{{'routeAddressNew'.$i}},
-                                            {{'delNew'.$i}},{{'lineNew'.$i}})">Trinti</button>
+                                            {{'delNew'.$i}},{{'lineNew'.$i}})" class="btn btn-danger">Trinti</button>
                                     <hr id="{{'lineNew'.$i}}">
                                 @endfor
                             </span>
+                            <input type="button" class="btn btn-info" onclick="createFieldsNew()" value="Naujas laukelis">
                         </div>
                         <div class="form-group">
                             <label for="cargoNew">Krovinys</label>
@@ -120,7 +120,7 @@
                                    placeholder="Pasirinkite datą" required>
                             <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
                                    placeholder="Įveskitę adresą" required>
-                            <input type="button" onclick="createFieldsNew()" value="Naujas laukelis">
+                            <input type="button" class="btn btn-info" onclick="createFieldsNew()" value="Naujas laukelis">
                             <span id="fooBarNew">&nbsp;</span>
                         </div>
                         <div class="form-group">
@@ -290,17 +290,17 @@
                                                     <hr>
                                                     <span id="{{'foobar'.$d->order_no}}">
                                                             @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
-                                                            <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                            <input type="date" class="form-control" id="{{'routeDateEdit'.$d->order_no.$i}}" name="{{'routeDateEdit'.$i}}"
                                                                    value="{{explode('!!',$d->dates)[$i]}}" required>
-                                                            <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                            <input type="text" class="form-control" id="{{'routeAddressEdit'.$d->order_no.$i}}" name="{{'routeAddressEdit'.$i}}"
                                                                    value="{{explode('!!',$d->addresses)[$i]}}" required>
                                                             <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
-                                                                    onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
-                                                                    {{$d->order_no}})">Trinti</button>
-                                                            <hr id="{{'line'.$d->order_no.$i}}">
+                                                                    onclick="deleteField({{'routeDateEdit'.$d->order_no.$i}},{{'routeAddressEdit'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'lineEdit'.$d->order_no.$i}},
+                                                                    {{$d->order_no}},1)">Trinti</button>
+                                                            <hr id="{{'lineEdit'.$d->order_no.$i}}">
                                                         @endfor
                                                         </span>
-                                                    <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})"
+                                                    <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateEdit','routeAddressEdit','delEdit','lineEdit', {{$i+1}},{{$d->order_no}}, 1)"
                                                             class="btn btn-info">Naujas laukelis</button>
                                                 </div>
                                                 <div class="form-group">
@@ -379,19 +379,19 @@
                                                            placeholder="Įveskite adresą" value="{{explode('!!',$d->addresses)[0]}}" required>
                                                     <hr>
 
-                                                    <span {{'foobar'.$d->order_no}}>&nbsp;
+                                                    <span id="{{'foobarstate'.$d->order_no}}">&nbsp;
                                                         @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
                                                             <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
                                                                    placeholder="Pasirinkite datą" value="{{explode('!!',$d->dates)[$i]}}" required>
                                                             <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
                                                                    placeholder="Įveskite adresą" value="{{explode('!!',$d->addresses)[$i]}}" required>
-                                                            <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
-                                                                    onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
-                                                                    {{$d->order_no}})">Trinti</button>
-                                                            <hr id="{{'line'.$d->order_no.$i}}">
+                                                            <button type="button" id="{{'delState'.$d->order_no.$i}}" class="btn btn-danger"
+                                                                    onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delState'.$d->order_no.$i}},{{'lineState'.$d->order_no.$i}},
+                                                                    {{$d->order_no}},2)">Trinti</button>
+                                                            <hr id="{{'lineState'.$d->order_no.$i}}">
                                                         @endfor
                                                     </span>
-                                                    <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})"
+                                                    <button type="button" onclick="createFields({{'foobarstate'.$d->order_no}},'routeDateState','routeAddressState','delState','lineState', {{$i+1}},{{$d->order_no}},2)"
                                                             class="btn btn-info">Naujas laukelis</button>
                                                 </div>
                                                 <div class="form-group">
@@ -536,18 +536,18 @@
                                                         <hr>
                                                         <span id="{{'foobar'.$d->order_no}}">
                                                             @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
-                                                                <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                <input type="date" class="form-control" id="{{'routeDateEdit'.$d->order_no.$i}}" name="{{'routeDateEdit'.$i}}"
                                                                        value="{{explode('!!',$d->dates)[$i]}}" required>
-                                                                <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                <input type="text" class="form-control" id="{{'routeAddressEdit'.$d->order_no.$i}}" name="{{'routeAddressEdit'.$i}}"
                                                                        value="{{explode('!!',$d->addresses)[$i]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
-                                                                        onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
-                                                                            {{$d->order_no}})">Trinti</button>
-                                                                <hr id="{{'line'.$d->order_no.$i}}">
+                                                                        onclick="deleteField({{'routeDateEdit'.$d->order_no.$i}},{{'routeAddressEdit'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'lineEdit'.$d->order_no.$i}},
+                                                                        {{$d->order_no}},1)">Trinti</button>
+                                                                <hr id="{{'lineEdit'.$d->order_no.$i}}">
                                                             @endfor
                                                         </span>
-                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})"
-                                                        class="btn btn-info">Naujas laukelis</button>
+                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateEdit','routeAddressEdit','delEdit','lineEdit', {{$i+1}},{{$d->order_no}}, 1)"
+                                                                class="btn btn-info">Naujas laukelis</button>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="cargoState">Krovinys</label>
@@ -745,17 +745,17 @@
                                                         <hr>
                                                         <span id="{{'foobar'.$d->order_no}}">
                                                             @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
-                                                                <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                <input type="date" class="form-control" id="{{'routeDateEdit'.$d->order_no.$i}}" name="{{'routeDateEdit'.$i}}"
                                                                        value="{{explode('!!',$d->dates)[$i]}}" required>
-                                                                <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                <input type="text" class="form-control" id="{{'routeAddressEdit'.$d->order_no.$i}}" name="{{'routeAddressEdit'.$i}}"
                                                                        value="{{explode('!!',$d->addresses)[$i]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
-                                                                        onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
-                                                                        {{$d->order_no}})">Trinti</button>
-                                                                <hr id="{{'line'.$d->order_no.$i}}">
+                                                                        onclick="deleteField({{'routeDateEdit'.$d->order_no.$i}},{{'routeAddressEdit'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'lineEdit'.$d->order_no.$i}},
+                                                                        {{$d->order_no}},1)">Trinti</button>
+                                                                <hr id="{{'lineEdit'.$d->order_no.$i}}">
                                                             @endfor
                                                         </span>
-                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})"
+                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateEdit','routeAddressEdit','delEdit','lineEdit', {{$i+1}},{{$d->order_no}}, 1)"
                                                                 class="btn btn-info">Naujas laukelis</button>
                                                     </div>
                                                     <div class="form-group">
@@ -993,14 +993,14 @@
                                                         <hr>
                                                         <span id="{{'foobar'.$d->order_no}}">
                                                             @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
-                                                                <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                <input type="date" class="form-control" id="{{'routeDateEdit'.$d->order_no.$i}}" name="{{'routeDateEdit'.$i}}"
                                                                        value="{{explode('!!',$d->dates)[$i]}}" required>
-                                                                <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                <input type="text" class="form-control" id="{{'routeAddressEdit'.$d->order_no.$i}}" name="{{'routeAddressEdit'.$i}}"
                                                                        value="{{explode('!!',$d->addresses)[$i-1]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
-                                                                        onclick="deleteFieldsExporting({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},
-                                                                        {{'line'.$d->order_no.$i}},{{$d->order_no}},{{'progressState'.$d->order_no.$i}},
-                                                                        {{'progressLabel'.$i}})">Trinti</button>
+                                                                        onclick="deleteFieldsExporting({{'routeDateEdit'.$d->order_no.$i}},{{'routeAddressEdit'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},
+                                                                        {{'lineEdit'.$d->order_no.$i}},{{$d->order_no}},{{'progressState'.$d->order_no.$i}},
+                                                                        {{'progressLabel'.$d->order_no.$i}},1)">Trinti</button>
                                                                 @if($i + 1 < $d->progress)
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" checked disabled
                                                                            oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
@@ -1014,11 +1014,11 @@
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}"
                                                                            oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                                 @endif
-                                                                <label class="form-check-label" id="{{'progressLabel'.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pasikrauta</label>
-                                                                <hr id="{{'line'.$d->order_no.$i}}">
+                                                                <label class="form-check-label" id="{{'progressLabel'.$d->order_no.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pasikrauta</label>
+                                                                <hr id="{{'lineEdit'.$d->order_no.$i}}">
                                                             @endfor
                                                         </span>
-                                                        <button type="button" class="btn btn-info" onclick="createFieldsExporting({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})">Naujas laukelis</button>
+                                                        <button type="button" class="btn btn-info" onclick="createFieldsExporting({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}},1)">Naujas laukelis</button>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="cargoState">Krovinys</label>
@@ -1381,8 +1381,7 @@
         @if(count($data) != 0)
             var fieldNo = {{count(explode('!!',$d->dates))}};
         @endif
-        function createFields(fooID,dateString,addressString,fieldCount, orderNo) {
-            document.getElementById('delEdit'+orderNo.toString()+(fieldNo-1)).hidden = false;
+        function createFields(fooID,dateString,addressString,delString,lineString,fieldCount, orderNo, mode) {
             var address = document.createElement("input");
 
             address.setAttribute("type", 'text');
@@ -1401,26 +1400,27 @@
             date.required = true;
 
             var line = document.createElement("hr");
-            line.setAttribute("id", 'lineEdit' + fieldNo);
+            line.setAttribute("id", lineString+orderNo.toString()+fieldNo);
 
             var delButton = document.createElement('button');
             delButton.setAttribute('type','button');
             delButton.setAttribute('class','btn btn-danger');
-            delButton.setAttribute('id','delEdit'+orderNo.toString()+fieldNo);
-            delButton.setAttribute('onclick', 'deleteField('+date.id+','+address.id+','+delButton.id+','+line.id+');');
+            delButton.setAttribute('id',delString+orderNo.toString()+fieldNo);
+            delButton.setAttribute('onclick', 'deleteField('+date.id+','+address.id+','+delButton.id+','+line.id+
+                ','+orderNo+','+mode+');');
             delButton.innerText = 'Trinti';
 
-            var foo = document.getElementById(fooID.id);
+            //var foo = document.getElementById(fooID.id);
 
-            foo.appendChild(date);
-            foo.appendChild(address);
-            foo.appendChild(delButton);
-            foo.appendChild(line);
+            document.getElementById(fooID.id).appendChild(date);
+            document.getElementById(fooID.id).appendChild(address);
+            document.getElementById(fooID.id).appendChild(delButton);
+            document.getElementById(fooID.id).appendChild(line);
             fieldNo++;
             document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
         }
         @if(session()->has('neworder'))
-            var fieldNoNew = {{count(explode('!!',session('neworder')[0][3]))}} + 1;
+            var fieldNoNew = {{count(explode('!!',session('neworder')[0][3]))}};
             $('#naujas').modal('show');
             @php(session()->pull('neworder'))
         @else
@@ -1451,6 +1451,7 @@
             var delButton = document.createElement('button');
             delButton.setAttribute('type','button');
             delButton.setAttribute('id','delNew'+fieldNoNew);
+            delButton.setAttribute('class','btn btn-danger');
             delButton.setAttribute('onclick', 'deleteFieldNew('+'routeDateNew' + fieldNoNew+','+'routeAddressNew' + fieldNoNew+','+
                 'delNew'+fieldNoNew+','+'lineNew' + fieldNoNew+');');
             delButton.innerText = 'Trinti';
@@ -1467,15 +1468,70 @@
             fieldsDate[id].push('routeDateNew' + fieldCount);
             fieldsLine[id].push('line' + fieldCount);
             fieldCount += 1;*/
-            document.getElementById('fieldsNewCount').value = fieldNoNew - 1;
+            document.getElementById('fieldsNewCount').value = fieldNoNew;
         }
-        function deleteField(dateID, addressID, delID, lineID, orderNo) {
+        function deleteField(dateID, addressID, delID, lineID, orderNo, mode) {
             document.getElementById(dateID.id).remove();
             document.getElementById(addressID.id).remove();
             document.getElementById(delID.id).remove();
             document.getElementById(lineID.id).remove();
             fieldNo--;
             document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
+            var i = 1;
+            if(mode === 1) {
+                document.querySelectorAll('[id^='+'routeDateEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'routeDateEdit'+orderNo.toString()+i;
+                    document.getElementById(x.id).name = 'routeDateEdit'+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'routeAddressEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'routeAddressEdit'+orderNo.toString()+i;
+                    document.getElementById(x.id).name = 'routeAddressEdit'+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'lineEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'lineEdit'+orderNo.toString()+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'delEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'delEdit'+orderNo.toString()+i;
+                    document.getElementById(x.id).setAttribute('onclick','deleteField('+'routeDateEdit'+orderNo.toString()+i+','+
+                        'routeAddressEdit'+orderNo.toString()+i+','+'delEdit'+orderNo.toString()+i+','+'lineEdit'+orderNo.toString()+i+
+                        ','+orderNo+','+mode+');');
+                    i++;
+                });
+                i=1;
+            }
+            else if(mode === 2) {
+                document.querySelectorAll('[id^='+'routeDateState'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'routeDateState'+orderNo.toString()+i;
+                    document.getElementById(x.id).name = 'routeDateState'+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'routeAddressState'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'routeAddressState'+orderNo.toString()+i;
+                    document.getElementById(x.id).name = 'routeAddressState'+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'lineState'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'lineState'+orderNo.toString()+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'delState'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'delState'+orderNo.toString()+i;
+                    document.getElementById(x.id).setAttribute('onclick','deleteField('+'routeDateState'+orderNo.toString()+i+','+
+                        'routeAddressState'+orderNo.toString()+i+','+'delState'+orderNo.toString()+i+','+'lineState'+orderNo.toString()+i+
+                        ','+orderNo+','+mode+');');
+                    i++;
+                });
+                i=1;
+            }
         }
         function deleteFieldNew(dateID, addressID, delID, lineID) {
             document.getElementById(dateID.id).remove();
@@ -1493,7 +1549,7 @@
         function changeFieldNo(count) {
             fieldNo = count;
         }
-        function createFieldsExporting(fooID,dateString,addressString,fieldCount, orderNo) {
+        function createFieldsExporting(fooID,dateString,addressString,fieldCount, orderNo,mode) {
 
             document.getElementById('delEdit'+orderNo.toString()+(fieldNo-1)).hidden = false;
             var address = document.createElement("input");
@@ -1581,7 +1637,7 @@
                 }
             }
         }
-        function deleteFieldsExporting(dateID, addressID, delID, lineID, orderNo,checkID,labelID) {
+        function deleteFieldsExporting(dateID, addressID, delID, lineID, orderNo,checkID,labelID,mode) {
             document.getElementById(dateID.id).remove();
             document.getElementById(addressID.id).remove();
             document.getElementById(delID.id).remove();
@@ -1597,6 +1653,50 @@
             document.getElementById(lineID.id).remove();
             fieldNo--;
             document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
+            var i = 1;
+            if(mode === 1) {
+                document.querySelectorAll('[id^='+'routeDateEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'routeDateEdit'+orderNo.toString()+i;
+                    document.getElementById(x.id).name = 'routeDateEdit'+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'routeAddressEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'routeAddressEdit'+orderNo.toString()+i;
+                    document.getElementById(x.id).name = 'routeAddressEdit'+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'lineEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'lineEdit'+orderNo.toString()+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'progressState'+orderNo.toString()+']').forEach(x => {
+                    document.getElementById(x.id).id = 'progressState'+orderNo.toString()+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'progressState'+orderNo.toString()+']').forEach(x => {
+                    document.getElementById(x.id).id = 'progressState'+orderNo.toString()+i;
+                    i++;
+                    console.log(x.id);
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'progressLabel'+orderNo.toString()+']').forEach(x => {
+                    document.getElementById(x.id).id = 'progressLabel'+orderNo.toString()+i;
+                    i++;
+                });
+                i=1;
+                document.querySelectorAll('[id^='+'delEdit'+orderNo+']').forEach(x => {
+                    document.getElementById(x.id).id = 'delEdit'+orderNo.toString()+i;
+                    document.getElementById(x.id).setAttribute('onclick','deleteFieldsExporting('+'routeDateEdit'+orderNo.toString()+i+','+
+                        'routeAddressEdit'+orderNo.toString()+i+','+'delEdit'+orderNo.toString()+i+','+'lineEdit'+orderNo.toString()+i+
+                        ','+orderNo+','+'progressState'+orderNo.toString()+i+','+'progressLabel'+orderNo.toString()+i+','+mode+');');
+                    i++;
+                });
+                i=1;
+            }
             updateLastIndex(orderNo);
         }
         function changeProgress(orderNo, index, lastIndex) {

@@ -152,6 +152,7 @@ class ExpeditionController extends Controller
         session()->pull('neworder');
         session()->push('neworder',$order);
         return Redirect::back();
+        //return $order;
     }
     private function read_docx($filename){
 
@@ -251,6 +252,7 @@ class ExpeditionController extends Controller
                 $expedition->dates = $datesArray;
                 $expedition->state = 'received';
                 $expedition->date = Carbon::now()->toDateString();
+                //return $expedition;
                 $expedition->save();
             } else {
                 $datesArray = explode('!!', $expedition->dates);
@@ -259,6 +261,7 @@ class ExpeditionController extends Controller
                 $expedition->dates = $datesArray;
                 $expedition->progress += 1;
                 $expedition->date = Carbon::now()->toDateString();
+                //return $expedition;
                 $expedition->save();
             }
         }
@@ -304,9 +307,9 @@ class ExpeditionController extends Controller
         $addresses = array();
         array_push($addresses, $req->routeAddressState);
         $b = array();
-        if ($req->has('routeDateState1')) {
+        if ($req->has('routeDateEdit1')) {
             for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
-                if ($datess[0] <= $req->input('routeDateState'.$i))
+                if ($datess[0] <= $req->input('routeDateEdit'.$i))
                     continue;
                 else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
             }
@@ -315,7 +318,7 @@ class ExpeditionController extends Controller
                     if ($i === $j)
                         continue;
                     else if (!in_array($j, $b)) {
-                        if ($req->input('routeDateState'.$i) <= $req->input('routeDateState'.$j))
+                        if ($req->input('routeDateEdit'.$i) <= $req->input('routeDateEdit'.$j))
                             continue;
                         else {
                             //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
@@ -325,8 +328,8 @@ class ExpeditionController extends Controller
                     } else continue;
                 }
                 array_push($b, $i);
-                array_push($datess, $req->input('routeDateState'.$i));
-                array_push($addresses, $req->input('routeAddressState'.$i));
+                array_push($datess, $req->input('routeDateEdit'.$i));
+                array_push($addresses, $req->input('routeAddressEdit'.$i));
             }
         }
         $expedition->dates = implode('!!', $datess);
@@ -345,9 +348,9 @@ class ExpeditionController extends Controller
         $addresses = array();
         array_push($addresses, $req->routeAddressState);
         $b = array();
-        if ($req->has('routeDateState1')) {
+        if ($req->has('routeDateEdit1')) {
             for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
-                if ($datess[0] <= $req->input('routeDateState'.$i))
+                if ($datess[0] <= $req->input('routeDateEdit'.$i))
                     continue;
                 else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
             }
@@ -356,7 +359,7 @@ class ExpeditionController extends Controller
                     if ($i === $j)
                         continue;
                     else if (!in_array($j, $b)) {
-                        if ($req->input('routeDateState'.$i) <= $req->input('routeDateState'.$j))
+                        if ($req->input('routeDateEdit'.$i) <= $req->input('routeDateEdit'.$j))
                             continue;
                         else {
                             //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
@@ -366,8 +369,8 @@ class ExpeditionController extends Controller
                     } else continue;
                 }
                 array_push($b, $i);
-                array_push($datess, $req->input('routeDateState'.$i));
-                array_push($addresses, $req->input('routeAddressState'.$i));
+                array_push($datess, $req->input('routeDateEdit'.$i));
+                array_push($addresses, $req->input('routeAddressEdit'.$i));
             }
         }
         $expedition->dates = implode('!!', $datess);
@@ -389,9 +392,9 @@ class ExpeditionController extends Controller
         $addresses = array();
         array_push($addresses, $req->routeAddressState);
         $b = array();
-        if ($req->has('routeDateState1')) {
+        if ($req->has('routeDateEdit1')) {
             for ($i = 1; $i < $req->input('fieldsEditCount'.$req->id); $i++) {
-                if ($datess[0] <= $req->input('routeDateState'.$i))
+                if ($datess[0] <= $req->input('routeDateEdit'.$i))
                     continue;
                 //else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
             }
@@ -400,7 +403,7 @@ class ExpeditionController extends Controller
                     if ($i === $j)
                         continue;
                     else if (!in_array($j, $b)) {
-                        if ($req->input('routeDateState'.$i) <= $req->input('routeDateState'.$j))
+                        if ($req->input('routeDateEdit'.$i) <= $req->input('routeDateEdit'.$j))
                             continue;
                         else {
                             //return $i.' '.$j.' - cia negerai. Data '.$req->input('routeDateNew'.$i).' !< '.$req->input('routeDateNew'.$j);
@@ -411,8 +414,8 @@ class ExpeditionController extends Controller
                     } else continue;
                 }
                 array_push($b, $i);
-                array_push($datess, $req->input('routeDateState'.$i));
-                array_push($addresses, $req->input('routeAddressState'.$i));
+                array_push($datess, $req->input('routeDateEdit'.$i));
+                array_push($addresses, $req->input('routeAddressEdit'.$i));
             }
         }
         $expedition->dates = implode('!!', $datess);

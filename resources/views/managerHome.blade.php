@@ -9,7 +9,7 @@
             @foreach($data as $d)
                 @if(\Carbon\Carbon::now()->diffInDays($d->date) > 3 && $d->state != 'transport' && $d->state != 'exporting')
                     @if($d->state === 'order')
-                        <p>Eksp. {{$d->order_no}}: Nekontaktuota su klientu
+                        <p>Eksp. {{$d->order_no}}: Nekontaktuota su tiekėju
                             @if(\Carbon\Carbon::now()->diffInDays($d->date) > 3 && \Carbon\Carbon::now()->diffInDays($d->date) < 10)
                                 {{\Carbon\Carbon::now()->diffInDays($d->date)}} dienos.
                             @elseif(\Carbon\Carbon::now()->diffInDays($d->date) > 9 && \Carbon\Carbon::now()->diffInDays($d->date) < 21)
@@ -77,7 +77,7 @@
                 @if(\Carbon\Carbon::now()->diffInDays($d->date) > 0 && \Carbon\Carbon::now()->diffInDays($d->date) < 4
                     && $d->state != 'transport' && $d->state != 'exporting')
                     @if($d->state === 'order')
-                        <p>Eksp. {{$d->order_no}}: Nekontaktuota su klientu
+                        <p>Eksp. {{$d->order_no}}: Nekontaktuota su tiekėju
                             @if(\Carbon\Carbon::now()->diffInDays($d->date) == 1) 1 diena.
                             @elseif(\Carbon\Carbon::now()->diffInDays($d->date) > 1 && \Carbon\Carbon::now()->diffInDays($d->date) < 4)
                                 {{\Carbon\Carbon::now()->diffInDays($d->date)}} dienos.

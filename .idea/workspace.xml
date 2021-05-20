@@ -22,14 +22,9 @@
     <list default="true" id="d9b19c56-7aca-4806-8974-84e54bbca145" name="Default Changelist" comment="Implemented: tweaks and fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/ExpeditionHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/ExpeditionHistory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/clients.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/clients.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/expeditions.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/expeditions.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/expeditionsHistory.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/expeditionsHistory.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/home.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/home.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/managerHome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/managerHome.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/suppliers.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/suppliers.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -215,7 +210,8 @@
       <workItem from="1621076549057" duration="14269000" />
       <workItem from="1621161276175" duration="2907000" />
       <workItem from="1621437310701" duration="889000" />
-      <workItem from="1621440477234" duration="12447000" />
+      <workItem from="1621440477234" duration="12721000" />
+      <workItem from="1621511108673" duration="12290000" />
     </task>
     <task id="LOCAL−00001" summary="Implemented: expedition state changing, expedition transfering to expedition history, ldm calculator">
       <created>1619193771631</created>
@@ -283,7 +279,13 @@
       <option name="presentableId" value="LOCAL−00011" />
       <updated>1621102913649</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL−00012" summary="Implemented: tweaks and fixes">
+      <created>1621453814110</created>
+      <option name="number" value="LOCAL−00012" />
+      <option name="presentableId" value="LOCAL−00012" />
+      <updated>1621453814110</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,10 +330,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="604" y="336" key="NewPhpFileDialog/0.0.1536.824@0.0.1536.824" timestamp="1620381992862" />
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1621102915622">
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1621453815667">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1621102915622" />
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1621453815667" />
     <state x="586" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1619193639741">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
