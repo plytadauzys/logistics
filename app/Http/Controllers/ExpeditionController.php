@@ -427,7 +427,7 @@ class ExpeditionController extends Controller
         $expedition->carrier = $req->carrierState;
         $expedition->carrier_price = $req->carrierPriceState;
         $expedition->total_profit = $req->totalPriceState;
-        $expedition->progress = $req->progressCount + 1;
+        $expedition->progress = $req->progressCount;
         $expedition->save();
     }
     function editReceived($req) {

@@ -99,9 +99,9 @@
                         pasikrovimo data {{explode('!!',$d->dates)[0]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
                     </p>
-                @elseif($d->state === 'exporting' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress-1]) == 1)
-                    <p>Eksp. {{$d->order_no}}: Nepradėtas pasikrovimas adresu {{explode('!!',$d->addresses)[$d->progress-1]}},
-                        planuota pasikrovimo data {{explode('!!',$d->dates)[$d->progress-1]}}
+                @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 0)
+                    <p>Eksp. {{$d->order_no}}: Nepradėtas pasikrovimas adresu {{explode('!!',$d->addresses)[$d->progress]}},
+                        planuota pasikrovimo data {{explode('!!',$d->dates)[$d->progress]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
                     </p>
                 @endif
@@ -169,18 +169,24 @@
     document.getElementById('homeBtn').classList.remove('btn-outline-success');
     document.getElementById('homeBtn').classList.add('btn-success');
     @foreach($data as $d)
-        @if(\Carbon\Carbon::now()->diffInDays($d->date) > 0 && \Carbon\Carbon::now()->diffInDays($d->date) < 4)
+        @if(\Carbon\Carbon::now()->diffInDays($d->date) > 0 && \Carbon\Carbon::now()->diffInDays($d->date) < 4 &&
+        $d->state != 'transport' && $d->state != 'exporting')
             document.getElementById('warning').hidden = false;
-        @elseif(\Carbon\Carbon::now()->diffInDays($d->date) > 3)
+        @elseif($d->state == 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) == 1)
+            document.getElementById('warning').hidden = false;
+        @elseif($d->state === 'exporting' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress-1]) == 1)
+            document.getElementById('warning').hidden = false;
+        @endif
+        @if(\Carbon\Carbon::now()->diffInDays($d->date) > 3)
             document.getElementById('danger').hidden = false;
         @endif
     @endforeach
-    @foreach($client as $c)
-        @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id + 1).'. Reikia keisti' ||
-        $c->name == $c->email)
-            document.getElementById('danger').hidden = false;
-        @endif
-    @endforeach
+        @foreach($client as $c)
+            @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id + 1).'. Reikia keisti' ||
+            $c->name == $c->email)
+                document.getElementById('danger').hidden = false;
+            @endif
+        @endforeach
     @foreach($supplier as $s)
         @if($s->name == $s->address || $s->postal_code == '0' || $s->phone_no == ($s->id + 1).'. Reikia keisti' ||
         $s->names == $s->email)

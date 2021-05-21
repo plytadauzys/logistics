@@ -996,29 +996,29 @@
                                                                 <input type="date" class="form-control" id="{{'routeDateEdit'.$d->order_no.$i}}" name="{{'routeDateEdit'.$i}}"
                                                                        value="{{explode('!!',$d->dates)[$i]}}" required>
                                                                 <input type="text" class="form-control" id="{{'routeAddressEdit'.$d->order_no.$i}}" name="{{'routeAddressEdit'.$i}}"
-                                                                       value="{{explode('!!',$d->addresses)[$i-1]}}" required>
+                                                                       value="{{explode('!!',$d->addresses)[$i]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
                                                                         onclick="deleteFieldsExporting({{'routeDateEdit'.$d->order_no.$i}},{{'routeAddressEdit'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},
                                                                         {{'lineEdit'.$d->order_no.$i}},{{$d->order_no}},{{'progressState'.$d->order_no.$i}},
                                                                         {{'progressLabel'.$d->order_no.$i}},1)">Trinti</button>
                                                                 @if($i + 1 < $d->progress)
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" checked disabled
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}})">
                                                                 @elseif($i + 1 == $d->progress)
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" checked
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}})">
                                                                 @elseif($i + 1 > $d->progress + 1)
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}" disabled
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}})">
                                                                 @else
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}"
-                                                                           oninput="changeProgress({{$d->order_no}},{{$i}},'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
+                                                                           oninput="changeProgress({{$d->order_no}},{{$i}})">
                                                                 @endif
                                                                 <label class="form-check-label" id="{{'progressLabel'.$d->order_no.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pasikrauta</label>
                                                                 <hr id="{{'lineEdit'.$d->order_no.$i}}">
                                                             @endfor
                                                         </span>
-                                                        <button type="button" class="btn btn-info" onclick="createFieldsExporting({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}},1)">Naujas laukelis</button>
+                                                        <button type="button" class="btn btn-info" onclick="createFieldsExporting({{'foobar'.$d->order_no}},'routeDateEdit','routeAddressEdit', 0,{{$d->order_no}},1)">Naujas laukelis</button>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="cargoState">Krovinys</label>
@@ -1052,8 +1052,8 @@
                                                     </div>
 
                                                     <input id="{{'fieldsEditCount'.$d->order_no}}" name="{{'fieldsEditCount'.$d->order_no}}" type="number" hidden value="{{count(explode('!!',$d->dates))}}">
-                                                    <input id="progressCount" name="progressCount" value="{{$d->progress}}" hidden>
-                                                    <button type="submit" class="btn btn-success">Redaguoti</button>
+                                                    <input id="{{'progressCount'.$d->order_no}}" name="progressCount" value="{{$d->progress}}" hidden>
+                                                    <button type="submit" class="btn btn-success" onclick="countProgress({{$d->order_no}})">Redaguoti</button>
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                                 </form>
                                             </div>
@@ -1550,8 +1550,6 @@
             fieldNo = count;
         }
         function createFieldsExporting(fooID,dateString,addressString,fieldCount, orderNo,mode) {
-
-            document.getElementById('delEdit'+orderNo.toString()+(fieldNo-1)).hidden = false;
             var address = document.createElement("input");
 
             address.setAttribute("type", 'text');
@@ -1570,38 +1568,55 @@
             date.required = true;
 
             var line = document.createElement("hr");
-            line.setAttribute("id", 'lineEdit' + fieldNo);
+            line.setAttribute("id", 'lineEdit' + orderNo.toString() + fieldNo);
 
             var lastIndex = document.getElementById('lastIndex'+orderNo);
 
-            if(document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).checked === false &&
-                document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).disabled === false) {
-                var checkBox = document.createElement('input');
-                checkBox.setAttribute('type','checkbox');
-                checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
-                checkBox.setAttribute('name','progressState'+fieldNo);
-                checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+','+(parseInt(lastIndex.value)+1)+')');
-                checkBox.disabled = true;
-            }
-            else if(document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).checked === false) {
-                var checkBox = document.createElement('input');
-                checkBox.setAttribute('type','checkbox');
-                checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
-                checkBox.setAttribute('name','progressState'+fieldNo);
-                checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+','+(parseInt(lastIndex.value)+1)+')');
-                checkBox.disabled = true;
+            if(document.getElementById('progressState'+orderNo.toString()+1) !== null) {
+                if(document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).checked === false &&
+                    document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).disabled === false) {
+                    var checkBox = document.createElement('input');
+                    checkBox.setAttribute('type','checkbox');
+                    checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                    checkBox.setAttribute('name','progressState'+fieldNo);
+                    checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+')');
+                    checkBox.disabled = true;
+                }
+                else if(document.getElementById('progressState'+orderNo.toString()+(fieldNo-1)).checked === false) {
+                    var checkBox = document.createElement('input');
+                    checkBox.setAttribute('type','checkbox');
+                    checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                    checkBox.setAttribute('name','progressState'+fieldNo);
+                    checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+')');
+                    checkBox.disabled = true;
+                } else {
+                    var checkBox = document.createElement('input');
+                    checkBox.setAttribute('type','checkbox');
+                    checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                    checkBox.setAttribute('name','progressState'+fieldNo);
+                    checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+')');
+                }
             } else {
-                var checkBox = document.createElement('input');
-                checkBox.setAttribute('type','checkbox');
-                checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
-                checkBox.setAttribute('name','progressState'+fieldNo);
-                checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+','+(parseInt(lastIndex.value)+1)+')');
+                if(document.getElementById('progressState' + orderNo.toString()).checked === false) {
+                    var checkBox = document.createElement('input');
+                    checkBox.setAttribute('type','checkbox');
+                    checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                    checkBox.setAttribute('name','progressState'+fieldNo);
+                    checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+')');
+                    checkBox.disabled = true;
+                } else {
+                    var checkBox = document.createElement('input');
+                    checkBox.setAttribute('type','checkbox');
+                    checkBox.setAttribute('id','progressState'+orderNo.toString()+fieldNo);
+                    checkBox.setAttribute('name','progressState'+fieldNo);
+                    checkBox.setAttribute('oninput','changeProgress('+orderNo+','+fieldNo+')');
+                }
             }
 
             var label = document.createElement('label');
             label.setAttribute('class','form-check-label');
             label.setAttribute('for','progressState'+orderNo.toString()+fieldNo);
-            label.setAttribute('id','progressLabel'+fieldNo);
+            label.setAttribute('id','progressLabel'+orderNo.toString()+fieldNo);
             label.innerText = 'Pasikrauta';
 
             var delButton = document.createElement('button');
@@ -1609,7 +1624,7 @@
             delButton.setAttribute('class','btn btn-danger');
             delButton.setAttribute('id','delEdit'+orderNo.toString()+fieldNo);
             delButton.setAttribute('onclick', 'deleteFieldsExporting('+date.id+','+address.id+','+delButton.id+','+line.id+
-                ','+ orderNo + ',' + checkBox.id+','+label.id+');');
+                ','+ orderNo + ',' + checkBox.id+','+label.id+','+mode+');');
             delButton.innerText = 'Trinti';
 
             var foo = document.getElementById(fooID.id);
@@ -1623,31 +1638,60 @@
             foo.appendChild(line);
             fieldNo++;
             updateLastIndex(orderNo);
+            document.getElementById('lastIndex'+orderNo).value += 1;
             document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
             lastIndex.value = fieldNo;
+            countProgress(orderNo);
         }
         function updateLastIndex(orderNo) {
             for(let i = 0; i < fieldNo; i++) {
                 if(i === 0) {
                     document.getElementById('progressState'+orderNo.toString()).setAttribute('oninput',
-                        'changeProgress('+orderNo+','+i+','+fieldNo+')');
+                        'changeProgress('+orderNo+','+i+')');
                 } else {
                     document.getElementById('progressState'+orderNo.toString()+i).setAttribute('oninput',
-                        'changeProgress('+orderNo+','+i+','+fieldNo+')');
+                        'changeProgress('+orderNo+','+i+')');
                 }
             }
         }
         function deleteFieldsExporting(dateID, addressID, delID, lineID, orderNo,checkID,labelID,mode) {
+            //console.log(checkID.id);
+            var index = checkID.id.replace(/[^\d.]/g, '').replace(orderNo,'');
+            var indexPlus = parseInt(index) + 1;
+            var indexMinus = parseInt(index) - 1;
+            var elementE = document.getElementById('progressState'+orderNo.toString()+index);
+            var elementMinus = document.getElementById('progressState'+orderNo.toString()+indexMinus);
+            var elementPlus = document.getElementById('progressState'+orderNo.toString()+indexPlus);
+            if(elementE.checked === true) {
+                var progressCount = document.getElementById('progressCount'+orderNo).value;
+                document.getElementById('progressCount'+orderNo).value = document.getElementById('progressCount'+orderNo).value -1;
+            }
+            if(elementPlus === null && elementMinus === null) {
+                document.getElementById('progressState'+orderNo.toString()).disabled = false;
+            } else if(elementPlus === null && elementMinus !== null) {
+                if(elementE.disabled === false && elementMinus.disabled === true)
+                    elementMinus.disabled = false;
+                else if(elementE.disabled === true && elementMinus.disabled === true)
+                    ;
+            } else if(elementPlus !== null && elementMinus === null) {
+                if(document.getElementById('progressState'+orderNo.toString()).disabled === false &&
+                    document.getElementById('progressState'+orderNo.toString()).checked === false)
+                    elementPlus.disabled = true;
+                else if(elementE.disabled === false && elementPlus.disabled === false)
+                    document.getElementById('progressState'+orderNo.toString()).disabled = false;
+                else if(elementE.disabled === false && elementPlus.disabled === true)
+                    elementPlus.disabled = false;
+                else if(elementE.disabled === true && elementPlus.disabled === true)
+                    elementPlus.disabled = false;
+            } else {
+                if(elementE.disabled === false && elementMinus.disabled === true && elementPlus.disabled === false)
+                    elementMinus.disabled = false;
+                else if(elementE.disabled === false && elementMinus.disabled === false && elementPlus.disabled === true)
+                    elementPlus.disabled = false;
+            }
             document.getElementById(dateID.id).remove();
             document.getElementById(addressID.id).remove();
             document.getElementById(delID.id).remove();
-            console.log(checkID.id);
-            var index = checkID.id.replace(/[^\d.]/g, '').replace(orderNo,'');
-            if(document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled === false &&
-                document.getElementById('progressState'+orderNo.toString()+(index-1)).checked === false)
-                document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled = true;
-            else if(document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled)
-                document.getElementById('progressState'+orderNo.toString()+(index-1)).disabled = false;
             document.getElementById(checkID.id).remove();
             document.getElementById(labelID.id).remove();
             document.getElementById(lineID.id).remove();
@@ -1673,14 +1717,14 @@
                 });
                 i=1;
                 document.querySelectorAll('[id^='+'progressState'+orderNo.toString()+']').forEach(x => {
-                    document.getElementById(x.id).id = 'progressState'+orderNo.toString()+i;
-                    i++;
-                });
-                i=1;
-                document.querySelectorAll('[id^='+'progressState'+orderNo.toString()+']').forEach(x => {
-                    document.getElementById(x.id).id = 'progressState'+orderNo.toString()+i;
-                    i++;
-                    console.log(x.id);
+                    if(document.getElementById(x.id).id === 'progressState'+orderNo.toString())
+                        ;
+                    else {
+                        document.getElementById(x.id).id = 'progressState'+orderNo.toString()+i;
+                        document.getElementById(x.id).name = 'progressState'+i;
+                        document.getElementById(x.id).setAttribute('oninput','changeProgress('+orderNo.toString()+','+i+')');
+                        i++;
+                    }
                 });
                 i=1;
                 document.querySelectorAll('[id^='+'progressLabel'+orderNo.toString()+']').forEach(x => {
@@ -1698,55 +1742,87 @@
                 i=1;
             }
             updateLastIndex(orderNo);
+            document.getElementById('lastIndex'+orderNo).value -= 1;
+            countProgress(orderNo);
         }
-        function changeProgress(orderNo, index, lastIndex) {
+        function changeProgress(orderNo, index) {
+            var lastIndex = document.getElementById('lastIndex'+orderNo).value;
             lastIndex -= 1;
-            var progressValue = parseInt(document.getElementById('progressCount').value);
+            var progressValue = parseInt(document.getElementById('progressCount'+orderNo).value);
+            var indexPlus = parseInt(index) + 1;
             if(index === 0)
                 var progress = document.getElementById('progressState'+orderNo.toString());
             else
                 var progress = document.getElementById('progressState'+orderNo.toString()+index.toString());
             if(index === 0) {
                 if(progress.checked === true) {
-                    document.getElementById('progressState'+orderNo.toString()+(index+1).toString()).disabled = false;
-                    document.getElementById('progressCount').value = progressValue + 1;
+                    document.getElementById('progressState'+orderNo.toString()+indexPlus.toString()).disabled = false;
+                    document.getElementById('progressCount'+orderNo).value = progressValue + 1;
                 }
                 else {
-                    document.getElementById('progressState'+orderNo.toString()+(index+1).toString()).disabled = true;
-                    document.getElementById('progressCount').value = progressValue - 1;
+                    document.getElementById('progressState'+orderNo.toString()+indexPlus.toString()).disabled = true;
+                    document.getElementById('progressCount'+orderNo).value = progressValue - 1;
+                }
+            } else if(index === 1 && document.getElementById('progressState'+orderNo.toString()+indexPlus.toString()) === null) {
+                console.log('cia?');
+                if(progress.checked === true) {
+                    document.getElementById('progressState'+orderNo.toString()).disabled = true;
+                    document.getElementById('progressCount'+orderNo).value = progressValue + 1;
+                }
+                else {
+                    document.getElementById('progressState'+orderNo.toString()).disabled = false;
+                    document.getElementById('progressCount'+orderNo).value = progressValue - 1;
                 }
             }
             else if(index === lastIndex) {
                 if(progress.checked === true) {
                     document.getElementById('progressState'+orderNo.toString()+(index-1).toString()).disabled = true;
-                    document.getElementById('progressCount').value = progressValue + 1;
+                    document.getElementById('progressCount'+orderNo).value = progressValue + 1;
                 }
                 else {
                     document.getElementById('progressState'+orderNo.toString()+(index-1).toString()).disabled = false;
-                    document.getElementById('progressCount').value = progressValue - 1;
+                    document.getElementById('progressCount'+orderNo).value = progressValue - 1;
+                }
+            } else if(index === 1 && document.getElementById('progressState'+orderNo.toString()+indexPlus.toString()) === null) {
+                if(progress.checked === true) {
+                    document.getElementById('progressState'+orderNo.toString()).disabled = true;
+                    document.getElementById('progressCount'+orderNo).value = progressValue + 1;
+                }
+                else {
+                    document.getElementById('progressState'+orderNo.toString()).disabled = false;
+                    document.getElementById('progressCount'+orderNo).value = progressValue - 1;
                 }
             } else {
                 if(progress.checked === true) {
                     if(index - 1 === 0) {
                         document.getElementById('progressState' + orderNo.toString()).disabled = true;
-                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = false;
+                        document.getElementById('progressState' + orderNo.toString() + indexPlus.toString()).disabled = false;
                     } else {
                         document.getElementById('progressState' + orderNo.toString() + (index - 1).toString()).disabled = true;
-                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = false;
+                        document.getElementById('progressState' + orderNo.toString() + indexPlus.toString()).disabled = false;
                     }
-                    document.getElementById('progressCount').value = progressValue + 1;
+                    document.getElementById('progressCount'+orderNo).value = progressValue + 1;
                 }
                 else {
                     if(index - 1 === 0) {
-                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = true;
+                        document.getElementById('progressState' + orderNo.toString() + indexPlus.toString()).disabled = true;
                         document.getElementById('progressState' + orderNo.toString()).disabled = false;
                     } else {
-                        document.getElementById('progressState' + orderNo.toString() + (index + 1).toString()).disabled = true;
+                        document.getElementById('progressState' + orderNo.toString() + indexPlus.toString()).disabled = true;
                         document.getElementById('progressState' + orderNo.toString() + (index - 1).toString()).disabled = false;
                     }
-                    document.getElementById('progressCount').value = progressValue - 1;
+                    document.getElementById('progressCount'+orderNo).value = progressValue - 1;
                 }
             }
+            countProgress(orderNo);
+        }
+        function countProgress(orderNo) {
+            var i = 0;
+            document.querySelectorAll('[id^='+'progressState'+orderNo+']').forEach(x => {
+                if(document.getElementById(x.id).checked === true)
+                    i++;
+            });
+            document.getElementById('progressCount'+orderNo).value = i;
         }
     </script>
 @endsection
