@@ -45,21 +45,21 @@
                         pasikrovimo data {{explode('!!',$d->dates)[0]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
                     </p>
-                @elseif($d->state === 'exporting' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress-1]) > 1)
-                    <p>Eksp. {{$d->order_no}}: Nepradėtas pasikrovimas adresu {{explode('!!',$d->addresses)[$d->progress-1]}},
-                        planuota pasikrovimo data {{explode('!!',$d->dates)[$d->progress-1]}}
+                @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 1)
+                    <p>Eksp. {{$d->order_no}}: Nepradėtas pasikrovimas adresu {{explode('!!',$d->addresses)[$d->progress]}},
+                        planuota pasikrovimo data {{explode('!!',$d->dates)[$d->progress]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
                     </p>
                 @endif
             @endforeach
             @foreach($client as $c)
-                @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id + 1).'. Reikia keisti' ||
+                @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id).'. Reikia keisti' ||
                 $c->name == $c->email)
                     <p>Pakeiskite kliento "{{$c->name}}" duomenis tikrais.  <a href="clients/{{$c->id}}"><button type="button" class="btn btn-outline-danger">Pildyti</button></a></p>
                 @endif
             @endforeach
             @foreach($supplier as $s)
-                @if($s->name == $s->address || $s->postal_code == '0' || $s->phone_no == ($s->id + 1).'. Reikia keisti' ||
+                @if($s->name == $s->address || $s->postal_code == '0' || $s->phone_no == ($s->id).'. Reikia keisti' ||
                 $s->names == $s->email)
                     <p>Pakeiskite tiekėjo "{{$s->name}}" duomenis tikrais.  <a href="suppliers/{{$s->id}}"><button type="button" class="btn btn-outline-danger">Pildyti</button></a></p>
                 @endif
@@ -141,7 +141,7 @@
                     <div class="card-body">
                         <h6 class="card-title">Pelnas:</h6>
                         <p class="card-text green-text"><i class="fas fa-angle-double-up fa-2x"></i><span class="ml-2" style="font-size: 30px;">
-                                {{$data->sum('total_profit')}}
+                                {{$expHist->sum('total_profit')}}
                             </span>€</p>
                     </div>
                 </div>
@@ -174,7 +174,7 @@
             document.getElementById('warning').hidden = false;
         @elseif($d->state == 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) == 1)
             document.getElementById('warning').hidden = false;
-        @elseif($d->state === 'exporting' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress-1]) == 1)
+        @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress-1]) == 1)
             document.getElementById('warning').hidden = false;
         @endif
         @if(\Carbon\Carbon::now()->diffInDays($d->date) > 3)
@@ -182,13 +182,13 @@
         @endif
     @endforeach
         @foreach($client as $c)
-            @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id + 1).'. Reikia keisti' ||
+            @if($c->name == $c->address || $c->postal_code == 0 || $c->phone_no == ($c->id).'. Reikia keisti' ||
             $c->name == $c->email)
                 document.getElementById('danger').hidden = false;
             @endif
         @endforeach
     @foreach($supplier as $s)
-        @if($s->name == $s->address || $s->postal_code == '0' || $s->phone_no == ($s->id + 1).'. Reikia keisti' ||
+        @if($s->name == $s->address || $s->postal_code == '0' || $s->phone_no == ($s->id).'. Reikia keisti' ||
         $s->names == $s->email)
             document.getElementById('danger').hidden = false;
         @endif

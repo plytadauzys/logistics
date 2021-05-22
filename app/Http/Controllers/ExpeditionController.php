@@ -191,13 +191,13 @@ class ExpeditionController extends Controller
             array_push($addresses, $req->routeAddressState);
             $b = array();
             if ($req->has('routeDateState1')) {
-                for ($i = 1; $i < $req->fieldsNewCountState + 1; $i++) {
+                for ($i = 1; $i < $req->fieldsNewCountState; $i++) {
                     if ($datess[0] <= $req->input('routeDateState'.$i))
                         continue;
                     else return Redirect::back()->with('error', 'Netinkamai suvestos datos: datos, esančios papildamuose laukeliuose, turi būti lygios arba didesnės už pirmąją datą');
                 }
-                for ($i = 1; $i < $req->fieldsNewCountState + 1; $i++) {
-                    for ($j = 1; $j < $req->fieldsNewCountState + 1; $j++) {
+                for ($i = 1; $i < $req->fieldsNewCountState; $i++) {
+                    for ($j = 1; $j < $req->fieldsNewCountState; $j++) {
                         if ($i === $j)
                             continue;
                         else if (!in_array($j, $b)) {
@@ -244,19 +244,25 @@ class ExpeditionController extends Controller
             $expedition->save();
         }
         else if ($expedition->state == 'exporting') {
-            if($expedition->progress == count(explode('!!', $expedition->dates))) {
-                $expedition->unloaded = $req->unloadedState;
+            if($expedition->progress == count(explode('!!', $expedition->dates))-1) {
                 $datesArray = explode('!!', $expedition->dates);
-                $datesArray[$expedition->progress-1] = $req->unloadedState;
+                $datesArray[$expedition->progress] = $req->unloadedState;
                 $datesArray = implode('!!', $datesArray);
                 $expedition->dates = $datesArray;
-                $expedition->state = 'received';
+                $expedition->progress += 1;
                 $expedition->date = Carbon::now()->toDateString();
                 //return $expedition;
                 $expedition->save();
+            }
+            else if($expedition->progress == count(explode('!!', $expedition->dates))) {
+                $expedition->unloaded = $req->loadedState;
+                $expedition->state = 'received';
+                $expedition->date = Carbon::now()->toDateString();
+                return $expedition;
+                //$expedition->save();
             } else {
                 $datesArray = explode('!!', $expedition->dates);
-                $datesArray[$expedition->progress-1] = $req->unloadedState;
+                $datesArray[$expedition->progress] = $req->unloadedState;
                 $datesArray = implode('!!', $datesArray);
                 $expedition->dates = $datesArray;
                 $expedition->progress += 1;
@@ -285,19 +291,24 @@ class ExpeditionController extends Controller
             $expeditionHistory->closed_date = Carbon::now()->toDateString();
             if ($expeditionHistory->save()) {
                 $expedition->delete();
+            return Redirect::back()->with('message','Ekspedicija sėkmingai uždaryta.');
             }
         }
         return Redirect::back()->with('message','Ekspedicijos būsena sėkmingai pakeista.');
     }
     function edit(request $req) {
         $exp = Expedition::where('order_no',$req->id)->first();
-        if($exp->state == 'order' || $exp->state == 'contact')
-            $this->editOrder($req);
-        else if($exp->state == 'transport' || $exp->state == 'received')
+        if($exp->state == 'order' || $exp->state == 'contact') {
+            return $this->editOrder($req);
+        }
+        else if($exp->state == 'transport' || $exp->state == 'received') {
             $this->editTransport($req);
-        else if($exp->state == 'exporting')
+            return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
+        }
+        else if($exp->state == 'exporting') {
             $this->editExporting($req);
-        return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
+            return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
+        }
     }
     function editOrder($req) {
         $expedition = Expedition::where('order_no',$req->id)->first();
@@ -339,6 +350,7 @@ class ExpeditionController extends Controller
         $expedition->amount = $req->amountState;
         $expedition->profit = $req->profitState;
         $expedition->save();
+        return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
     }
     function editTransport($req) {
         $expedition = Expedition::where('order_no',$req->id)->first();

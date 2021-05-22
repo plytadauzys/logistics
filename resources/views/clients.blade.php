@@ -1,10 +1,14 @@
 @extends('layouts.app')
 @section('content')
 @if(session('message'))
-    <p style="color: #008000">{{session('message')}}</p>
+    <div class="alert alert-success" role="alert" style="width: 100%">
+        <p>{{session('message')}}</p>
+    </div>
 @endif
 @if(session('error'))
-    <p style="color: red">{{session('error')}}</p>
+    <div class="alert alert-danger" role="alert" style="width: 100%">
+        <p>{{session('error')}}</p>
+    </div>
 @endif
 @if ($errors->any())
     <div class="alert alert-danger">

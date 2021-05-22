@@ -6,6 +6,7 @@ use App\Models\Administrator;
 use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -53,7 +54,7 @@ class AdministratorController extends Controller
                 'first_name' => 'required',
                 'last_name' => 'required',
                 'email' => 'required|unique:managers,email',
-                'password' => 'required|min:8'
+                'password' => 'required'
             ]
         );
         if ($validator->fails()) {
@@ -65,7 +66,7 @@ class AdministratorController extends Controller
             $manager->first_name = $req->first_name;
             $manager->last_name = $req->last_name;
             $manager->email = $req->email;
-            $manager->password = $req->password;
+            $manager->password = $req->Hash::make($req->password);
             $manager->save();
         }
         return Redirect::back()->with('message', 'Vartotojas sėkmingai sukurtas.');
@@ -85,7 +86,7 @@ class AdministratorController extends Controller
                 'first_name' => 'required',
                 'last_name' => 'required',
                 'email' => 'required|unique:managers,email,'.$manager->id,
-                'password' => 'required|min:8'
+                'password' => 'required'
             ]
         );
         if ($validator->fails()) {
@@ -96,8 +97,39 @@ class AdministratorController extends Controller
             $manager->first_name = $req->firstName;
             $manager->last_name = $req->lastName;
             $manager->email = $req->email;
-            $manager->password = $req->password;
+            $manager->password = Hash::make($req->password);
             $manager->save();
+        }
+        return Redirect::to('adminHome')->with('message','Duomenys pakeisti sėkmingai.');
+    }
+    function editAdmin(request $req) {
+        $admin = Administrator::where('id','=',$req->idH)->first();
+        $validator = Validator::make(
+            [
+                'id' => $req->input('id'),
+                'first_name' => $req->input('firstName'),
+                'last_name' => $req->input('lastName'),
+                'email' => $req->input('email'),
+                'password' => $req->input('password')
+            ],
+            [
+                'id' => 'unique:managers,id,'.$admin->id,
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'email' => 'required|unique:managers,email,'.$admin->id,
+                'password' => 'required'
+            ]
+        );
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator);
+        } else {
+            if($req->id != null)
+                $admin->id = $req->id;
+            $admin->first_name = $req->firstName;
+            $admin->last_name = $req->lastName;
+            $admin->email = $req->email;
+            $admin->password = Hash::make($req->password);
+            $admin->save();
         }
         return Redirect::to('adminHome')->with('message','Duomenys pakeisti sėkmingai.');
     }

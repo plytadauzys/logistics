@@ -1,10 +1,14 @@
 @extends('layouts.app')
 @section('content')
 @if(session('message'))
-    <p style="color: green">{{session('message')}}</p>
+    <div class="alert alert-success" role="alert" style="width: 100%">
+        <p>{{session('message')}}</p>
+    </div>
 @endif
 @if(session('error'))
-    <p style="color: red">{{session('error')}}</p>
+    <div class="alert alert-danger" role="alert" style="width: 100%">
+        <p>{{session('error')}}</p>
+    </div>
 @endif
 
 <!-- Modal NAUJAS -->
@@ -116,12 +120,13 @@
                         </div>
                         <div class="form-group">
                             <label for="routeAddressNew">Data ir pasikrovimo adresas</label>
-                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
+                            <input type="date" class="form-control" id="routeDateNe" name="routeDateNew"
                                    placeholder="Pasirinkite datą" required>
-                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
+                            <input type="text" class="form-control" id="routeAddressNe" name="routeAddressNew"
                                    placeholder="Įveskitę adresą" required>
-                            <input type="button" class="btn btn-info" onclick="createFieldsNew()" value="Naujas laukelis">
+                            <hr>
                             <span id="fooBarNew">&nbsp;</span>
+                            <input type="button" class="btn btn-info" onclick="createFieldsNew()" value="Naujas laukelis">
                         </div>
                         <div class="form-group">
                             <label for="cargoNew">Krovinys</label>
@@ -651,6 +656,11 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
+                                                                <label for="routeState">Maršrutas</label>
+                                                                <input type="text" class="form-control" id="routeState" name="routeState"
+                                                                       value="{{$d->route}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
                                                                 <label for="routeDateAddressState">Datos ir adresai</label>
                                                                 <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
                                                                        value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
@@ -658,11 +668,6 @@
                                                                     <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
                                                                            value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
                                                                 @endfor
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="routeState">Maršrutas</label>
-                                                                <input type="text" class="form-control" id="routeState" name="routeState"
-                                                                       value="{{$d->route}}" readonly>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="cargoState">Krovinys</label>
@@ -865,14 +870,19 @@
                                                             <div class="form-group">
                                                                 <label for="clientState">Klientas</label>
                                                                 <select class="custom-select" name="clientState" id="clientState" disabled>
-                                                                    <option value="{{$d->client}}">{{$d->client}}</option>
+                                                                    <option value="{{$d->client}}">{{$d->klientas->name}}</option>
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="supplierState">Tiekėjo pavadinimas</label>
                                                                 <select class="custom-select" name="supplierState" id="supplierState" disabled>
-                                                                    <option value="{{$d->supplier}}">{{$d->supplier}}</option>
+                                                                    <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                                 </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="routeState">Maršrutas</label>
+                                                                <input type="text" class="form-control" id="routeState" name="routeState"
+                                                                       value="{{$d->route}}" readonly>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="routeDateAddressState">Datos ir adresai</label>
@@ -882,11 +892,6 @@
                                                                     <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
                                                                            value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
                                                                 @endfor
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="routeState">Maršrutas</label>
-                                                                <input type="text" class="form-control" id="routeState" name="routeState"
-                                                                       value="{{$d->route}}" readonly>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="cargoState">Krovinys</label>
@@ -920,19 +925,20 @@
                                                         <input type="number" class="form-control" id="totalPriceState" name="totalPriceState" placeholder="Įveskite visą pelną"
                                                                value="{{$d->total_profit}}" readonly>
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label for="loadedState">Pasikrovimo data</label>
-                                                        <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
-                                                               value="{{$d->loaded}}" readonly>
-                                                    </div>
                                                     <div class="progress">
                                                         <div class="progress-bar bg-info" role="progressbar" style="{{'width: '.($d->progress/count(explode('!!',$d->dates))*100).'%'}}" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                                                     </div>
                                                     @for($i = 0; $i < count(explode('!!',$d->dates)); $i++)
-                                                        @if($i <= $d->progress - 1)
-                                                            <p style="color: green">{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i].' = pasikrauta'}}</p>
+                                                        @if($i == $d->progress - 1 && $d->progress - 1 == count(explode('!!',$d->dates)) - 1)
+                                                            <div class="alert alert-success" role="alert" style="display:inline-block; width: 100%">
+                                                                <p>{{'Pristatyta: '.explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}</p>
+                                                            </div>
+                                                        @elseif($i <= $d->progress - 1)
+                                                            <div class="alert alert-success" role="alert" style="display:inline-block; width: 100%">
+                                                                <p>{{'Pasikrauta: '.explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}</p>
+                                                            </div>
                                                         @else
-                                                            <p>{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i].' = vyksta'}}</p>
+                                                            <p>{{'Vyksta: '.explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}</p>
                                                         @endif
                                                     @endfor
                                                 </form>
@@ -1077,19 +1083,7 @@
                                                     <!-- <div class="form-group">
                                                         <input type="date" class="form-control" value="{//explode('!!', $d->dates)[$d->progress]}" readonly hidden>
                                                     </div> -->
-                                                    @if($d->progress != count(explode('!!', $d->dates)) - 1)
-                                                        <div class="form-group">
-                                                            <label for="loadedState">Planuojama pasikrovimo data</label>
-                                                            <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
-                                                                   value="{{explode('!!', $d->dates)[$d->progress-1]}}" readonly>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="unloadedState">Pasikrovimo data</label>
-                                                            <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
-                                                                   value="{{\Carbon\Carbon::now()->toDateString()}}" required>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-success">Keisti būseną</button>
-                                                    @else
+                                                    @if($d->progress == count(explode('!!', $d->dates)) - 1 && $d->progress != 0)
                                                         <div class="form-group">
                                                             <label for="loadedState">Planuojama pristatymo data</label>
                                                             <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
@@ -1098,7 +1092,43 @@
                                                         <div class="form-group">
                                                             <label for="unloadedState">Pristatymo data</label>
                                                             <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
-                                                                   value="{{\Carbon\Carbon::now()->toDateString()}}" required>
+                                                                   value="{{\Carbon\Carbon::now()->toDateString()}}" readonly>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    @elseif($d->progress == count(explode('!!', $d->dates)) - 1 && $d->progress == 0)
+                                                        <div class="form-group">
+                                                            <label for="loadedState">Planuojama pristatymo data</label>
+                                                            <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
+                                                                   value="{{explode('!!', $d->dates)[$d->progress]}}" readonly>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="unloadedState">Pristatymo data</label>
+                                                            <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
+                                                                   value="{{\Carbon\Carbon::now()->toDateString()}}" readonly>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    @elseif($d->progress < count(explode('!!', $d->dates)))
+                                                        <div class="form-group">
+                                                            <label for="loadedState">Planuojama pasikrovimo data</label>
+                                                            <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
+                                                                   value="{{explode('!!', $d->dates)[$d->progress]}}" readonly>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="unloadedState">Pasikrovimo data</label>
+                                                            <input type="date" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
+                                                                   value="{{\Carbon\Carbon::now()->toDateString()}}" readonly>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Keisti būseną</button>
+                                                    @else
+                                                        <div class="form-group">
+                                                            <label for="loadedState">Pristatymo data</label>
+                                                            <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite visą pelną"
+                                                                   value="{{explode('!!', $d->dates)[$d->progress-1]}}" readonly>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="unloadedState">Pristatymo adresas</label>
+                                                            <input type="text" class="form-control" id="unloadedState" name="unloadedState" placeholder="Įveskite datą"
+                                                                   value="{{explode('!!', $d->addresses)[$d->progress-1]}}" readonly>
                                                         </div>
                                                         <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
@@ -1156,6 +1186,11 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
+                                                                <label for="routeState">Maršrutas</label>
+                                                                <input type="text" class="form-control" id="routeState" name="routeState"
+                                                                       value="{{$d->route}}" readonly>
+                                                            </div>
+                                                            <div class="form-group">
                                                                 <label for="routeDateAddressState">Datos ir adresai</label>
                                                                 <input type="text" class="form-control" id="routeDateAddressState" name="routeDateAddressState"
                                                                        value="{{explode('!!',$d->dates)[0].' '.explode('!!',$d->addresses)[0]}}" readonly>
@@ -1163,11 +1198,6 @@
                                                                     <input type="text" class="form-control" id="{{'routeDateState'}}" name="{{'routeDateState'}}"
                                                                            value="{{explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}" readonly>
                                                                 @endfor
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="routeState">Maršrutas</label>
-                                                                <input type="text" class="form-control" id="routeState" name="routeState"
-                                                                       value="{{$d->route}}" readonly>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="cargoState">Krovinys</label>
@@ -1250,17 +1280,17 @@
                                                         <hr>
                                                         <span id="{{'foobar'.$d->order_no}}">
                                                             @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
-                                                                <input type="date" class="form-control" id="{{'routeDateState'.$d->order_no.$i}}" name="{{'routeDateState'.$i}}"
+                                                                <input type="date" class="form-control" id="{{'routeDateEdit'.$d->order_no.$i}}" name="{{'routeDateEdit'.$i}}"
                                                                        value="{{explode('!!',$d->dates)[$i-1]}}" required>
-                                                                <input type="text" class="form-control" id="{{'routeAddressState'.$d->order_no.$i}}" name="{{'routeAddressState'.$i}}"
+                                                                <input type="text" class="form-control" id="{{'routeAddressEdit'.$d->order_no.$i}}" name="{{'routeAddressEdit'.$i}}"
                                                                        value="{{explode('!!',$d->addresses)[$i-1]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
-                                                                        onclick="deleteField({{'routeDateState'.$d->order_no.$i}},{{'routeAddressState'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'line'.$d->order_no.$i}},
-                                                                        {{$d->order_no}})">Trinti</button>
-                                                                <hr id="{{'line'.$d->order_no.$i}}">
+                                                                        onclick="deleteField({{'routeDateEdit'.$d->order_no.$i}},{{'routeAddressEdit'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'lineEdit'.$d->order_no.$i}},
+                                                                        {{$d->order_no}}, 1)">Trinti</button>
+                                                                <hr id="{{'lineEdit'.$d->order_no.$i}}">
                                                             @endfor
                                                         </span>
-                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateState','routeAddressState', {{$i+1}},{{$d->order_no}})"
+                                                        <button type="button" onclick="createFields({{'foobar'.$d->order_no}},'routeDateEdit','routeAddressEdit','delEdit','lineEdit', {{$i+1}},{{$d->order_no}}, 1)"
                                                                 class="btn btn-info">Naujas laukelis</button>
                                                     </div>
                                                     <div class="form-group">
@@ -1429,7 +1459,6 @@
         function createFieldsNew() {
             var address = document.createElement("input");
 
-            //Assign different attributes to the element.
             address.setAttribute("type", 'text');
             address.setAttribute("class", 'form-control');
             address.setAttribute("id", 'routeAddressNew' + fieldNoNew);
@@ -1538,6 +1567,31 @@
             document.getElementById(addressID.id).remove();
             document.getElementById(delID.id).remove();
             document.getElementById(lineID.id).remove();
+            var i = 1;
+            document.querySelectorAll('[id^='+'routeDateNew]').forEach(x => {
+                document.getElementById(x.id).id = 'routeDateNew'+i;
+                document.getElementById(x.id).name = 'routeDateNew'+i;
+                i++;
+            });
+            i=1;
+            document.querySelectorAll('[id^='+'routeAddressNew]').forEach(x => {
+                document.getElementById(x.id).id = 'routeAddressNew'+i;
+                document.getElementById(x.id).name = 'routeAddressNew'+i;
+                i++;
+            });
+            i=1;
+            document.querySelectorAll('[id^='+'lineNew]').forEach(x => {
+                document.getElementById(x.id).id = 'lineNew'+i;
+                i++;
+            });
+            i=1;
+            document.querySelectorAll('[id^='+'delNew]').forEach(x => {
+                document.getElementById(x.id).id = 'delNew'+i;
+                document.getElementById(x.id).setAttribute('onclick','deleteFieldNew('+'routeDateNew'+i+','+
+                    'routeAddressNew'+i+','+'delNew'+i+','+'lineNew'+i+');');
+                i++;
+            });
+            i=1;
             fieldNoNew--;
         }
         function calcTotalProfit(orderNo) {

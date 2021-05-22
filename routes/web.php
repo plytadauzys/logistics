@@ -40,7 +40,8 @@ else {*/
     Route::get('logoutAdmin', [AdministratorController::class, 'logout']);
     Route::get('adminHome', [AdministratorController::class, 'index']);
     Route::post('adminHome/new', [AdministratorController::class, 'createUser']);
-    Route::post('admin/edit', [AdministratorController::class, 'editUser']);
+    Route::post('admin/editUser', [AdministratorController::class, 'editUser']);
+    Route::post('admin/editAdmin', [AdministratorController::class, 'editAdmin']);
     Route::get('admin/remove/{id}', [AdministratorController::class, 'removeUser']);
     Route::get('admin/removeAdmin/{id}', [AdministratorController::class, 'removeAdmin']);
     //-------------------------------------------------------------------

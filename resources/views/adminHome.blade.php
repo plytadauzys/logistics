@@ -81,7 +81,7 @@
                 <td>{{$a->first_name}}</td>
                 <td>{{$a->last_name}}</td>
                 <td>{{$a->email}}</td>
-                <td>{{$a->password}}</td>
+                <td id="{{'a'.$a->id}}" onmouseover="document.getElementById('{{'a'.$a->id}}').value = {{}}">{{$a->password}}</td>
                 <td>
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#a{{$a->id}}">
@@ -99,7 +99,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="/admin/edit" method="POST">
+                                    <form action="/admin/editAdmin" method="POST">
                                         @csrf
                                         <input type="hidden" name="idH" value="{{$a->id}}">
                                         <div class="form-group">
@@ -178,7 +178,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="/admin/edit" method="POST">
+                                    <form action="/admin/editUser" method="POST">
                                         @csrf
                                         <input type="hidden" name="idH" value="{{$m->id}}">
                                         <div class="form-group">

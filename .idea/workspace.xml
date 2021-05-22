@@ -21,9 +21,14 @@
   <component name="ChangeListManager">
     <list default="true" id="d9b19c56-7aca-4806-8974-84e54bbca145" name="Default Changelist" comment="Implemented: edit fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AdministratorController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AdministratorController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ExpeditionController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/adminHome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/adminHome.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/clients.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/clients.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/expeditions.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/expeditions.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/managerHome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/managerHome.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/suppliers.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/suppliers.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,7 +216,8 @@
       <workItem from="1621437310701" duration="889000" />
       <workItem from="1621440477234" duration="12721000" />
       <workItem from="1621511108673" duration="12330000" />
-      <workItem from="1621585677403" duration="19912000" />
+      <workItem from="1621585677403" duration="20189000" />
+      <workItem from="1621673891465" duration="11594000" />
     </task>
     <task id="LOCAL−00001" summary="Implemented: expedition state changing, expedition transfering to expedition history, ldm calculator">
       <created>1619193771631</created>
@@ -291,7 +297,13 @@
       <option name="presentableId" value="LOCAL−00013" />
       <updated>1621525511704</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL−00014" summary="Implemented: edit fixes">
+      <created>1621612225165</created>
+      <option name="number" value="LOCAL−00014" />
+      <option name="presentableId" value="LOCAL−00014" />
+      <updated>1621612225165</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -337,10 +349,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="604" y="336" key="NewPhpFileDialog/0.0.1536.824@0.0.1536.824" timestamp="1620381992862" />
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1621525513845">
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2" timestamp="1621612227173">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1621525513845" />
+    <state x="361" y="132" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1621612227173" />
     <state x="586" y="326" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1619193639741">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
