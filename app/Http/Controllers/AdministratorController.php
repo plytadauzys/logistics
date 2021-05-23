@@ -25,7 +25,11 @@ class AdministratorController extends Controller
             return Redirect::back()->with('error', 'Neteisingas el. paštas arba slaptažodis.');
         }
         else {
-            $req->session()->put('admin', $req->email);
+            $admin = Administrator::where('email',$req->email)->first();
+            if(Hash::check($req->password,$admin->password))
+                $req->session()->put('admin', $req->email);
+            else
+                return Redirect::back()->with('error', 'Neteisingas el. paštas arba slaptažodis.');
         }
         return Redirect::to('adminHome');
     }
@@ -41,6 +45,14 @@ class AdministratorController extends Controller
         return Redirect('/');
     }
     function createUser(request $req) {
+        if($req->role === 'manager')
+            return $this->createManager($req);
+        else if($req->role === 'admin')
+            return $this->createAdmin($req);
+        else
+            return Redirect::back()->with('error','Vartotojas nesukurtas');
+    }
+    function createManager($req) {
         $validator = Validator::make(
             [
                 'id' => $req->input('id'),
@@ -66,8 +78,39 @@ class AdministratorController extends Controller
             $manager->first_name = $req->first_name;
             $manager->last_name = $req->last_name;
             $manager->email = $req->email;
-            $manager->password = $req->Hash::make($req->password);
+            $manager->password = Hash::make($req->password);
             $manager->save();
+        }
+        return Redirect::back()->with('message', 'Vartotojas sėkmingai sukurtas.');
+    }
+    function createAdmin($req) {
+        $validator = Validator::make(
+            [
+                'id' => $req->input('id'),
+                'first_name' => $req->input('first_name'),
+                'last_name' => $req->input('last_name'),
+                'email' => $req->input('email'),
+                'password' => $req->input('password')
+            ],
+            [
+                'id' => 'unique:administrators,id',
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'email' => 'required|unique:administrators,email',
+                'password' => 'required'
+            ]
+        );
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator);
+        } else {
+            $admin = new Administrator();
+            if($req->id != null)
+                $admin->id = $req->id;
+            $admin->first_name = $req->first_name;
+            $admin->last_name = $req->last_name;
+            $admin->email = $req->email;
+            $admin->password = Hash::make($req->password);
+            $admin->save();
         }
         return Redirect::back()->with('message', 'Vartotojas sėkmingai sukurtas.');
     }
@@ -147,6 +190,6 @@ class AdministratorController extends Controller
             $admin->delete();
             return Redirect::back()->with('message','Vartotojas sėkmingai pašalintas');
         }
-        return Redirect::back()->with('error','Vartotojas neištrintas: negali trinti administratoriaus, kai yra mažiau nei 2 administratoriai.');
+        return Redirect::back()->with('error','Vartotojas neištrintas: negalima trinti administratoriaus, kai yra mažiau nei 2 administratoriai.');
     }
 }

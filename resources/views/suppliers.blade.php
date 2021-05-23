@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+@if(session()->has('user') || session()->has('admin'))
 @if(session('message'))
     <div class="alert alert-success" role="alert" style="width: 100%">
         <p>{{session('message')}}</p>
@@ -255,4 +256,7 @@
         }
     }
 </script>
+@else
+    <script>window.location = '/'</script>
+@endif
 @endsection

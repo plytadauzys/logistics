@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+@if(session()->has('user') || session()->has('admin'))
     @if($data->count() == 0)
         <div class="alert alert-info" role="alert">
             Nėra įvykusių ekspedicijų.
@@ -18,7 +19,7 @@
                 <th>Kiekis</th>
                 <th>Pelnas</th>
                 <th>Pirmas pasikrovimas</th>
-                <th>Galutinis iškrovimas</th>
+                <th>Pristatyta</th>
                 <th>Vežėjas</th>
                 <th>Vežėjo kaina</th>
                 <th>Visas pelnas</th>
@@ -35,8 +36,8 @@
                     <td>{{$d->cargo}}</td>
                     <td>{{$d->amount}}</td>
                     <td>{{$d->profit}}</td>
-                    <td>{{$d->loaded}}</td>
-                    <td>{{$d->unloaded}}</td>
+                    <td>{{explode('!!',$d->dates)[0]}}</td>
+                    <td>{{explode('!!',$d->dates)[array_key_last(explode('!!',$d->dates))]}}</td>
                     <td>{{$d->carrier}}</td>
                     <td>{{$d->carrier_price}}</td>
                     <td>{{$d->total_profit}}</td>
@@ -72,4 +73,7 @@
             }
         }
     </script>
+@else
+    <script>window.location = '/'</script>
+@endif
 @endsection

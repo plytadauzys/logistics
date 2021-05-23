@@ -258,8 +258,8 @@ class ExpeditionController extends Controller
                 $expedition->unloaded = $req->loadedState;
                 $expedition->state = 'received';
                 $expedition->date = Carbon::now()->toDateString();
-                return $expedition;
-                //$expedition->save();
+                //return $expedition;
+                $expedition->save();
             } else {
                 $datesArray = explode('!!', $expedition->dates);
                 $datesArray[$expedition->progress] = $req->unloadedState;
@@ -302,12 +302,10 @@ class ExpeditionController extends Controller
             return $this->editOrder($req);
         }
         else if($exp->state == 'transport' || $exp->state == 'received') {
-            $this->editTransport($req);
-            return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
+            return $this->editTransport($req);
         }
         else if($exp->state == 'exporting') {
-            $this->editExporting($req);
-            return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
+            return $this->editExporting($req);
         }
     }
     function editOrder($req) {
@@ -395,6 +393,7 @@ class ExpeditionController extends Controller
         $expedition->carrier_price = $req->carrierPriceState;
         $expedition->total_profit = $req->totalPriceState;
         $expedition->save();
+        return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
     }
     function editExporting($req) {
         $expedition = Expedition::where('order_no',$req->id)->first();
@@ -441,8 +440,6 @@ class ExpeditionController extends Controller
         $expedition->total_profit = $req->totalPriceState;
         $expedition->progress = $req->progressCount;
         $expedition->save();
-    }
-    function editReceived($req) {
-
+        return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
     }
 }

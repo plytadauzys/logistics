@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+@if(session()->has('user') || session()->has('admin'))
 @if(session('message'))
     <div class="alert alert-success" role="alert" style="width: 100%">
         <p>{{session('message')}}</p>
@@ -58,9 +59,9 @@
                         </div>
                         <div class="form-group">
                             <label>Data ir pasikrovimo adresas</label>
-                            <input type="date" class="form-control" id="routeDateNew" name="routeDateNew"
+                            <input type="date" class="form-control" id="routeDateNe" name="routeDateNew"
                                    placeholder="Pasirinkite datą" value="{{explode('!!',session('neworder')[0][3])[0]}}" required>
-                            <input type="text" class="form-control" id="routeAddressNew" name="routeAddressNew"
+                            <input type="text" class="form-control" id="routeAddressNe" name="routeAddressNew"
                                    placeholder="Įveskite adresą" value="{{explode('!!',session('neworder')[0][4])[0]}}" required>
                             <hr>
 
@@ -172,7 +173,7 @@
 <div class="row col-md-6">
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
 </div>
-<table class="table">
+<table id="table" class="table">
     <thead>
     <tr>
         <th scope="col">Gautas užsakymas</th>
@@ -186,7 +187,7 @@
     @foreach($data as $d)
         @if($d->state == 'order')
             <tr>
-                <td> <p hidden>5</p>
+                <td> <p hidden>Gautas užsakymas {{$d->order_no}}</p>
                     <div class="card" style="width: 12rem;">
                         <div class="card-body">
                             <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -197,7 +198,7 @@
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - gautas užsakymas</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -247,7 +248,8 @@
                                                            value="{{$d->profit}}" readonly>
                                                 </div>
                                             </form>
-                                            <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}">Keisti būseną</button>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="{{'#expstate'.$d->order_no}}"
+                                                    onclick="changeFieldNo({{count(explode('!!',$d->dates))}})">Keisti būseną</button>
                                             <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
                                                     onclick="changeFieldNo({{count(explode('!!',$d->dates))}})" type="button">Redaguoti</button>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
@@ -260,7 +262,7 @@
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - redagavimas</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -337,7 +339,7 @@
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                            <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' - būsenos keitimas'}}</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -415,7 +417,7 @@
                                                            value="{{$d->profit}}">
                                                 </div>
                                                 <input id="fieldsNewCountState" name="fieldsNewCountState" type="number" hidden
-                                                       value="{{count(explode('!!', $d->dates))-1}}">
+                                                       value="{{count(explode('!!', $d->dates))}}">
                                                 <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
                                             </form>
@@ -432,7 +434,7 @@
         @elseif($d->state == 'contact')
             <tr>
                 <td><p hidden>2</p></td>
-                    <td><p style="display: none">1</p>
+                    <td><p hidden>Sukontaktuota su tiekėju {{$d->order_no}}</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -443,7 +445,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - sukontaktuota su tiekėju</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -506,7 +508,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - redagavimas</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -583,7 +585,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' - būsenos keitimas'}}</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -618,7 +620,7 @@
         @elseif($d->state == 'transport')
             <tr>
                 <td><p hidden>3</p></td><td><p hidden>3</p></td>
-                    <td><p hidden>1</p>
+                    <td><p hidden>Surastas transportas {{$d->order_no}}</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -629,7 +631,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - surastas transportas</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -715,7 +717,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - redagavimas</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -807,7 +809,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' - būsenos keitimas'}}</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -842,7 +844,7 @@
         @elseif($d->state == 'exporting')
             <tr>
                 <td><p hidden>4</p></td><td><p hidden>4</p></td><td><p hidden>4</p></td>
-                    <td><p hidden>1</p>
+                    <td><p hidden>Gabenama {{$d->order_no}}</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -853,7 +855,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - gabenama</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -955,7 +957,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - redagavimas</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -1020,7 +1022,11 @@
                                                                     <input type="checkbox" id="{{'progressState'.$d->order_no.$i}}" name="{{'progressState'.$i}}"
                                                                            oninput="changeProgress({{$d->order_no}},{{$i}})">
                                                                 @endif
-                                                                <label class="form-check-label" id="{{'progressLabel'.$d->order_no.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pasikrauta</label>
+                                                                @if($i != count(explode('!!',$d->dates))-1)
+                                                                    <label class="form-check-label" id="{{'progressLabel'.$d->order_no.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pasikrauta</label>
+                                                                @else
+                                                                    <label class="form-check-label" id="{{'progressLabel'.$d->order_no.$i}}" for="{{'progressState'.$d->order_no.$i}}">Pristatyta</label>
+                                                                @endif
                                                                 <hr id="{{'lineEdit'.$d->order_no.$i}}">
                                                             @endfor
                                                         </span>
@@ -1071,7 +1077,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' - būsenos keitimas'}}</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -1147,7 +1153,7 @@
         @elseif($d->state == 'received')
             <tr>
                 <td><p hidden>5</p></td><td><p hidden>5</p></td><td><p hidden>5</p></td><td><p hidden>5</p></td>
-                    <td><p hidden>1</p>
+                    <td><p hidden>Pristatyta {{$d->order_no}}</p>
                         <div class="card" style="width: 12rem;">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
@@ -1158,7 +1164,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - pristatyta</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -1245,7 +1251,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicija nr. '.$d->order_no}} - redagavimas</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -1281,9 +1287,9 @@
                                                         <span id="{{'foobar'.$d->order_no}}">
                                                             @for($i = 1; $i < count(explode('!!',$d->dates)); $i++)
                                                                 <input type="date" class="form-control" id="{{'routeDateEdit'.$d->order_no.$i}}" name="{{'routeDateEdit'.$i}}"
-                                                                       value="{{explode('!!',$d->dates)[$i-1]}}" required>
+                                                                       value="{{explode('!!',$d->dates)[$i]}}" required>
                                                                 <input type="text" class="form-control" id="{{'routeAddressEdit'.$d->order_no.$i}}" name="{{'routeAddressEdit'.$i}}"
-                                                                       value="{{explode('!!',$d->addresses)[$i-1]}}" required>
+                                                                       value="{{explode('!!',$d->addresses)[$i]}}" required>
                                                                 <button type="button" id="{{'delEdit'.$d->order_no.$i}}" class="btn btn-danger"
                                                                         onclick="deleteField({{'routeDateEdit'.$d->order_no.$i}},{{'routeAddressEdit'.$d->order_no.$i}},{{'delEdit'.$d->order_no.$i}},{{'lineEdit'.$d->order_no.$i}},
                                                                         {{$d->order_no}}, 1)">Trinti</button>
@@ -1337,7 +1343,7 @@
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' būsenos keitimas'}}</h5>
+                                                <h5 class="modal-title" id="exampleModalLongTitle">{{'Ekspedicijos '.$d->order_no.' - uždarymas'}}</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -1389,7 +1395,7 @@
             var input, filter, table, tr, td, i;
             input = document.getElementById("search");
             filter = input.value.toUpperCase();
-            table = document.getElementById("clientTable");
+            table = document.getElementById("table");
             tr = table.getElementsByTagName("tr");
 
             for (i = 0; i < tr.length; i++) {
@@ -1879,4 +1885,7 @@
             document.getElementById('progressCount'+orderNo).value = i;
         }
     </script>
+@else
+    <script>window.location = '/'</script>
+@endif
 @endsection

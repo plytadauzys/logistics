@@ -1,11 +1,15 @@
 @extends('layouts.app')
 @section('content')
-
+    @if(session()->has('admin'))
     @if(session('message'))
-        <p style="color: #008000">{{session('message')}}</p>
+        <div class="alert alert-success" role="alert" style="width: 100%">
+            <p style="color: #008000">{{session('message')}}</p>
+        </div>
     @endif
     @if(session('error'))
-        <p style="color: red">{{session('error')}}</p>
+        <div class="alert alert-danger" role="alert" style="width: 100%">
+            <p style="color: red">{{session('error')}}</p>
+        </div>
     @endif
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -16,7 +20,6 @@
             </ul>
         </div>
     @endif
-    @if(session()->has('admin'))
 
         <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
             Naujas
@@ -36,24 +39,31 @@
                         <form action="/adminHome/new" method="POST">
                             @csrf
                             <div class="form-group">
-                                <label for="id">Vartotojo ID</label>
+                                <label for="role">Vartotojo rolė</label>
+                                <select class="custom-select" name="role" id="role">
+                                    <option value="manager">Vadybininkas</option>
+                                    <option value="admin">Administratorius</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="id">Vartotojo ID (nebūtina)</label>
                                 <input type="number" class="form-control" id="id" name="id" placeholder="Įveskite vartotojo ID">
                             </div>
                             <div class="form-group">
                                 <label for="first_name">Vartotojo vardas</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Įveskite vartotojo vardą">
+                                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Įveskite vartotojo vardą" required>
                             </div>
                             <div class="form-group">
                                 <label for="last_name">Vartotojo pavardė</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Įveskite vartotojo pavardę">
+                                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Įveskite vartotojo pavardę" required>
                             </div>
                             <div class="form-group">
                                 <label for="email">Vartotojo el. paštas</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Įveskite vartotojo el. paštą">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Įveskite vartotojo el. paštą" required>
                             </div>
                             <div class="form-group">
-                                <label for="password">vartotojo slaptažodis</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Įveskite vartotojo slaptažodį">
+                                <label for="password">Vartotojo slaptažodis</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Įveskite vartotojo slaptažodį" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Pridėti</button>
                         </form>
@@ -81,7 +91,7 @@
                 <td>{{$a->first_name}}</td>
                 <td>{{$a->last_name}}</td>
                 <td>{{$a->email}}</td>
-                <td id="{{'a'.$a->id}}" onmouseover="document.getElementById('{{'a'.$a->id}}').value = {{}}">{{$a->password}}</td>
+                <td>{{$a->password}}</td>
                 <td>
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#a{{$a->id}}">
@@ -103,7 +113,7 @@
                                         @csrf
                                         <input type="hidden" name="idH" value="{{$a->id}}">
                                         <div class="form-group">
-                                            <label for="id">ID</label>
+                                            <label for="id">ID (nebūtina)</label>
                                             <input type="number" class="form-control" id="id" name="id" placeholder="Įveskite identifikacinį numerį (ID)"
                                                    value="{{$a->id}}">
                                         </div>
@@ -236,7 +246,7 @@
         </tbody>
     </table>
     <p></p>
-    @endif
+
     <script>
         document.getElementById('homeBtn').classList.remove('btn-outline-success');
         document.getElementById('homeBtn').classList.add('btn-success');
@@ -264,5 +274,7 @@
             }
         }
     </script>
-
+    @else
+        <script>window.location = '/'</script>
+    @endif
 @endsection

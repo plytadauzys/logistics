@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+@if(session()->has('user') || session()->has('admin'))
 <br><br><br><br><br><br>
 <div class="container">
     <div class="row justify-content-center">
@@ -172,4 +173,7 @@
         document.getElementById('cubMeter').append(sup);
     }
 </script>
+@else
+    <script>window.location = '/'</script>
+@endif
 @endsection

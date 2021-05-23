@@ -8,7 +8,9 @@ use App\Models\ExpeditionHistory;
 use App\Models\Manager;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Testing\Fluent\Concerns\Has;
 
 class ManagerController extends Controller
 {
@@ -28,7 +30,11 @@ class ManagerController extends Controller
             return Redirect::back()->with('error', 'Neteisingas el. paštas arba slaptažodis.');
         }
         else {
-            $req->session()->put('user', $req->email);
+            $manager = Manager::where('email',$req->email)->first();
+            if(Hash::check($req->password,$manager->password))
+                $req->session()->put('user', $req->email);
+            else
+                return Redirect::back()->with('error', 'Neteisingas el. paštas arba slaptažodis.');
         }
         return Redirect::to('managerHome');
     }
