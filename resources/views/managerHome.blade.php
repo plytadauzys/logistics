@@ -141,14 +141,6 @@
             <div class="card-group">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h6 class="card-title">Pelnas:</h6>
-                        <p class="card-text green-text"><i class="fas fa-angle-double-up fa-2x"></i><span class="ml-2" style="font-size: 30px;">
-                                {{$expHist->sum('total_profit')}}
-                            </span>€</p>
-                    </div>
-                </div>
-                <div class="card mb-4">
-                    <div class="card-body">
                         <h6 class="card-title">Klientų skaičius: </h6>
                         <p class="card-text red-text"><i class="fas fa-angle-double-down fa-2x"></i><span class="ml-2" style="font-size: 30px;">
                                 {{count($client)}}
