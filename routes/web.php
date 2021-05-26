@@ -81,7 +81,7 @@ else {*/
         return \redirect()->action([ExpeditionController::class, 'index']);
     });
     Route::get('ldm', function () {
-        return view('ldm');
+        return view('ldm',['data' => \App\Models\Expedition::all()]);
     });
     //-------------------------------------------------------------------
     // Expeditions History ----------------------------------------------

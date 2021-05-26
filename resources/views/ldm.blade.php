@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Krovimo metrų skaičiuoklė')
 @section('content')
 @if(session()->has('user') || session()->has('admin'))
 <br><br><br><br><br><br>
@@ -38,6 +39,15 @@
                 </form>
                 <form id="dimensions" hidden>
                     <div>
+                        <div class="form-group">
+                            <label for="exp">Skaičiuoti pagal ekspedicijos palečių kiekį (nebūtina)</label>
+                            <select class="custom-select" name="exp" id="exp" oninput="changeAmount()">
+                                <option value="0">Pasirinkite ekspediciją</option>
+                                @foreach($data as $d)
+                                    <option value="{{intval($d->amount)}}">Eksp. nr. {{$d->order_no}}:   {{$d->amount}}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="pallet">Paletės tipas</label>
                             <select class="custom-select" name="pallet" id="pallet" oninput="calcPal()">
@@ -171,6 +181,10 @@
         document.getElementById('ldm').innerText = ldm + ' krovimo metrų';
         document.getElementById('cubMeter').innerText = cubMeter + ' m';
         document.getElementById('cubMeter').append(sup);
+    }
+    function changeAmount() {
+        var amount = document.getElementById('exp').value;
+        document.getElementById('amountP').value = amount;
     }
 </script>
 @else

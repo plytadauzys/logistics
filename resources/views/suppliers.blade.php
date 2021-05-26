@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Tiekėjai')
 @section('content')
 @if(session()->has('user') || session()->has('admin'))
 @if(session('message'))
@@ -116,6 +117,7 @@
     </div>
 
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti tiekėjų" title="Įveskite norimą tekstą">
+    <p id="allNull" hidden>Nėra tokių įrašų</p>
     <table class="table table-bordered sortable" id="clientTable">
         <thead class="thead-dark">
         <tr>
@@ -254,6 +256,19 @@
                 }
             }
         }
+        for(i = 1; i < tr.length; i++) {
+            if(tr[i].style.display == 'none') {
+                allNull = true;
+            }
+            else {
+                allNull = false;
+                break
+            }
+        }
+        if(allNull)
+            document.getElementById('allNull').hidden = false;
+        else
+            document.getElementById('allNull').hidden = true;
     }
 </script>
 @else

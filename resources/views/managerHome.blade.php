@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Namai')
 @section('content')
 @if(session()->has('user'))
 <div id="danger" hidden>

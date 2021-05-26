@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Klientai')
 @section('content')
 @if(session()->has('user') || session()->has('admin'))
 @if(session('message'))
@@ -115,6 +116,7 @@
     </div>
 
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
+    <p id="allNull" hidden>Nėra tokių įrašų</p>
     <table class="table table-bordered sortable" id="clientTable">
         <thead class="thead-dark">
             <tr>
@@ -232,7 +234,7 @@
     @php(session()->pull('client'))
     @endif
     function search() {
-        var input, filter, table, tr, td, i;
+        var input, filter, table, tr, td, i, allNull;
         input = document.getElementById("search");
         filter = input.value.toUpperCase();
         table = document.getElementById("clientTable");
@@ -253,6 +255,19 @@
                 }
             }
         }
+        for(i = 1; i < tr.length; i++) {
+            if(tr[i].style.display == 'none') {
+                allNull = true;
+            }
+            else {
+                allNull = false;
+                break
+            }
+        }
+        if(allNull)
+            document.getElementById('allNull').hidden = false;
+        else
+            document.getElementById('allNull').hidden = true;
     }
 </script>
 @else

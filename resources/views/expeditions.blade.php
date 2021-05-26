@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Ekspedicijos')
 @section('content')
 @if(session()->has('user') || session()->has('admin'))
 @if(session('message'))
@@ -173,6 +174,7 @@
 <div class="row col-md-6">
     <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
 </div>
+<p id="allNull" hidden>Nėra tokių įrašų</p>
 <table id="table" class="table">
     <thead>
     <tr>
@@ -416,7 +418,7 @@
                                                     <input type="number" class="form-control" id="profitState" name="profitState" placeholder="Įveskite pelną"
                                                            value="{{$d->profit}}">
                                                 </div>
-                                                <input id="fieldsNewCountState" name="fieldsNewCountState" type="number" hidden
+                                                <input id="{{'fieldsNewCountState'.$d->order_no}}" name="fieldsNewCountState" type="number" hidden
                                                        value="{{count(explode('!!', $d->dates))}}">
                                                 <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
@@ -826,7 +828,7 @@
                                                     <div class="form-group">
                                                         <label for="loadedState">Pasikrovimo data</label>
                                                         <input type="date" class="form-control" id="loadedState" name="loadedState" placeholder="Įveskite datą"
-                                                               value="{{\Carbon\Carbon::now()->toDateString()}}" required>
+                                                               value="{{\Carbon\Carbon::now()->toDateString()}}" readonly>
                                                     </div>
                                                     <button type="submit" class="btn btn-success">Keisti būseną</button>
                                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Atšaukti</button>
@@ -990,7 +992,7 @@
                                                         <input type="text" class="form-control" id="routeAddressState" name="routeAddressState"
                                                                value="{{explode('!!',$d->addresses)[0]}}" required>
                                                         <input id="{{'lastIndex'.$d->order_no}}" value="{{count(explode('!!',$d->dates))}}" hidden>
-                                                        @if($d->progress > 2)
+                                                        @if($d->progress >= 2)
                                                             <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked disabled oninput="changeProgress({{$d->order_no}},0,'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
                                                         @elseif($d->progress == 1)
                                                             <input type="checkbox" id="{{'progressState'.$d->order_no}}" name="progressState" checked oninput="changeProgress({{$d->order_no}},0,'document.getElementById({{'lastIndex'.$d->order_no}}).value')">
@@ -1413,6 +1415,19 @@
                     }
                 }
             }
+            for(i = 1; i < tr.length; i++) {
+                if(tr[i].style.display == 'none') {
+                    allNull = true;
+                }
+                else {
+                    allNull = false;
+                    break
+                }
+            }
+            if(allNull)
+                document.getElementById('allNull').hidden = false;
+            else
+                document.getElementById('allNull').hidden = true;
         }
         @if(count($data) != 0)
             var fieldNo = {{count(explode('!!',$d->dates))}};
@@ -1454,6 +1469,8 @@
             document.getElementById(fooID.id).appendChild(line);
             fieldNo++;
             document.getElementById('fieldsEditCount'+orderNo).value = fieldNo;
+            if(mode == 2)
+                document.getElementById('fieldsNewCountState'+orderNo).value = fieldNo;
         }
         @if(session()->has('neworder'))
             var fieldNoNew = {{count(explode('!!',session('neworder')[0][3]))}};
@@ -1566,6 +1583,7 @@
                     i++;
                 });
                 i=1;
+                document.getElementById('fieldsNewCountState'+orderNo).value = fieldNo;
             }
         }
         function deleteFieldNew(dateID, addressID, delID, lineID) {
@@ -1599,6 +1617,7 @@
             });
             i=1;
             fieldNoNew--;
+            document.getElementById('fieldsNewCount').value = fieldNoNew;
         }
         function calcTotalProfit(orderNo) {
             var profit = document.getElementById('profitState'+orderNo);

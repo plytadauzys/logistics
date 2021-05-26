@@ -24,7 +24,6 @@ class ExpeditionController extends Controller
         $suppliers = Supplier::all();
         return view('expeditions', ['data' => $expeditions, 'clients' => $clients, 'suppliers' => $suppliers]);
     }
-
     function createExpedition(request $req) {
         $expeditions = Expedition::all();
         $clients = Client::all();
@@ -88,7 +87,8 @@ class ExpeditionController extends Controller
             $newClient->name = $client;
 
             $adresas = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Adresas: ', 'Pašto kodas:')));
-            if(empty($adresas)) $newClient->address = $client;
+            if(Client::where('address',$adresas)->first() != null) return Redirect::back()->with('error','Negalima importuoti užsakymo ir kurti naujo kliento, nes klientas su adresu '.$adresas.' jau egzistuoja.');
+            else if(empty($adresas)) $newClient->address = $client;
             else $newClient->address = $adresas;
 
             $postal_code = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Pašto kodas:', 'Telefonas')));
@@ -96,19 +96,21 @@ class ExpeditionController extends Controller
             else $newClient->postal_code = $postal_code;
 
             $phone_no = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'Telefonas:', 'El. paštas:')));
-            if(empty($phone_no) && !empty(Client::all())) $newClient->phone_no = (Client::orderBy('id','desc')->first()->id + 1).'. Reikia keisti';
-            else if(empty(Client::all())) $newClient = '1. Reikia keisti';
+            if(Client::where('phone_no',$phone_no)->first() != null) return Redirect::back()->with('error','Negalima importuoti užsakymo ir kurti naujo kliento, nes klientas su telefono nr. '.$phone_no.' jau egzistuoja.');
+            else if(empty($phone_no) && !empty(Client::all())) $newClient->phone_no = (Client::orderBy('id','desc')->first()->id + 1).'. Reikia keisti';
+            else if(empty(Client::all()) && empty($phone_no)) $newClient = '1. Reikia keisti';
             else $newClient->phone_no = $phone_no;
 
             $email = trim(preg_replace('/\s\s+/', ' ', Str::between($txt, 'El. paštas:', 'KROVINIO APRAŠYMAS')));
-            if(empty($email)) $newClient->email = $client;
+            if(Client::where('email',$email)->first() != null) return Redirect::back()->with('error','Negalima importuoti užsakymo ir kurti naujo kliento, nes klientas su el. paštu '.$email.' jau egzistuoja.');
+            else if(empty($email)) $newClient->email = $client;
             else $newClient->email = $email;;
 
             $newClient->save();
         }
         $supplier = trim(preg_replace('/\s\s+/', ' ', Str::between($txt,'Siuntėjo pavadinimas: ',PHP_EOL.'Pervežimo maršrutas')));
         if(strlen($supplier) > 30)
-            return Redirect::back()->with('error','Tiekėjo pavadinimas nerastas arba per ilgas');
+            return Redirect::back()->with('error','Tiekėjo pavadinimas nerastas arba per ilgas.');
         $supplierObject = Supplier::where('name','=',$supplier)->first();
         if($supplierObject == null) {
             $newSupplier = new Supplier();
@@ -220,6 +222,7 @@ class ExpeditionController extends Controller
             $expedition->addresses = implode('!!', $addresses);
             $expedition->amount = $req->amountState;
             $expedition->profit = $req->profitState;
+            $expedition->cargo = $req->cargoState;
             $expedition->state = 'contact';
             $expedition->date = Carbon::now()->toDateString();
             $expedition->save();
