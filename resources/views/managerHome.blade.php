@@ -42,12 +42,13 @@
                         <p>Eksp. {{$d->order_no}}: Ekspedicija neuždaryta daugiau nei 4 dienos.
                             <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a></p>
                     @endif
-                @elseif($d->state == 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) > 2)
+                @elseif($d->state == 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) > 1 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[0])
                     <p>Eksp. {{$d->order_no}}: Nepradėtas pirmas pasikrovimas adresu {{explode('!!',$d->addresses)[0]}}, planuota
                         pasikrovimo data {{explode('!!',$d->dates)[0]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
                     </p>
-                @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 1)
+                @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 1 &&
+                        \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
                     <p>Eksp. {{$d->order_no}}: Nepradėtas pasikrovimas adresu {{explode('!!',$d->addresses)[$d->progress]}},
                         planuota pasikrovimo data {{explode('!!',$d->dates)[$d->progress]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
@@ -96,12 +97,13 @@
                         <p>Eksp. {{$d->order_no}}: Ekspedicija neuždaryta daugiau nei 1 diena.
                             <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a></p>
                     @endif
-                @elseif($d->state == 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) == 1)
+                @elseif($d->state == 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) == 1 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[0])
                     <p>Eksp. {{$d->order_no}}: Nepradėtas pirmas pasikrovimas adresu {{explode('!!',$d->addresses)[0]}}, planuota
                         pasikrovimo data {{explode('!!',$d->dates)[0]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
                     </p>
-                @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 0)
+                @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 0 &&
+                        \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
                     <p>Eksp. {{$d->order_no}}: Nepradėtas pasikrovimas adresu {{explode('!!',$d->addresses)[$d->progress]}},
                         planuota pasikrovimo data {{explode('!!',$d->dates)[$d->progress]}}
                         <a href="expeditions/{{$d->order_no}}"><button type="button" class="btn btn-outline-danger">Tvarkyti</button></a>
@@ -163,28 +165,28 @@
     document.getElementById('homeBtn').classList.remove('btn-outline-success');
     document.getElementById('homeBtn').classList.add('btn-success');
     @foreach($data as $d)
-        @if($d->state === 'order' && \Carbon\Carbon::now()->diffInDays($d->date) > 3)
+        @if($d->state === 'order' && \Carbon\Carbon::now()->diffInDays($d->date) > 3 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
             document.getElementById('danger').hidden = false;
         @elseif($d->state === 'order' && \Carbon\Carbon::now()->diffInDays($d->date) > 0 &&
-        \Carbon\Carbon::now()->diffInDays($d->date) < 4)
+        \Carbon\Carbon::now()->diffInDays($d->date) < 4 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
             document.getElementById('warning').hidden = false;
-        @elseif($d->state === 'contact' && \Carbon\Carbon::now()->diffInDays($d->date) > 3)
+        @elseif($d->state === 'contact' && \Carbon\Carbon::now()->diffInDays($d->date) > 3 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
             document.getElementById('danger').hidden = false;
         @elseif($d->state === 'contact' && \Carbon\Carbon::now()->diffInDays($d->date) > 0 &&
-        \Carbon\Carbon::now()->diffInDays($d->date) < 4)
+        \Carbon\Carbon::now()->diffInDays($d->date) < 4 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
             document.getElementById('warning').hidden = false;
-        @elseif($d->state === 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) > 2)
+        @elseif($d->state === 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) > 1 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[0])
             document.getElementById('danger').hidden = false;
-        @elseif($d->state === 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) > 0)
+        @elseif($d->state === 'transport' && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[0]) == 1 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[0])
             document.getElementById('warning').hidden = false;
-        @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 1)
+        @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 1 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
             document.getElementById('danger').hidden = false;
-        @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 0)
+        @elseif($d->state === 'exporting' && $d->progress != count(explode('!!',$d->dates)) && \Carbon\Carbon::now()->diffInDays(explode('!!',$d->dates)[$d->progress]) > 0 && \Carbon\Carbon::now()->toDateString() > explode('!!',$d->dates)[$d->progress])
             document.getElementById('warning').hidden = false;
-        @elseif($d->state === 'received' && \Carbon\Carbon::now()->diffInDays($d->date) > 3)
+        @elseif($d->state === 'received' && \Carbon\Carbon::now()->diffInDays($d->date) > 3 && \Carbon\Carbon::now()->toDateString() > $d->date)
             document.getElementById('danger').hidden = false;
         @elseif($d->state === 'received' && \Carbon\Carbon::now()->diffInDays($d->date) > 0 &&
-            \Carbon\Carbon::now()->diffInDays($d->date) < 4)
+            \Carbon\Carbon::now()->diffInDays($d->date) < 4 && \Carbon\Carbon::now()->toDateString() > $d->dates)
             document.getElementById('warning').hidden = false;
         @endif
     @endforeach

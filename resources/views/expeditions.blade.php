@@ -215,7 +215,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                    <label for="supplierState">Tiekėjas</label>
                                                     <select class="custom-select" name="supplierState" id="supplierState" disabled>
                                                         <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                     </select>
@@ -462,7 +462,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                        <label for="supplierState">Tiekėjas</label>
                                                         <select class="custom-select" name="supplierState" id="supplierState" disabled>
                                                             <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                         </select>
@@ -654,7 +654,7 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                                <label for="supplierState">Tiekėjas</label>
                                                                 <select class="custom-select" name="supplierState" id="supplierState" disabled>
                                                                     <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                                 </select>
@@ -878,7 +878,7 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                                <label for="supplierState">Tiekėjas</label>
                                                                 <select class="custom-select" name="supplierState" id="supplierState" disabled>
                                                                     <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                                 </select>
@@ -930,7 +930,7 @@
                                                                value="{{$d->total_profit}}" readonly>
                                                     </div>
                                                     <div class="progress">
-                                                        <div class="progress-bar bg-info" role="progressbar" style="{{'width: '.($d->progress/count(explode('!!',$d->dates))*100).'%'}}" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        <div class="progress-bar bg-info" role="progressbar" style="{{'width: '.($d->progress/count(explode('!!',$d->dates))*100).'%'}}" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{round($d->progress/count(explode('!!',$d->dates)) * 100,1)}}%</div>
                                                     </div>
                                                     @for($i = 0; $i < count(explode('!!',$d->dates)); $i++)
                                                         @if($i == $d->progress - 1 && $d->progress - 1 == count(explode('!!',$d->dates)) - 1)
@@ -942,7 +942,9 @@
                                                                 <p>{{'Pasikrauta: '.explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}</p>
                                                             </div>
                                                         @else
-                                                            <p>{{'Vyksta: '.explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}</p>
+                                                            <div class="alert alert-info" role="alert" style="display:inline-block; width: 100%">
+                                                                <p>{{'Vyksta: '.explode('!!',$d->dates)[$i].' '.explode('!!',$d->addresses)[$i]}}</p>
+                                                            </div>
                                                         @endif
                                                     @endfor
                                                 </form>
@@ -1188,7 +1190,7 @@
                                                                 </select>
                                                             </div>
                                                             <div class="form-group">
-                                                                <label for="supplierState">Tiekėjo pavadinimas</label>
+                                                                <label for="supplierState">Tiekėjas</label>
                                                                 <select class="custom-select" name="supplierState" id="supplierState" disabled>
                                                                     <option value="{{$d->supplier}}">{{$d->tiekejas->name}}</option>
                                                                 </select>
