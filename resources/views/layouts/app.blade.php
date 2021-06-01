@@ -39,6 +39,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/ldm"><button id="ldmBtn" class="btn btn-outline-success me-2" type="button">Krovimo metrų skaičiuoklė</button></a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/settings"><button id="warnSettings" class="btn btn-outline-success me-2" type="button">Įspėjimų nustatymai</button></a>
+                </li>
                 @if(session('user'))
                     <li class="nav-item">
                         <a class="nav-link" href="/logoutManager"><button id="logoutBtn" class="btn btn-outline-success me-2" type="button">Atsijungti</button></a>

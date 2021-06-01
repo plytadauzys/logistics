@@ -7,6 +7,7 @@ use App\Models\Expedition;
 use App\Models\ExpeditionHistory;
 use App\Models\Manager;
 use App\Models\Supplier;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
@@ -21,8 +22,9 @@ class ManagerController extends Controller
         $expeditionHistory = ExpeditionHistory::all();
         $client = Client::all();
         $supplier = Supplier::all();
+        $settings = Setting::all();
         return view('managerHome',['data' => $expedition, 'manager' => $manager, 'expHist' => $expeditionHistory,
-            'client' => $client, 'supplier' => $supplier]);
+            'client' => $client, 'supplier' => $supplier, 'settings' => $settings]);
     }
     function login (request $req) {
         $manager = Manager::select('email')->where('email',$req->email)->exists();

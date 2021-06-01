@@ -190,7 +190,7 @@
         @if($d->state == 'order')
             <tr>
                 <td> <p hidden>Gautas užsakymas {{$d->order_no}}</p>
-                    <div class="card" style="width: 12rem;">
+                    <div class="card" style="width: 12rem;" id="{{'card'.$d->order_no}}">
                         <div class="card-body">
                             <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
@@ -437,7 +437,7 @@
             <tr>
                 <td><p hidden>2</p></td>
                     <td><p hidden>Sukontaktuota su tiekėju {{$d->order_no}}</p>
-                        <div class="card" style="width: 12rem;">
+                        <div class="card" style="width: 12rem;" id="{{'card'.$d->order_no}}">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
@@ -623,7 +623,7 @@
             <tr>
                 <td><p hidden>3</p></td><td><p hidden>3</p></td>
                     <td><p hidden>Surastas transportas {{$d->order_no}}</p>
-                        <div class="card" style="width: 12rem;">
+                        <div class="card" style="width: 12rem;" id="{{'card'.$d->order_no}}">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
@@ -847,7 +847,7 @@
             <tr>
                 <td><p hidden>4</p></td><td><p hidden>4</p></td><td><p hidden>4</p></td>
                     <td><p hidden>Gabenama {{$d->order_no}}</p>
-                        <div class="card" style="width: 12rem;">
+                        <div class="card" style="width: 12rem;" id="{{'card'.$d->order_no}}">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
@@ -1158,7 +1158,7 @@
             <tr>
                 <td><p hidden>5</p></td><td><p hidden>5</p></td><td><p hidden>5</p></td><td><p hidden>5</p></td>
                     <td><p hidden>Pristatyta {{$d->order_no}}</p>
-                        <div class="card" style="width: 12rem;">
+                        <div class="card" style="width: 12rem;" id="{{'card'.$d->order_no}}">
                             <div class="card-body">
                                 <h5 class="card-title">Eksp. {{$d->order_no}}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{$d->route}}</h6>
@@ -1389,6 +1389,13 @@
 
 
     <script>
+        @foreach($data as $d)
+            @if(session()->has('ordDanger'))
+                @foreach(session()->get('ordDanger') as $s)
+                    console.log({{$s}});
+                @endforeach
+            @endif
+        @endforeach
         document.getElementById('expBtn').classList.remove('btn-outline-success');
         document.getElementById('expBtn').classList.add('btn-success');
         @if(session()->has('exp'))
@@ -1904,6 +1911,14 @@
                     i++;
             });
             document.getElementById('progressCount'+orderNo).value = i;
+        }
+        function colorDanger(orderNo) {
+            var card = document.getElementById('card'+orderNo);
+            card.style.backgroundColor = '#f8d7da';
+            card.style.borderColor = '#f5c6cb';
+        }
+        function colorWarning(orderNo) {
+
         }
     </script>
 @else

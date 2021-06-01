@@ -8,6 +8,7 @@ use \App\Http\Controllers\SupplierController;
 use \App\Http\Controllers\ManagerController;
 use \App\Http\Controllers\AdministratorController;
 use \App\Http\Controllers\ExpeditionHistoryController;
+use \App\Http\Controllers\SettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,8 @@ else {*/
     Route::get('ldm', function () {
         return view('ldm',['data' => \App\Models\Expedition::all()]);
     });
+    Route::get('settings', [SettingsController::class, 'index']);
+    Route::post('settings/edit', [SettingsController::class, 'edit']);
     //-------------------------------------------------------------------
     // Expeditions History ----------------------------------------------
     Route::get('/expeditionHistory', [ExpeditionHistoryController::class, 'index']);
