@@ -115,7 +115,12 @@
         </div>
     </div>
 
-    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
+    <div class="row m-0">
+        <input class="form-control col-sm-8" type="text" id="search" onkeyup="search()" placeholder="Ieškoti klientų" title="Įveskite norimą tekstą">
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-danger" onclick="document.getElementById('search').value = ''; search();">Valyti paieškos laukelį</button>
+        </div>
+    </div>
     <p id="allNull" hidden>Nėra tokių įrašų</p>
     <table class="table table-bordered sortable" id="clientTable">
         <thead class="thead-dark">
@@ -268,6 +273,16 @@
             document.getElementById('allNull').hidden = false;
         else
             document.getElementById('allNull').hidden = true;
+    }
+    function addTextToSearch(textString) {
+        textString = textString.toString();
+        if(document.getElementById('check').checked) {
+            if(document.getElementById('search').value == '')
+                document.getElementById('search').value = document.getElementById('search').value + textString.toString();
+            else
+                document.getElementById('search').value = document.getElementById('search').value + ' ' + textString.toString();
+            search();
+        }
     }
 </script>
 @else

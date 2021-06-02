@@ -73,7 +73,12 @@
             </div>
         </div>
 
-    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti vartotojų" title="Įveskite norimą tekstą">
+    <div class="row m-0">
+        <input class="form-control col-sm-8" type="text" id="search" onkeyup="search()" placeholder="Ieškoti vartotojų" title="Įveskite norimą tekstą">
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-danger" onclick="document.getElementById('search').value = ''; search();">Valyti paieškos laukelį</button>
+        </div>
+    </div>
     <p id="allNull" hidden>Nėra tokių įrašų</p>
     <table class="table table-bordered" id="clientTable">
         <thead class="thead-dark">

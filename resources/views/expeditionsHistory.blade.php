@@ -7,12 +7,14 @@
             Nėra įvykusių ekspedicijų.
         </div>
     @else
-        <div>
-            <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
-            <button type="button" class="btn btn-danger" onclick="document.getElementById('search').value = ''; search();">Valyti paieškos laukelį</button>
+        <div class="row m-0">
+            <input class="form-control col-sm-8" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
+            <div class="col-sm-4">
+                <button type="button" class="btn btn-danger" onclick="document.getElementById('search').value = ''; search();">Valyti paieškos laukelį</button>
+                <input type="checkbox" id="check" name="progressState">
+                <label class="form-check-label" for="check">Leisti teksto pridėjimą paspaudus</label>
+            </div>
         </div>
-        <input type="checkbox" id="check" name="progressState">
-        <label class="form-check-label" for="check">Leisti teksto pridėjimą paspaudus</label>
         <p id="allNull" hidden>Nėra tokių įrašų</p>
         <table class="table table-bordered sortable" id="clientTable">
             <thead class="thead-dark">
@@ -139,7 +141,6 @@
         function addTextToSearch(textString) {
             textString = textString.toString();
             if(document.getElementById('check').checked) {
-                console.log(textString);
                 if(document.getElementById('search').value == '')
                     document.getElementById('search').value = document.getElementById('search').value + textString.toString();
                 else

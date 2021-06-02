@@ -445,4 +445,8 @@ class ExpeditionController extends Controller
         $expedition->save();
         return Redirect::back()->with('message','Ekspedicija Nr. '.$req->id. ' redaguota sėkmingai.');
     }
+    function remove($order_no) {
+        Expedition::where('order_no',$order_no)->first()->delete();
+        return Redirect::back()->with('message', 'Ekspedicija sėkmingai pašalinta.');
+    }
 }

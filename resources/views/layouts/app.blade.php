@@ -55,6 +55,10 @@
         </ul>
     </div>
 </nav>
+<p id="markDanger" hidden></p>
+<p id="markWarning" hidden></p>
+<p id="markClient" hidden></p>
+<p id="markSupplier" hidden></p>
 <main>
     @yield('content')
 </main>

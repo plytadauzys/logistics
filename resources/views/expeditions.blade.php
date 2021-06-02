@@ -155,7 +155,7 @@
 </div>
 <form action="/expeditions/file" method="POST" enctype="multipart/form-data">
     @csrf
-    <div class="row g-3">
+    <div class="row m-0">
         <div class="col-md-2">
             <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#naujas">
                 Nauja
@@ -171,18 +171,23 @@
     </div>
 </form>
 @if(count($data) != 0)
-<div class="row col-md-6">
-    <input class="form-control" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
+<div class="row m-0">
+    <input class="form-control col-sm-8" type="text" id="search" onkeyup="search()" placeholder="Ieškoti ekspedicijų" title="Įveskite norimą tekstą">
+    <div class="col-sm-4">
+        <button type="button" class="btn btn-danger" onclick="document.getElementById('search').value = ''; search();">Valyti paieškos laukelį</button>
+        <input type="checkbox" id="check" name="progressState">
+        <label class="form-check-label" for="check">Leisti teksto pridėjimą paspaudus</label>
+    </div>
 </div>
 <p id="allNull" hidden>Nėra tokių įrašų</p>
 <table id="table" class="table">
     <thead>
     <tr>
-        <th scope="col">Gautas užsakymas</th>
-        <th scope="col">Sukontaktuota su tiekėju</th>
-        <th scope="col">Surastas transportas</th>
-        <th scope="col">Gabenama</th>
-        <th scope="col">Pristatyta</th>
+        <th scope="col" onclick="addTextToSearch('Gautas užsakymas')">Gautas užsakymas</th>
+        <th scope="col" onclick="addTextToSearch('Sukontaktuota su tiekėju')">Sukontaktuota su tiekėju</th>
+        <th scope="col" onclick="addTextToSearch('Surastas transportas')">Surastas transportas</th>
+        <th scope="col" onclick="addTextToSearch('Gabenama')">Gabenama</th>
+        <th scope="col" onclick="addTextToSearch('Pristatyta')">Pristatyta</th>
     </tr>
     </thead>
     <tbody>
@@ -255,6 +260,24 @@
                                             <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
                                                     onclick="changeFieldNo({{count(explode('!!',$d->dates))}})" type="button">Redaguoti</button>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="{{'#confirm'.$d->order_no}}">Šalinti</button>
+                                            <!-- ŠALINTI Modal -->
+                                            <div class="modal fade" id="{{'confirm'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti Eksp. {{$d->order_no}}?</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                                            <a href="{{'expeditions/remove/'.$d->order_no}}"><button type="button" class="btn btn-danger" value="{{$d->order_no}}">Taip</button></a>
+                                                            <button type="button" class="btn btn-success" onclick="$({{'confirm'.$d->order_no}}).modal('hide');">Ne</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -501,6 +524,24 @@
                                                 <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
                                                         onclick="changeFieldNo({{count(explode('!!',$d->dates))}})" type="button">Redaguoti</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="{{'#confirm'.$d->order_no}}">Šalinti</button>
+                                                <!-- ŠALINTI Modal -->
+                                                <div class="modal fade" id="{{'confirm'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti Eksp. {{$d->order_no}}?</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                                                <a href="{{'expeditions/remove/'.$d->order_no}}"><button type="button" class="btn btn-danger" value="{{$d->order_no}}">Taip</button></a>
+                                                                <button type="button" class="btn btn-success" onclick="$({{'confirm'.$d->order_no}}).modal('hide');">Ne</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -710,6 +751,24 @@
                                                 <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
                                                         onclick="changeFieldNo({{count(explode('!!',$d->dates))}})" type="button">Redaguoti</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="{{'#confirm'.$d->order_no}}">Šalinti</button>
+                                                <!-- ŠALINTI Modal -->
+                                                <div class="modal fade" id="{{'confirm'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti Eksp. {{$d->order_no}}?</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                                                <a href="{{'expeditions/remove/'.$d->order_no}}"><button type="button" class="btn btn-danger" value="{{$d->order_no}}">Taip</button></a>
+                                                                <button type="button" class="btn btn-success" onclick="$({{'confirm'.$d->order_no}}).modal('hide');">Ne</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -952,6 +1011,24 @@
                                                 <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
                                                         onclick="changeFieldNo({{count(explode('!!',$d->dates))}})" type="button">Redaguoti</button>
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="{{'#confirm'.$d->order_no}}">Šalinti</button>
+                                                <!-- ŠALINTI Modal -->
+                                                <div class="modal fade" id="{{'confirm'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti Eksp. {{$d->order_no}}?</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                                                <a href="{{'expeditions/remove/'.$d->order_no}}"><button type="button" class="btn btn-danger" value="{{$d->order_no}}">Taip</button></a>
+                                                                <button type="button" class="btn btn-success" onclick="$({{'confirm'.$d->order_no}}).modal('hide');">Ne</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1245,6 +1322,24 @@
                                                     <button class="btn btn-info" data-toggle="modal" data-target="{{'#expedit'.$d->order_no}}"
                                                             onclick="changeFieldNo({{count(explode('!!',$d->dates))}})" type="button">Redaguoti</button>
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Uždaryti</button>
+                                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="{{'#confirm'.$d->order_no}}">Šalinti</button>
+                                                    <!-- ŠALINTI Modal -->
+                                                    <div class="modal fade" id="{{'confirm'.$d->order_no}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="exampleModalLabel">Ar tikrai norite šalinti Eksp. {{$d->order_no}}?</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-footer d-flex justify-content-center" style="vertical-align: middle">
+                                                                    <a href="{{'expeditions/remove/'.$d->order_no}}"><button type="button" class="btn btn-danger" value="{{$d->order_no}}">Taip</button></a>
+                                                                    <button type="button" class="btn btn-success" onclick="$({{'confirm'.$d->order_no}}).modal('hide');">Ne</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </div>
@@ -1389,13 +1484,6 @@
 
 
     <script>
-        @foreach($data as $d)
-            @if(session()->has('ordDanger'))
-                @foreach(session()->get('ordDanger') as $s)
-                    console.log({{$s}});
-                @endforeach
-            @endif
-        @endforeach
         document.getElementById('expBtn').classList.remove('btn-outline-success');
         document.getElementById('expBtn').classList.add('btn-success');
         @if(session()->has('exp'))
@@ -1919,6 +2007,13 @@
         }
         function colorWarning(orderNo) {
 
+        }
+        function addTextToSearch(textString) {
+            textString = textString.toString();
+            if(document.getElementById('check').checked) {
+                document.getElementById('search').value = textString.toString();
+                search();
+            }
         }
     </script>
 @else

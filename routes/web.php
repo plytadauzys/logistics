@@ -84,6 +84,7 @@ else {*/
     Route::get('ldm', function () {
         return view('ldm',['data' => \App\Models\Expedition::all()]);
     });
+    Route::get('expeditions/remove/{order_no}', [ExpeditionController::class, 'remove']);
     Route::get('settings', [SettingsController::class, 'index']);
     Route::post('settings/edit', [SettingsController::class, 'edit']);
     //-------------------------------------------------------------------

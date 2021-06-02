@@ -14,7 +14,7 @@
     @endif
     <p></p>
     <div class="row m-0">
-        <div class="card col-sm-6">
+        <div class="card col-sm-6" style="background-color: #f8d7da; border-color: #f5c6cb;">
             <h5 class="card-title">Svarbūs įspėjimai</h5>
             <form action="settings/edit" method="POST">
                 @csrf
@@ -23,13 +23,13 @@
                     <div class="form-group">
                         <label for="exampleInputPassword1">{{$d->description}}</label>
                         <input type="number" class="form-control" id="{{'value'.$d->id}}" name="{{'value'.$d->id}}"
-                               placeholder="Įveskite dienų skaičių" value="{{$d->value}}" required>
+                               placeholder="Įveskite dienų skaičių" value="{{$d->value}}" required style="background-color: #fdf6f7;">
                     </div>
                 @endforeach
-                <button type="submit" class="btn btn-primary">Keisti</button>
+                <button type="submit" class="btn btn-outline-dark">Keisti</button>
             </form>
         </div>
-        <div class="card col-sm-6">
+        <div class="card col-sm-6" style="background-color: #fff3cd; border-color: #ffeeba;">
             <h5 class="card-title">Mažiau svarbūs įspėjimai</h5>
             <form action="settings/edit" method="POST">
                 @csrf
@@ -38,10 +38,10 @@
                     <div class="form-group">
                         <label for="exampleInputPassword1">{{$d->description}}</label>
                         <input type="number" class="form-control" id="{{'value'.$d->id}}" name="{{'value'.$d->id}}"
-                               placeholder="Įveskite dienų skaičių" value="{{$d->value}}" required>
+                               placeholder="Įveskite dienų skaičių" value="{{$d->value}}" required style="background-color: #fffdf5;">
                     </div>
                 @endforeach
-                <button type="submit" class="btn btn-primary">Keisti</button>
+                <button type="submit" class="btn btn-outline-dark">Keisti</button>
             </form>
         </div>
     </div>
